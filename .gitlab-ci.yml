@@ -1,0 +1,39 @@
+variables:
+  CI_SERVER_URL: http://makebe-gitlab
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  script:
+    - dotnet build
+    - dotnet publish -c Release -o published
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - published/  
+
+before_script:
+  - apt-get update && apt-get install -y rsync 
+
+deploy:
+  stage: deploy
+  image: docker:stable
+  script:
+    - apt-get update && apt-get install -y rsync 
+    - docker pull api-makebe:latest || true  
+    - docker build -t api-makebe:latest . 
+    - docker stop makebe-session || true  
+    - docker rm makebe-session || true     
+    - docker run -d --name makebe-session -p 81:80 -v /mnt/arquivos/makebeserver/dockercompose/App/appsettings.json:/App/appsettings.json -v /home/makebe-user/Imagens:/app/uploads -v /etc/localtime:/etc/localtime:ro api-makebe:latest
+    - docker network connect dockercompose_makebe-rede makebe-session 
+  tags:
+    - docker
+  only:
+    - main  
+
+
+
