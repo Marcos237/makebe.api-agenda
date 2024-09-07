@@ -6,6 +6,11 @@ namespace api.makebe.agenda.domain.ValueObjects
     {
         public const int ValorMaxCpf = 11;
         public string? Codigo { get; private set; }
+
+        public CNPJ(string cnpj)
+        {
+            Codigo = cnpj;
+        }
         public  bool IsValidCNPJ(string cnpj)
         {
             cnpj = Regex.Replace(cnpj, "[^0-9]", "");

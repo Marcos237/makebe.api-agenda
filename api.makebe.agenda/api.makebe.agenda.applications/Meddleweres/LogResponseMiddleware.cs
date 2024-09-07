@@ -1,5 +1,5 @@
 ﻿using api.makebe.agenda.applications.Helpers;
-using api.makebe.agenda.domain.Services.Interfaces;
+using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Entidades.Constants;
 using api.makebe.agenda.infra.crosscutting.Entidades.Enum;
 using api.makebe.agenda.infra.crosscutting.Notifications;

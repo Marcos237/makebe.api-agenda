@@ -10,8 +10,8 @@ namespace api.makebe.agenda.domain.Entidades
         public string? Email { get; set; }
         public string? Telefone { get; set; }
         public bool Status { get; set; }
+        public int TipoLojaId { get; set; }
         public  DateTime DataCadastro { get; set; }
         public  DateTime DataAtualizacao { get; set; }
-
     }
 }

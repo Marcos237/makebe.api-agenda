@@ -1,5 +1,4 @@
-﻿using api.makebe.agenda.domain.Constants;
-using api.makebe.agenda.domain.DTO;
+﻿using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.infra.data.Repositorys.Interfaces;
 using Dapper;
@@ -13,9 +12,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
-        public async Task<PaginacaoDTO<Loja>> BuscarLojas(PaginacaoDTO<Loja> paginacao)
+        public async Task<IEnumerable<Loja>> BuscarLojas(PaginacaoDTO<Loja> paginacao, string usuarioId)
         {
-
             string countQuery = "SELECT COUNT(*) FROM Loja Where UsuarioId  = @UsuarioId";
             paginacao!.total = await _dbAgenda.Connection.ExecuteScalarAsync<int>(countQuery);
             paginacao.totalPaginas = (paginacao.total + paginacao.quantidadePagina - 1) / paginacao.quantidadePagina;
@@ -27,6 +25,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                                  AND (CNPJ LIKE '%' + @CNPJ + '%' OR @CNPJ IS NULL OR @CNPJ = '')
                                  AND (Email LIKE '%' + @Email + '%' OR @Email IS NULL OR @Email = '')
                                  AND ul.UsuarioId  = @UsuarioId
+                                 AND l.Status = 1
                                ORDER BY RazaoSocial 
                                OFFSET @RegistroInicial ROWS
                                FETCH NEXT @TamanhoPagina ROWS ONLY";
@@ -36,25 +35,19 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 TamanhoPagina = paginacao.quantidadePagina,
                 RazaoSocial = paginacao?.objetoPesquisa?.RazaoSocial,
                 CNPJ = paginacao?.objetoPesquisa?.CNPJ,
-                Emai = paginacao?.objetoPesquisa?.Email
+                Emai = paginacao?.objetoPesquisa?.Email,
+                UsuarioId = usuarioId
             };
             paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<Loja>(sql, parametros) ?? Enumerable.Empty<Loja>();
-            return paginacao;
+            return paginacao.objetos;
         }
-        public async Task<Loja> BuscarLojaPorCNPJ(string cnpj)
-        {
-            var sql = @"SELECT l.Id, l.RazaoSocial , l.CNPJ , l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao
-                               FROM Loja l
-                      WHERE CNPJ = @CNPJ";
-            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Loja>(sql, new { Cnpj = cnpj }) ?? new Loja();
-            return retorno;
-        }
+
 
         public async Task<Loja> BuscarLojaPorCodigo(int id)
         {
             var sql = @"SELECT l.Id, l.RazaoSocial , l.CNPJ , l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao
-                               FROM Loja l
-                      WHERE Id = @Id";
+                               FROM Loja l 
+                      WHERE Id = @Id AND Status = 1";
             var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Loja>(sql, new { Id = id }) ?? new Loja();
             return retorno;
         }

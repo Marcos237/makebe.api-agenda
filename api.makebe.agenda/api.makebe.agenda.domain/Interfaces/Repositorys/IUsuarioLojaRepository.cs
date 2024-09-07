@@ -5,5 +5,6 @@ namespace api.makebe.agenda.infra.data.Repositorys.Interfaces
     public interface IUsuarioLojaRepository
     {
         Task<int> Salvar(UsuarioLoja loja);
+        Task<Loja> BuscarLojaPorCNPJ(string cnpj, Guid usuarioId);
     }
 }

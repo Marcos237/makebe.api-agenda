@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Applications\" />
-    <Folder Include="Domains\" />
-    <Folder Include="Repositorys\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting.data\api.makebe.agenda.infra.data.csproj" />
     <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting\api.makebe.agenda.infra.crosscutting.csproj" />
   </ItemGroup>
 

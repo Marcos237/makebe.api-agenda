@@ -5,11 +5,11 @@ using StackExchange.Redis;
 
 namespace api.makebe.agenda.infra.data.Repositorys
 {
-    public class UsuarioSessapoRedisRepository : IUsuarioSessaoRedisRepository
+    public class UsuarioSessaoRedisRepository : IUsuarioSessaoRedisRepository
     {
         private readonly IConfiguration _configuration;
         private readonly ConnectionMultiplexer _connection;
-        public UsuarioSessapoRedisRepository(IConfiguration configuration)
+        public UsuarioSessaoRedisRepository(IConfiguration configuration)
         {
             _configuration = configuration;
             _connection = ConnectionMultiplexer.Connect(_configuration["connectionRedis"] ?? string.Empty);

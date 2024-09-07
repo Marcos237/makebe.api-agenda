@@ -7,17 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting.data\api.makebe.agenda.infra.data.csproj" />
     <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting\api.makebe.agenda.infra.crosscutting.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Payloads\" />
   </ItemGroup>
 
 </Project>

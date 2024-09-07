@@ -11,7 +11,6 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public UsuarioLojaRepository(DbAgenda dbAgenda)
         {
             _dbAgenda = dbAgenda;
-            _dbAgenda.GetConnection(DataBaseConstant.AgendaBase);
         }
         public async Task<int> Salvar(UsuarioLoja loja)
         {
@@ -19,6 +18,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         SELECT LAST_INSERT_ID();";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, loja);
 
+            return retorno;
+        }
+        public async Task<Loja> BuscarLojaPorCNPJ(string cnpj, Guid usuarioId)
+        {
+            var sql = @"SELECT l.Id, l.RazaoSocial , l.CNPJ , l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao
+                        FROM Loja l
+                        INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id 
+                        WHERE l.CNPJ = @CNPJ AND ul.UsuarioId  <> @UsuarioId";
+            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Loja>(sql, new { Cnpj = cnpj, UsuarioId = usuarioId }) ?? new Loja();
             return retorno;
         }
     }

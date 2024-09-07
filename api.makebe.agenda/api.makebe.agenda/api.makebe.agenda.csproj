@@ -11,7 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\api.makebe.agenda.applications\api.makebe.agenda.applications.csproj" />
+    <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting.ioc\api.makebe.agenda.infra.crosscutting.ioc.csproj" />
   </ItemGroup>
 
 </Project>

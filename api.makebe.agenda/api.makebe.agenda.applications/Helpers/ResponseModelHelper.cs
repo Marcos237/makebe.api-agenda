@@ -5,11 +5,10 @@ namespace api.makebe.agenda.applications.Helpers
 {
     public static class ResponseModelHelper<T> where T : class
     {
-        public static ResponseModel<T> RetornarResponseModel(T objeto, IEnumerable<T> objetos,  IEnumerable<Notification> notifications)
+        public static ResponseModel<T> RetornarResponseModel(IEnumerable<T> objetos,  IEnumerable<Notification> notifications)
         {
             return new ResponseModel<T>
             {
-                data = objeto,
                 notifications = notifications,
                 datas = objetos
             };
