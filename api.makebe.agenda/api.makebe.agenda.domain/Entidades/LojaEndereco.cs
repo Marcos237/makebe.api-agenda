@@ -1,6 +1,6 @@
 ﻿namespace api.makebe.agenda.domain.Entidades
 {
-    internal class LojaEndereco
+    public class LojaEndereco
     {
         public int Id { get; set; } 
         public int LojaId { get; set; }          

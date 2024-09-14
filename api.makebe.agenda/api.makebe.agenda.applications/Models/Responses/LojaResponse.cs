@@ -1,6 +1,9 @@
-﻿namespace api.makebe.agenda.applications.Models.Responses
+﻿using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.ValueObjects;
+
+namespace api.makebe.agenda.applications
 {
-    public  class LojaResponse
+    public class LojaResponse
     {
         public int Id { get; set; }
         public string? RazaoSocial { get; set; }
@@ -9,11 +12,7 @@
         public string? Telefone { get; set; }
         public int TipoLojaId { get; set; }
         public DateTime DataCadastro { get; set; }
-        public IEnumerable<EnderecoRespose>? Enderecos { get; set; }
-
-        public LojaResponse()
-        {
-            Enderecos = new List<EnderecoRespose>();
-        }
+        public IEnumerable<Endereco>? Enderecos { get; set; }
+        public IEnumerable<TipoLoja>? TiposLojas { get; set; }
     }
 }

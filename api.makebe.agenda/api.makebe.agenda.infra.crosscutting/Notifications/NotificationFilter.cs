@@ -6,7 +6,7 @@ using System.Text;
 
 namespace api.makebe.agenda.infra.crosscutting.Notifications
 {
-    internal class NotificationFilter : IAsyncResultFilter
+    public class NotificationFilter : IAsyncResultFilter
     {
         private readonly INotificationContext _notificationContext;
 

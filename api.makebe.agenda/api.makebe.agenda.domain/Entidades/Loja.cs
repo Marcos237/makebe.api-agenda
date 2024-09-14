@@ -13,5 +13,12 @@ namespace api.makebe.agenda.domain.Entidades
         public int TipoLojaId { get; set; }
         public  DateTime DataCadastro { get; set; }
         public  DateTime DataAtualizacao { get; set; }
+        public IEnumerable<Endereco>? Enderecos { get; set; }
+        public IEnumerable<TipoLoja>? TiposLojas { get; set; }
+        public Loja()
+        {
+            Enderecos = new List<Endereco>();
+            TiposLojas = new List<TipoLoja>();  
+        }
     }
 }

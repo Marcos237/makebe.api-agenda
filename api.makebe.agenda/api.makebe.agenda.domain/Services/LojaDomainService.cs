@@ -2,7 +2,6 @@
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.data.Repositorys.Interfaces;
-using FluentValidation;
 
 namespace api.makebe.agenda.domain.Services
 {

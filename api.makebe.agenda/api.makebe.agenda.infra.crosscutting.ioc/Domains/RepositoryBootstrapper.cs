@@ -12,7 +12,6 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddTransient<ILojaRepository, LojaRepository>();
             services.AddTransient<IUsuarioLojaRepository, UsuarioLojaRepository>();
             services.AddTransient<ILojaRepository, LojaRepository>();
-            services.AddTransient<IUsuarioSessaoRedisRepository, UsuarioSessaoRedisRepository>();
         }
     }
 }

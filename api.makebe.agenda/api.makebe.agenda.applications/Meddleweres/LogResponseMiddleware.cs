@@ -1,10 +1,10 @@
 ﻿using api.makebe.agenda.applications.Helpers;
-using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Entidades.Constants;
 using api.makebe.agenda.infra.crosscutting.Entidades.Enum;
 using api.makebe.agenda.infra.crosscutting.Notifications;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
+using lib.makebe.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;

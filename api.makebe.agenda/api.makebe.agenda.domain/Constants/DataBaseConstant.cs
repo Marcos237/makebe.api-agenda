@@ -2,6 +2,6 @@
 {
     public static class DataBaseConstant
     {
-        public const string AgendaBase = "Agenda";
+        public const string AgendaBase = "AgendaConnection";
     }
 }

@@ -1,7 +1,7 @@
 ﻿using api.makebe.agenda.applications.Helpers;
-using api.makebe.agenda.applications.Interfaces;
-using api.makebe.agenda.applications.Security;
-using api.makebe.agenda.domain.Enum;
+using lib.makebe.applications.Security;
+using lib.makebe.applications.Services.Interfaces;
+using lib.makebe.domain.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

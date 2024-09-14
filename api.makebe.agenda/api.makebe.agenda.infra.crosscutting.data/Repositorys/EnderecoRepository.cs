@@ -12,7 +12,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
-        public async Task<IEnumerable<Endereco>> BuscarEnderecos(PaginacaoDTO<Endereco> paginacao ,Guid usuarioId)
+        public async Task<IEnumerable<Endereco>> BuscarEnderecos(PaginacaoDTO<Endereco> paginacao ,string usuarioId)
         {
             var query = @"SELECT e.* FROM  UsuarioLoja ul 
                             INNER JOIN LojaEndereco le ON ul.LojaId  = le.LojaId 
