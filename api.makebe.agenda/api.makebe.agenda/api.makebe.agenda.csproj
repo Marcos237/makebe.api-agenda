@@ -18,6 +18,7 @@
     <ProjectReference Include="..\api.makebe.agenda.applications\api.makebe.agenda.applications.csproj" />
     <ProjectReference Include="..\api.makebe.agenda.domain\api.makebe.agenda.domain.csproj" />
     <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting.ioc\api.makebe.agenda.infra.crosscutting.ioc.csproj" />
+    <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting\api.makebe.agenda.infra.crosscutting.csproj" />
   </ItemGroup>
 
 </Project>
