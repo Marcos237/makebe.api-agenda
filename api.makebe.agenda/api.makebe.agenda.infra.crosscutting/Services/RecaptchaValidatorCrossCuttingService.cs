@@ -1,4 +1,5 @@
-﻿using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
+﻿using api.makebe.agenda.infra.crosscutting.Entidades;
+using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 

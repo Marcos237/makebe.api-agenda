@@ -1,9 +1,8 @@
-﻿using api.makebe.agenda.applications.Models.Responses;
-using api.makebe.agenda.domain.Entidades;
+﻿using api.makebe.agenda.domain.Entidades;
 
 namespace api.makebe.agenda.applications.Models.Payloads
 {
-    public class LojaPayload
+    public class LojaPayload : BasePayload
     {
         public int Id { get; set; }
         public string? RazaoSocial { get; set; }

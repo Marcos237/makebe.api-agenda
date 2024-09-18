@@ -1,5 +1,8 @@
-﻿public class RespostaRecaptcha
+﻿namespace api.makebe.agenda.infra.crosscutting.Entidades
 {
-    public bool Success { get; set; }
-    public string[]? ErrorCodes { get; set; }
+    public class RespostaRecaptcha
+    {
+        public bool Success { get; set; }
+        public string[]? ErrorCodes { get; set; }
+    }
 }
