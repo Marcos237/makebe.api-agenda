@@ -42,7 +42,7 @@ deploy:
     - docker build -t api-agenda:latest . 
     - docker stop makebe-agenda || true  
     - docker rm makebe-agenda || true     
-    - docker run -d --name makebe-agenda -p 81:80 
+    - docker run -d --name makebe-agenda -p 82:80 
        --dns 8.8.8.8 --dns 8.8.4.4
        -v /mnt/arquivos/makebeserver/dockercompose/app-agenda/appsettings.json:/App/appsettings.json 
        -v /home/makebe-user/Imagens:/App/uploads 
