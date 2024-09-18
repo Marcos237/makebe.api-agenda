@@ -36,5 +36,60 @@ namespace api.makebe.agenda.Controllers
                 throw new Exception(ex.Message);
             }
         }
+        [HttpPost]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> Post(LojaPayload model)
+        {
+            try
+            {
+                var retorno = await _lojaApplicationService.Persitir(model, Chave ?? string.Empty);
+                if (retorno.datas == null || !retorno.datas.Any())
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, retorno);
+                }
+                return StatusCode(StatusCodes.Status200OK, retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpPut]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> Put(LojaPayload model)
+        {
+            try
+            {
+                var retorno = await _lojaApplicationService.Persitir(model, Chave ?? string.Empty);
+                if (retorno.datas == null || !retorno.datas.Any())
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, retorno);
+                }
+                return StatusCode(StatusCodes.Status200OK, retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> Delete(int  id)
+        {
+            try
+            {
+                var retorno = await _lojaApplicationService.Desativar(id, Chave ?? string.Empty);
+                if (retorno)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, retorno);
+                }
+                return StatusCode(StatusCodes.Status200OK, retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

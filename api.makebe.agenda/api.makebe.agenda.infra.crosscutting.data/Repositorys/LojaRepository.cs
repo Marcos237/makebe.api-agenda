@@ -14,7 +14,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
             _dbAgenda = dbAgenda;
         }
 
-        public async Task<IEnumerable<Loja>> BuscarLojas(PaginacaoDTO<Loja> paginacao, string usuarioId)
+        public async Task<IEnumerable<LojaEnderecoDTO>> BuscarLojas(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
         {
             string countQuery = "SELECT COUNT(*) FROM Loja l INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id WHERE UsuarioId = @UsuarioId";
             paginacao!.total = await _dbAgenda.Connection.ExecuteScalarAsync<int>(countQuery, new { UsuarioId = usuarioId });
@@ -22,19 +22,18 @@ namespace api.makebe.agenda.infra.data.Repositorys
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
 
             string sql = @"SELECT l.Id, l.RazaoSocial, l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao,
-                          le.EnderecoId, e.Logradouro, e.Numero, e.Complemento, e.CEP, e.Estado, e.Cidade, l.CNPJ
-                     FROM Loja l
-                 INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id  
-                 LEFT JOIN LojaEndereco le ON le.LojaId = l.Id 
-                 LEFT JOIN Endereco e ON e.Id = le.EnderecoId
-                     WHERE (RazaoSocial LIKE '%' + @RazaoSocial + '%' OR @RazaoSocial IS NULL OR @RazaoSocial = '') 
-                       AND (CNPJ LIKE '%' + @CNPJ + '%' OR @CNPJ IS NULL OR @CNPJ = '')
-                       AND (Email LIKE '%' + @Email + '%' OR @Email IS NULL OR @Email = '')
-                       AND ul.UsuarioId = @UsuarioId
-                       AND l.Status = 1
-                     ORDER BY RazaoSocial 
-                     OFFSET @RegistroInicial ROWS
-                     FETCH NEXT @TamanhoPagina ROWS ONLY";
+                     le.EnderecoId, e.Logradouro, e.Numero, e.Complemento, e.CEP, e.Estado, e.Cidade, l.CNPJ
+                FROM Loja l
+            INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id  
+            LEFT JOIN LojaEndereco le ON le.LojaId = l.Id 
+            LEFT JOIN Endereco e ON e.Id = le.EnderecoId
+                WHERE (@RazaoSocial IS NULL OR l.RazaoSocial LIKE CONCAT('%', @RazaoSocial, '%')) 
+                  AND (@CNPJ IS NULL OR l.CNPJ LIKE CONCAT('%', @CNPJ, '%')) 
+                  AND (@Email IS NULL OR l.Email LIKE CONCAT('%', @Email, '%'))
+                  AND ul.UsuarioId = @UsuarioId
+                  AND l.Status = 1
+                ORDER BY l.RazaoSocial
+                LIMIT @TamanhoPagina OFFSET @RegistroInicial";
 
             var parametros = new
             {
@@ -46,24 +45,23 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 UsuarioId = usuarioId
             };
 
-            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<Loja, Endereco, LojaEndereco, string, Loja>(
+            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO, Endereco, LojaEndereco, LojaEnderecoDTO>(
                            sql,
-                (loja, endereco, lojaEndereco, cnpj) =>
+                (loja, endereco, lojaEndereco) =>
                 {
-                    var lojaExistente = paginacao?.objetos?.FirstOrDefault(l => l.Id == loja?.Id) ?? new Loja();
+                    var lojaExistente = paginacao?.objetos?.FirstOrDefault(l => l.Id == loja?.Id) ?? new LojaEnderecoDTO();
 
                     if (lojaExistente == null)
                         lojaExistente = loja;
 
-                    lojaExistente.CNPJ = new CNPJ(cnpj);
 
                     if (endereco != null && lojaEndereco.EnderecoId == endereco.Id)
                         lojaExistente?.Enderecos?.ToList().Add(endereco);
 
-                    return lojaExistente ?? new Loja();
+                    return lojaExistente ?? new LojaEnderecoDTO();
                 },
                 splitOn: "EnderecoId, CNPJ",
-                param: parametros) ?? Enumerable.Empty<Loja>();
+                param: parametros) ?? Enumerable.Empty<LojaEnderecoDTO>();
 
             return paginacao.objetos;
         }

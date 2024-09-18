@@ -8,8 +8,7 @@ namespace api.makebe.agenda.applications.Interfaces
     {
         Task<ResponseModel<LojaResponse>> BuscarTodos(PaginacaoDTO<LojaPayload> paginacaoDTO, string usuarioId);
         Task<ResponseModel<LojaResponse>> BuscarPorId(int id);
-        Task<int> Salvar(LojaPayload item);
-        Task<LojaResponse> Atualizar(LojaPayload item);
-        Task<bool> Desativar(int id);
+        Task<ResponseModel<LojaResponse>> Persitir(LojaPayload item, string usuarioId);
+        Task<bool> Desativar(int id, string usuarioId);
     }
 }

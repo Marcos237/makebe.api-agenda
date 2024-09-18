@@ -7,7 +7,7 @@ using FluentValidation;
 
 namespace api.makebe.agenda.domain.Services
 {
-    public class EnderecoDomainService : IDomainService<Endereco>
+    public class EnderecoDomainService : IEnderecoDomainService
     {
         private readonly IEnderecoRepository _enderecoRepository;
         private readonly IValidator<Endereco> _validator;
@@ -27,6 +27,11 @@ namespace api.makebe.agenda.domain.Services
         public async Task<Endereco> BuscarPorId(int id)
         {
             var resul = await _enderecoRepository.BuscarPorId(id);
+            return resul;
+        }
+        public async Task<IEnumerable<Endereco>> BuscarPorLojaId(int id)
+        {
+            var resul = await _enderecoRepository.BuscarPorLojaId(id);
             return resul;
         }
         public async Task<int> Salvar(Endereco item)

@@ -43,6 +43,16 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var result = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Endereco>(query, new { Id = id }) ?? new Endereco();
             return result;
         }
+
+        public async Task<IEnumerable<Endereco>> BuscarPorLojaId(int id)
+        {
+            var query = @" SELECT e.* FROM  UsuarioLoja ul 
+                            INNER JOIN LojaEndereco le ON ul.LojaId  = le.LojaId 
+                            INNER JOIN Endereco e ON e.Id  = le.LojaId 
+                            WHERE le.LojaId = @Id";
+            var result = await _dbAgenda.Connection.QueryAsync<Endereco>(query, new { Id = id }) ?? Enumerable.Empty<Endereco>();
+            return result;
+        }
         public async Task<int> Salvar(Endereco endereco)
         {
             var query = @"INSERT INTO Endereco (Logradouro, Numero, Complemento, CEP, Estado, Cidade, Status, DataCadastro, DataAtualizacao) 

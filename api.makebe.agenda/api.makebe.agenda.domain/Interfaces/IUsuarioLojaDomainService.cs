@@ -1,9 +1,9 @@
 ﻿using api.makebe.agenda.domain.Entidades;
 
-namespace api.makebe.agenda.domain.Services
+namespace api.makebe.agenda.domain.Interfaces
 {
     public interface IUsuarioLojaDomainService
     {
-        Task<int> Salvar(UsuarioLoja loja);
+        Task<UsuarioLoja> Salvar(UsuarioLoja loja);
     }
 }

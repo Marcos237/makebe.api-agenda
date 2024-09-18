@@ -1,5 +1,4 @@
 ﻿using api.makebe.agenda.domain.Entidades;
-using api.makebe.agenda.domain.ValueObjects;
 
 namespace api.makebe.agenda.applications
 {
@@ -13,6 +12,10 @@ namespace api.makebe.agenda.applications
         public int TipoLojaId { get; set; }
         public DateTime DataCadastro { get; set; }
         public IEnumerable<Endereco>? Enderecos { get; set; }
-        public IEnumerable<TipoLoja>? TiposLojas { get; set; }
+
+        public LojaResponse()
+        {
+            Enderecos = new List<Endereco>();
+        }
     }
 }

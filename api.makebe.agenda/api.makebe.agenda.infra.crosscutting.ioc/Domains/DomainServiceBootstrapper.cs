@@ -11,9 +11,10 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
     {
         public static void Initialize(IServiceCollection services)
         {
-            services.AddTransient<IDomainService<Loja>, LojaDomainService>();
-            services.AddTransient<IDomainService<Endereco>, EnderecoDomainService>();
+            services.AddTransient<IEnderecoDomainService, EnderecoDomainService>();
+            services.AddTransient<ILojaDomainService, LojaDomainService>();
             services.AddTransient<IUsuarioLojaDomainService, UsuarioLojaDomainService>();
+            services.AddTransient<ITipoLojaDomainService, TipoLojaDomainService>();
 
             services.AddTransient<IValidationService<Loja>, ValidationService<Loja>>();
 

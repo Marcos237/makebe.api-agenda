@@ -5,7 +5,7 @@ using api.makebe.agenda.infra.data.Repositorys.Interfaces;
 
 namespace api.makebe.agenda.domain.Services
 {
-    public class LojaDomainService : IDomainService<Loja>
+    public class LojaDomainService : ILojaDomainService
     {
         private readonly ILojaRepository _lojaRepository;
 
@@ -13,7 +13,7 @@ namespace api.makebe.agenda.domain.Services
         {
             _lojaRepository = lojaRepository;
         }
-        public async Task<IEnumerable<Loja>> BuscarTodos(PaginacaoDTO<Loja> paginacao, string usuarioId)
+        public async Task<IEnumerable<LojaEnderecoDTO>> BuscarTodos(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
         {
             var result = await _lojaRepository.BuscarLojas(paginacao, usuarioId);
             return result;
@@ -23,16 +23,15 @@ namespace api.makebe.agenda.domain.Services
             var result = await _lojaRepository.BuscarLojaPorCodigo(id);
             return result;
         }
-        public async Task<int> Salvar(Loja loja)
+        public async Task<int> Persitir(Loja loja)
         {
-            var result = await _lojaRepository.Salvar(loja);
-            return result;
-        }
-
-        public async Task<Loja> Atualizar(Loja loja)
-        {
-            var result = await _lojaRepository.Atualizar(loja);
-            return result;
+            if(loja.Id == 0)
+            {
+                var result = await _lojaRepository.Salvar(loja);
+                return result;
+            }
+            var resultUpdate = await _lojaRepository.Atualizar(loja);
+            return resultUpdate.Id;
         }
 
         public async Task<bool> Desativar(int id)

@@ -15,6 +15,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new UsuarioSessaoMapper());
                 mc.AddProfile(new LojaPayloadMapper());
                 mc.AddProfile(new LojaResponseMapper());
+                mc.AddProfile(new LojaResponseMapper());
                 mc.AddProfile(new SessaoMapper());
             });
 

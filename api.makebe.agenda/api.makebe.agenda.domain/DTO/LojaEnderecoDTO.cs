@@ -1,20 +1,20 @@
-﻿using api.makebe.agenda.applications.Models.Responses;
-using api.makebe.agenda.domain.Entidades;
+﻿using api.makebe.agenda.domain.Entidades;
 
-namespace api.makebe.agenda.applications.Models.Payloads
+namespace api.makebe.agenda.domain.DTO
 {
-    public class LojaPayload
+    public class LojaEnderecoDTO
     {
         public int Id { get; set; }
         public string? RazaoSocial { get; set; }
         public string? CNPJ { get; set; }
         public string? Email { get; set; }
         public string? Telefone { get; set; }
+        public bool Status { get; set; }
         public int TipoLojaId { get; set; }
-
+        public DateTime DataCadastro { get; set; }
+        public DateTime DataAtualizacao { get; set; }
         public IEnumerable<Endereco>? Enderecos { get; set; }
-
-        public LojaPayload()
+        public LojaEnderecoDTO()
         {
             Enderecos = new List<Endereco>();
         }
