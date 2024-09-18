@@ -1,11 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /App
 
 COPY . ./
 RUN dotnet restore
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 RUN groupadd -g 1000 imagens-group && \
     useradd -u 1000 -g imagens-group -m makebe-user
@@ -28,4 +28,4 @@ EXPOSE 80
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "api.makebe.session.dll"]
+ENTRYPOINT ["dotnet", "api.makebe.agenda.dll"]
