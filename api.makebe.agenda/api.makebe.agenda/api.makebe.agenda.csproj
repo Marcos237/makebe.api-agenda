@@ -7,11 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="lib.makebe.Applications" Version="1.1.8" />
+    <PackageReference Include="lib.makebe.domain" Version="1.1.1" />
+    <PackageReference Include="lib.makebe.Repository" Version="1.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\api.makebe.agenda.applications\api.makebe.agenda.applications.csproj" />
+    <ProjectReference Include="..\api.makebe.agenda.domain\api.makebe.agenda.domain.csproj" />
+    <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting.ioc\api.makebe.agenda.infra.crosscutting.ioc.csproj" />
   </ItemGroup>
 
 </Project>
