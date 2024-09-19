@@ -28,4 +28,6 @@ EXPOSE 80
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "api.makebe.agenda.dll"]
+
+ENTRYPOINT ["dotnet", "api.makebe.agenda.dll"] 
+
