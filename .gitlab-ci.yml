@@ -47,7 +47,7 @@ deploy:
        -v /mnt/arquivos/makebeserver/dockercompose/app-agenda/appsettings.json:/App/appsettings.json 
        -v /home/makebe-user/Imagens:/App/uploads 
        -v /home/makebe-user/Imagens/HTML:/App/uploads/HTML 
-       -v /etc/localtime:/etc/localtime:ro api-makebe:latest
+       -v /etc/localtime:/etc/localtime:ro api-agenda:latest
        -v /mnt/arquivos/makebeserver/dockercompose/App/data_protection_keys:/home/makebe-user/.aspnet/DataProtection-Keys
     - docker network connect dockercompose_makebe-rede makebe-agenda 
   tags:
