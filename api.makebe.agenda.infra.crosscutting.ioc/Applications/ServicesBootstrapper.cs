@@ -10,6 +10,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
         {
             services.AddTransient<ILojaApplicationService, LojaApplicationService>();
             services.AddTransient<ITipoLojaApplicationService, TipoLojaApplicationService>();
+            services.AddTransient<IEnderecoApplicationService, EnderecoApplicationService>();
         }
     }
 }

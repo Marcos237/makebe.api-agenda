@@ -94,7 +94,7 @@ namespace api.makebe.agenda.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpDelete]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Delete(int  id, string recaptcha)
         {

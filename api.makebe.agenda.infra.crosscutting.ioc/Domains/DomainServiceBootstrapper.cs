@@ -17,6 +17,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddTransient<ITipoLojaDomainService, TipoLojaDomainService>();
 
             services.AddTransient<IValidationService<Loja>, ValidationService<Loja>>();
+            services.AddTransient<IValidationService<Endereco>, ValidationService<Endereco>>();
 
             services.AddScoped<IValidator<Loja>, LojaValidation>();
             services.AddScoped<IValidator<Endereco>, EnderecoValidation>();
