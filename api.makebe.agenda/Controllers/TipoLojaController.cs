@@ -8,7 +8,7 @@ namespace api.makebe.agenda.Controllers
 {
     [ApiController]
     [Route("TipoLoja")]
-    [Authorize]
+    //[Authorize]
     public class TipoLojaController : BaseController
     {
         private readonly ITipoLojaApplicationService _tipoLojaApplicationService;
@@ -18,7 +18,7 @@ namespace api.makebe.agenda.Controllers
         }
 
         [HttpGet]
-        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        //[AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Get()
         {
             try
