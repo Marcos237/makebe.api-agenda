@@ -3,5 +3,6 @@
     public static class BaseConstant
     {
         public const string ListaVazia = "Nenhum item encontrado.";
+        public const string Campos = "Campos inválidos.";
     }
 }

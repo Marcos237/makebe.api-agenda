@@ -2,8 +2,8 @@
 {
     public interface IUnitOfWork : IDisposable
     {
-        void BeginTransaction();
+        Task BeginTransaction();
         void Commit();
-        void RollBack();
+        void Rollback();
     }
 }

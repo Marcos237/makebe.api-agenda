@@ -10,8 +10,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Services
     {
         public static void Initialize(IServiceCollection services)
         {
-            services.AddTransient<ILogCrossCuttingService, LogCrossCuttingService>();
-            services.AddTransient<IRecaptchaValidatorCrossCuttingService, RecaptchaValidatorCrossCuttingService>();
+            services.AddScoped<ILogCrossCuttingService, LogCrossCuttingService>();
+            services.AddScoped<IRecaptchaValidatorCrossCuttingService, RecaptchaValidatorCrossCuttingService>();
             services.AddScoped<INotificationContext, NotificationContext>();
         }
     }

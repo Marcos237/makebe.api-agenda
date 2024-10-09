@@ -21,14 +21,15 @@ namespace api.makebe.agenda.Controllers
             _lojaApplicationService = lojaApplicationService;
             _recaptchaValidatorCrossCuttingService = recaptchaValidatorCrossCuttingService;
         }
-        [HttpGet]
+        [HttpPost]
+        [Route("BuscarPaginado")]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> Get(PaginacaoDTO<LojaPayload> model)
+        public async Task<IActionResult> BuscarPaginado(PaginacaoDTO<LojaPayload> model)
         {
             try
             {
-                var retorno  = await _lojaApplicationService.BuscarTodos(model, Chave ?? string.Empty);
-                if (retorno.datas == null || !retorno.datas.Any())
+                var retorno = await _lojaApplicationService.BuscarTodos(model, Chave ?? string.Empty);
+                if (retorno.data == null)
                 {
                     return StatusCode(StatusCodes.Status204NoContent, retorno);
                 }
@@ -39,6 +40,26 @@ namespace api.makebe.agenda.Controllers
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpGet("{id}")]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var retorno = await _lojaApplicationService.BuscarPorId(id);
+                if (retorno.data == null)
+                {
+                    return StatusCode(StatusCodes.Status204NoContent, retorno);
+                }
+                return StatusCode(StatusCodes.Status200OK, retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Post(LojaPayload model)
@@ -55,7 +76,7 @@ namespace api.makebe.agenda.Controllers
 #endif
 
                 var retorno = await _lojaApplicationService.Persitir(model, Chave ?? string.Empty);
-                if (retorno.datas == null || !retorno.datas.Any())
+                if (retorno?.data?.Id == 0)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, retorno);
                 }

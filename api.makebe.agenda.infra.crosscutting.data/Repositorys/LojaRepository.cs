@@ -1,6 +1,5 @@
 ﻿using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
-using api.makebe.agenda.domain.ValueObjects;
 using api.makebe.agenda.infra.data.Repositorys.Interfaces;
 using Dapper;
 
@@ -14,27 +13,10 @@ namespace api.makebe.agenda.infra.data.Repositorys
             _dbAgenda = dbAgenda;
         }
 
-        public async Task<IEnumerable<LojaEnderecoDTO>> BuscarLojas(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
+        public async Task<PaginacaoDTO<LojaEnderecoDTO>> BuscarLojas(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
         {
-            string countQuery = "SELECT COUNT(*) FROM Loja l INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id WHERE UsuarioId = @UsuarioId";
-            paginacao!.total = await _dbAgenda.Connection.ExecuteScalarAsync<int>(countQuery, new { UsuarioId = usuarioId });
-            paginacao.totalPaginas = (paginacao.total + paginacao.quantidadePagina - 1) / paginacao.quantidadePagina;
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
-
-            string sql = @"SELECT l.Id, l.RazaoSocial, l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao,
-                     le.EnderecoId, e.Logradouro, e.Numero, e.Complemento, e.CEP, e.Estado, e.Cidade, l.CNPJ
-                FROM Loja l
-            INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id  
-            LEFT JOIN LojaEndereco le ON le.LojaId = l.Id 
-            LEFT JOIN Endereco e ON e.Id = le.EnderecoId
-                WHERE (@RazaoSocial IS NULL OR l.RazaoSocial LIKE CONCAT('%', @RazaoSocial, '%')) 
-                  AND (@CNPJ IS NULL OR l.CNPJ LIKE CONCAT('%', @CNPJ, '%')) 
-                  AND (@Email IS NULL OR l.Email LIKE CONCAT('%', @Email, '%'))
-                  AND ul.UsuarioId = @UsuarioId
-                  AND l.Status = 1
-                ORDER BY l.RazaoSocial
-                LIMIT @TamanhoPagina OFFSET @RegistroInicial";
-
+            var sql = await BuscarConsulta();
             var parametros = new
             {
                 RegistroInicial = paginacao.registroInicial,
@@ -42,69 +24,72 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 RazaoSocial = paginacao?.objetoPesquisa?.RazaoSocial,
                 CNPJ = paginacao?.objetoPesquisa?.CNPJ,
                 Email = paginacao?.objetoPesquisa?.Email,
+                Telefone = paginacao?.objetoPesquisa?.Telefone,
+                TipoLojaId = paginacao?.objetoPesquisa?.TipoLojaId,
                 UsuarioId = usuarioId
             };
+            var lojas = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO>(sql, parametros) ?? Enumerable.Empty<LojaEnderecoDTO>();
+            paginacao!.total = lojas.Count();
 
-            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO, Endereco, LojaEndereco, LojaEnderecoDTO>(
-                           sql,
-                (loja, endereco, lojaEndereco) =>
+            string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
+
+            paginacao!.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
+            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO, Endereco, LojaEnderecoDTO>(
+                           sqlBusca,
+                (loja, endereco) =>
                 {
-                    var lojaExistente = paginacao?.objetos?.FirstOrDefault(l => l.Id == loja?.Id) ?? new LojaEnderecoDTO();
 
-                    if (lojaExistente == null)
-                        lojaExistente = loja;
+                    if (loja != null)
+                        loja?.Enderecos?.ToList().Add(endereco);
 
-
-                    if (endereco != null && lojaEndereco.EnderecoId == endereco.Id)
-                        lojaExistente?.Enderecos?.ToList().Add(endereco);
-
-                    return lojaExistente ?? new LojaEnderecoDTO();
+                    return loja ?? new LojaEnderecoDTO();
                 },
-                splitOn: "EnderecoId, CNPJ",
+                splitOn: "EnderecoId",
                 param: parametros) ?? Enumerable.Empty<LojaEnderecoDTO>();
 
-            return paginacao.objetos;
+            return paginacao;
         }
 
-        public async Task<Loja> BuscarLojaPorCodigo(int id)
+        public async Task<LojaEnderecoDTO> BuscarLojaPorCodigo(int id)
         {
-            var sql = @"SELECT l.Id, l.RazaoSocial , l.CNPJ , l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao
+            var sql = @"SELECT l.Id, l.RazaoSocial , l.CNPJ , l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao, l.TipoLojaId
                                FROM Loja l 
                       WHERE Id = @Id AND Status = 1";
-            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Loja>(sql, new { Id = id }) ?? new Loja();
+            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<LojaEnderecoDTO>(sql, new { Id = id }) ?? new LojaEnderecoDTO();
             return retorno;
         }
 
         public async Task<int> Salvar(Loja loja)
         {
             var sql = @"                      
-                      INSERT INTO Loja (Id, RazaoSocial , CNPJ , Email, Telefone, Status, DataCadastro, DataAtualizacao)
-                      VALUES(@Id, @RazaoSocial , @CNPJ , @Email, @Telefone, @Status, @DataCadastro, @DataAtualizacao)
-                      SELECT LAST_INSERT_ID();";
-            var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
+                        INSERT INTO Loja (RazaoSocial, CNPJ, Email, Telefone, Status, TipoLojaId, DataCadastro, DataAtualizacao)
+                        VALUES (@RazaoSocial, @CNPJ, @Email, @Telefone, @Status, @TipoLojaId, @DataCadastro, @DataAtualizacao);
+                        
+                        SELECT LAST_INSERT_ID();";
+            var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
             {
-                Id = loja?.Id,
                 RazaoSocial = loja?.RazaoSocial,
                 Cnpj = loja?.CNPJ?.Codigo,
                 Email = loja?.Email,
                 Telefone = loja?.Telefone,
                 Status = loja?.Status,
+                TipoLojaId = loja?.TipoLojaId,
                 DataCadastro = loja?.DataCadastro,
                 DataAtualizacao = loja?.DataAtualizacao
-            });
+            }, _dbAgenda.Transaction);
             return retorno;
 
         }
         public async Task<Loja> Atualizar(Loja loja)
         {
             var sql = @"UPDATE Loja SET 
-                      Id = @Id, 
                       RazaoSocial = @RazaoSocial, 
                       CNPJ = @CNPJ, 
                       Email =  @Email, 
                       Telefone  = @Telefone, 
                       Status = @Status, 
-                      DataAtualizacao = @DataAtualizacao";
+                      DataAtualizacao = @DataAtualizacao
+                      WHERE Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
             {
                 Id = loja?.Id,
@@ -119,5 +104,37 @@ namespace api.makebe.agenda.infra.data.Repositorys
             return loja!;
         }
 
+        public async Task<bool> Desativar(int id)
+        {
+            var sql = @"UPDATE Loja SET 
+                      Status = false, 
+                      Where Id = @Id";
+            var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
+            { Id = id}) > 0;
+            return retorno;
+        }
+
+        private Task<string> BuscarConsulta()
+        {
+            var query = @"SELECT l.Id, l.RazaoSocial, l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao, l.CNPJ,
+                                   l.TipoLojaId, tl.Descricao as TipoLojaDescricao,
+                                   le.EnderecoId, e.Logradouro, e.Numero, e.Complemento, e.CEP, e.Estado, e.Cidade
+                            FROM Loja l
+                                 INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id  
+                                 INNER JOIN TipoLoja tl ON tl.Id = l.TipoLojaId 
+                                 LEFT JOIN LojaEndereco le ON le.LojaId = l.Id 
+                                 LEFT JOIN Endereco e ON e.Id = le.EnderecoId
+                            WHERE ul.UsuarioId = @UsuarioId
+                              AND l.Status = 1
+                              AND (
+                                    (@RazaoSocial IS NULL OR @RazaoSocial = '' OR l.RazaoSocial LIKE CONCAT('%', @RazaoSocial, '%')) 
+                                    AND (@CNPJ IS NULL OR @CNPJ = '' OR l.CNPJ LIKE CONCAT('%', @CNPJ, '%')) 
+                                    AND (@Email IS NULL OR @Email = '' OR l.Email LIKE CONCAT('%', @Email, '%'))
+                                    AND (@Telefone IS NULL OR @Telefone = '' OR l.Telefone LIKE CONCAT('%', @Telefone, '%'))
+                                    AND (@TipoLojaId IS NULL OR @TipoLojaId = 0 OR l.TipoLojaId = @TipoLojaId)
+                                  )
+                            ORDER BY l.Id DESC";
+            return Task.FromResult(query);
+        }
     }
 }

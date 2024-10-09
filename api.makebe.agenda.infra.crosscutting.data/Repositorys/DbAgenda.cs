@@ -10,7 +10,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         private readonly IConfiguration _configuration;
         private readonly string? _connectionString;
         public IDbConnection Connection { get; }
-        public IDbTransaction? Transaction { get; set; }
+        public IDbTransaction Transaction { get; set; }
         public DbAgenda(IConfiguration configuration)
         {
             _configuration = configuration;

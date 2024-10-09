@@ -11,11 +11,5 @@ namespace api.makebe.agenda.applications.Models.Payloads
         public string? Telefone { get; set; }
         public int TipoLojaId { get; set; }
 
-        public IEnumerable<Endereco>? Enderecos { get; set; }
-
-        public LojaPayload()
-        {
-            Enderecos = new List<Endereco>();
-        }
     }
 }

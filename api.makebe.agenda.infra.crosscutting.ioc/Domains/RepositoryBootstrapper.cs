@@ -9,11 +9,11 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
     {
         public static void Initialize(IServiceCollection services)
         {
-            services.AddTransient<IEnderecoRepository, EnderecoRepository>();
-            services.AddTransient<ILojaRepository, LojaRepository>();
-            services.AddTransient<IUsuarioLojaRepository, UsuarioLojaRepository>();
-            services.AddTransient<ILojaRepository, LojaRepository>();
-            services.AddTransient<ITipoLojaRepository, TipoLojaRepository>();
+            services.AddScoped<IEnderecoRepository, EnderecoRepository>();
+            services.AddScoped<ILojaRepository, LojaRepository>();
+            services.AddScoped<IUsuarioLojaRepository, UsuarioLojaRepository>();
+            services.AddScoped<ILojaRepository, LojaRepository>();
+            services.AddScoped<ITipoLojaRepository, TipoLojaRepository>();
         }
     }
 }

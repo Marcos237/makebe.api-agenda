@@ -2,6 +2,7 @@
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.infra.data.Repositorys.Interfaces;
 using Dapper;
+using System.Reflection.Metadata;
 
 namespace api.makebe.agenda.infra.data.Repositorys
 {
@@ -14,9 +15,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
         }
         public async Task<int> Salvar(UsuarioLoja loja)
         {
-            var sql = @"INSERT INTO UsuarioLoja (UsuarioId, LojaId, Status, DataCadastro) VALUES (UsuarioId, LojaId, Status, DataCadastro)
+            var sql = @"INSERT INTO UsuarioLoja (UsuarioId, LojaId, Status, DataCadastro) VALUES (@UsuarioId, @LojaId, @Status, @DataCadastro);
                         SELECT LAST_INSERT_ID();";
-            var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, loja);
+            var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
+            {
+                UsuarioId = loja.UsuarioId,
+                LojaId = loja.LojaId,
+                Status = loja.Status,   
+                DataCadastro = loja.DataCadastro
+            }, _dbAgenda.Transaction);
 
             return retorno;
         }

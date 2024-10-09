@@ -1,58 +1,35 @@
 ﻿using api.makebe.agenda.infra.data.interfaces;
 using api.makebe.agenda.infra.data.Repositorys;
-using System.Data;
 
 namespace api.makebe.agenda.infra.data.Uow.interfaces
 {
-    public class UnitOfWork : IUnitOfWork
+    public sealed class UnitOfWork : IUnitOfWork
     {
-        private readonly DbAgenda _agenda;
-        private bool _transactionStarted;
 
-        public UnitOfWork(DbAgenda session)
+        private readonly DbAgenda _agenda;
+
+        public UnitOfWork(DbAgenda agenda)
         {
-            _agenda = session;
+            _agenda = agenda;
         }
 
-        public void BeginTransaction()
+        public async Task BeginTransaction()
         {
-            if (_agenda.Transaction == null)
-            {
-                _agenda.Transaction = _agenda.Connection.BeginTransaction();
-                _transactionStarted = true;
-            }
+            _agenda.Transaction = await Task.FromResult(_agenda.Connection.BeginTransaction());
         }
 
         public void Commit()
         {
-            if (_transactionStarted)
-            {
-                _agenda?.Transaction?.Commit();
-                _transactionStarted = false;
-            }
+            _agenda?.Transaction?.Commit();
+            Dispose();
         }
 
-        public void RollBack()
+        public void Rollback()
         {
-            if (_transactionStarted)
-            {
-                _agenda?.Transaction?.Rollback();
-                _transactionStarted = false;
-            }
+            _agenda?.Transaction?.Rollback();
+            Dispose();
         }
 
-        public void Dispose()
-        {
-            if (_agenda.Transaction != null)
-            {
-                _agenda.Transaction.Dispose();
-                _transactionStarted = false;
-            }
-            if (_agenda.Connection.State == ConnectionState.Open)
-            {
-                _agenda.Connection.Close();
-                _agenda.Connection.Dispose();
-            }
-        }
+        public  void Dispose() => _agenda.Transaction?.Dispose();
     }
 }
