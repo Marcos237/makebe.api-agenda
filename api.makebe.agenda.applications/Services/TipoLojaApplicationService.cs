@@ -20,7 +20,7 @@ namespace api.makebe.agenda.applications.Services
         public async Task<ResponseModel<TipoLoja>> BuscarTodos()
         {
             var retorno = await _tipoLojaDomainService.BuscarTodos() ?? Enumerable.Empty<TipoLoja>();
-            if (retorno.Any())
+            if (!retorno.Any())
                 _notificationContext.AddNotification(nameof(TipoLoja), BaseConstant.ListaVazia);
 
             return ResponseModelHelper<TipoLoja>.RetornarResponseModel(retorno, _notificationContext.Notifications);

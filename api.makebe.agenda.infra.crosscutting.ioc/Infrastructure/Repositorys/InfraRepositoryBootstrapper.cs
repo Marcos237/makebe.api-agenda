@@ -1,7 +1,5 @@
 ﻿using api.makebe.agenda.infra.crosscutting.Repositorys;
 using api.makebe.agenda.infra.crosscutting.Repositorys.Interfaces;
-using api.makebe.agenda.infra.data.interfaces;
-using api.makebe.agenda.infra.data.Uow.interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Repositorys
@@ -10,8 +8,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Repositorys
     {
         public static void Initialize(IServiceCollection services)
         {
-            services.AddTransient<ILogRepository, LogRepository>(); 
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ILogRepository, LogRepository>(); 
         }
     }
 }

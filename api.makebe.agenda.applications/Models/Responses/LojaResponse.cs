@@ -10,6 +10,7 @@ namespace api.makebe.agenda.applications
         public string? Email { get; set; }
         public string? Telefone { get; set; }
         public int TipoLojaId { get; set; }
+        public string? TipoLojaDescricao { get; set; }
         public DateTime DataCadastro { get; set; }
         public IEnumerable<Endereco>? Enderecos { get; set; }
 
