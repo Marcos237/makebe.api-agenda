@@ -13,6 +13,16 @@ namespace api.makebe.agenda.infra.data.Repositorys
             _dbAgenda = dbAgenda;
         }
 
+        public async Task<IEnumerable<LojaEnderecoDTO>> BuscarTodos(string usuarioId)
+        {
+            var sql = @"SELECT DISTINCT l.* FROM Loja l
+                                 INNER JOIN UsuarioLoja ul ON ul.LojaId  = l.Id 
+                                 Where ul.UsuarioId  = @UsuarioId
+                                 and l.Status  = 1";
+            var retorno = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO>(sql, new { UsuarioId = usuarioId });
+            return retorno;
+        }
+
         public async Task<PaginacaoDTO<LojaEnderecoDTO>> BuscarLojas(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
@@ -32,20 +42,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
             paginacao!.total = lojas.Count();
 
             string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
-
-            paginacao!.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
-            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO, Endereco, LojaEnderecoDTO>(
-                           sqlBusca,
-                (loja, endereco) =>
-                {
-
-                    if (loja != null)
-                        loja?.Enderecos?.ToList().Add(endereco);
-
-                    return loja ?? new LojaEnderecoDTO();
-                },
-                splitOn: "EnderecoId",
-                param: parametros) ?? Enumerable.Empty<LojaEnderecoDTO>();
+            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO>(sqlBusca, param: parametros) ?? Enumerable.Empty<LojaEnderecoDTO>();
 
             return paginacao;
         }
@@ -107,23 +104,20 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<bool> Desativar(int id)
         {
             var sql = @"UPDATE Loja SET 
-                      Status = false, 
+                      Status = false 
                       Where Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
-            { Id = id}) > 0;
+            { Id = id }) > 0;
             return retorno;
         }
 
         private Task<string> BuscarConsulta()
         {
-            var query = @"SELECT l.Id, l.RazaoSocial, l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao, l.CNPJ,
-                                   l.TipoLojaId, tl.Descricao as TipoLojaDescricao,
-                                   le.EnderecoId, e.Logradouro, e.Numero, e.Complemento, e.CEP, e.Estado, e.Cidade
+            var query = @"SELECT DISTINCT l.Id, l.RazaoSocial, l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao, l.CNPJ,
+                                   l.TipoLojaId, tl.Descricao as TipoLojaDescricao
                             FROM Loja l
                                  INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id  
                                  INNER JOIN TipoLoja tl ON tl.Id = l.TipoLojaId 
-                                 LEFT JOIN LojaEndereco le ON le.LojaId = l.Id 
-                                 LEFT JOIN Endereco e ON e.Id = le.EnderecoId
                             WHERE ul.UsuarioId = @UsuarioId
                               AND l.Status = 1
                               AND (

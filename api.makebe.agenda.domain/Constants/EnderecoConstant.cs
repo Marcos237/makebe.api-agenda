@@ -6,5 +6,6 @@
         public const string CidadeInvalida = "Nome da cidade inválida.";
         public const string EstadoInvalido = "Nome do estado inválido.";
         public const string LogradouroInvalido = "Endereço inválido.";
+        public const string LojaInvalido = "Loja inválida.";
     }
 }

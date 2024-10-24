@@ -19,25 +19,30 @@ namespace api.makebe.agenda.domain.Services
             _validator = validator;
             _notificationContext = notificationContext;
         }
-        public async Task<IEnumerable<Endereco>> BuscarTodos(PaginacaoDTO<Endereco> paginacao, string usuarioId)
+        public async Task<PaginacaoDTO<EnderecoDTO>> BuscarTodos(PaginacaoDTO<EnderecoDTO> paginacao, string usuarioId)
         {
-            var resul = await _enderecoRepository.BuscarEnderecos(paginacao, usuarioId);
-            return resul;
+            var result = await _enderecoRepository.BuscarEnderecos(paginacao, usuarioId);
+            result.totalPaginas = (result.total + result.quantidadePagina - 1) / result.quantidadePagina;
+            return result;
         }
-        public async Task<Endereco> BuscarPorId(int id)
+        public async Task<EnderecoDTO> BuscarPorId(int id)
         {
             var resul = await _enderecoRepository.BuscarPorId(id);
             return resul;
         }
-        public async Task<IEnumerable<Endereco>> BuscarPorLojaId(int id)
-        {
-            var resul = await _enderecoRepository.BuscarPorLojaId(id);
-            return resul;
-        }
         public async Task<int> Salvar(Endereco item)
         {
-            var result = await _enderecoRepository.Salvar(item);
-            return result;
+            item.Status = true;
+            item.DataAtualizacao = DateTime.Now;
+            if (item.Id == 0)
+            {
+                item.DataCadastro = DateTime.Now;
+                var result = await _enderecoRepository.Salvar(item);
+                return result;
+            }
+
+            var resultAualizado = await _enderecoRepository.Atualizar(item);
+            return resultAualizado.Id;
         }
 
         public async Task<Endereco> Atualizar(Endereco item)
@@ -48,9 +53,7 @@ namespace api.makebe.agenda.domain.Services
 
         public async Task<bool> Desativar(int id)
         {
-            var endereco = await _enderecoRepository.BuscarPorId(id);
-            endereco.Status = false;
-            var result = await _enderecoRepository.Atualizar(endereco) != null;
+            var result = await _enderecoRepository.Deastivar(id);
             return result;
 
         }

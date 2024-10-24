@@ -27,7 +27,7 @@ namespace api.makebe.agenda.applications.Services
 
 
         public LojaApplicationService(IValidationService<Loja> validationService, IUsuarioLojaDomainService usarioLojaDomainService, ILojaDomainService lojaDomainService,
-            INotificationContext notificationContext, IMapper mapper, IEnderecoApplicationService enderecoApplicationService, IUnitOfWork unitOfWork, 
+            INotificationContext notificationContext, IMapper mapper, IEnderecoApplicationService enderecoApplicationService, IUnitOfWork unitOfWork,
             IUsuarioSessaoDomainService usuarioSessaoDomainService)
         {
             _lojaDomainService = lojaDomainService;
@@ -39,17 +39,25 @@ namespace api.makebe.agenda.applications.Services
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
         }
-        public async Task<ResponseModel<PaginacaoDTO<LojaResponse>>> BuscarTodos(PaginacaoDTO<LojaPayload> lojaPayload, string usuarioId)
+        public async Task<ResponseModel<LojaEnderecoDTO>> BuscarTodos(string usuarioId)
+        {
+            var lojas = await _lojaDomainService.BuscarTodos(usuarioId);
+            if (!lojas.Any())
+                _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
+
+            return ResponseModelHelper<LojaEnderecoDTO>.RetornarResponseModel(lojas, _notificationContext.Notifications);
+        }
+
+        public async Task<ResponseModel<PaginacaoDTO<LojaResponse>>> BuscarTodosPaginado(PaginacaoDTO<LojaPayload> lojaPayload, string usuarioId)
         {
             var paginacaoDTO = _mapper.Map<PaginacaoDTO<LojaEnderecoDTO>>(lojaPayload) ?? new PaginacaoDTO<LojaEnderecoDTO>();
-            var result = await _lojaDomainService.BuscarTodos(paginacaoDTO, usuarioId) ?? new PaginacaoDTO<LojaEnderecoDTO>();
+            var result = await _lojaDomainService.BuscarTodosPaginado(paginacaoDTO, usuarioId) ?? new PaginacaoDTO<LojaEnderecoDTO>();
             if (result != null && !result.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
 
             var lojaResponse = _mapper.Map<PaginacaoDTO<LojaResponse>>(result);
             return ResponseModelHelper<PaginacaoDTO<LojaResponse>>.RetornarResponseModel(lojaResponse, _notificationContext.Notifications);
         }
-
         public async Task<ResponseModel<LojaResponse>> BuscarPorId(int id)
         {
             var result = await _lojaDomainService.BuscarPorId(id);
@@ -57,7 +65,6 @@ namespace api.makebe.agenda.applications.Services
                 _validationService.RetornarListaVazia(BaseConstant.ListaVazia, nameof(Loja));
 
             var lojaRetorno = _mapper.Map<LojaResponse>(result);
-            lojaRetorno.Enderecos = await _enderecoApplicationService.BuscarPorLojaId(id);
             return ResponseModelHelper<LojaResponse>.RetornarResponseModel(lojaRetorno, _notificationContext.Notifications);
         }
 
@@ -67,7 +74,7 @@ namespace api.makebe.agenda.applications.Services
             var isValidate = await _validationService.Validar(loja);
             if (!isValidate)
             {
-                var lojaResponseErro = _mapper.Map<LojaResponse>(loja);  
+                var lojaResponseErro = _mapper.Map<LojaResponse>(loja);
                 return ResponseModelHelper<LojaResponse>.RetornarResponseModel(lojaResponseErro, _notificationContext.Notifications);
             }
             try
@@ -77,9 +84,9 @@ namespace api.makebe.agenda.applications.Services
                 Guid idGuid = Guid.TryParse(usuarioId, out Guid parsedGuid) ? parsedGuid : Guid.Empty;
                 var usuarioLoja = new UsuarioLoja() { LojaId = lojaRetorno, UsuarioId = idGuid };
 
-                if(lojaPayload.Id == 0)
-                await _usarioLojaDomainService.Salvar(usuarioLoja);
-                 _unitOfWork.Commit();
+                if (lojaPayload.Id == 0)
+                    await _usarioLojaDomainService.Salvar(usuarioLoja);
+                _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
 
@@ -88,7 +95,7 @@ namespace api.makebe.agenda.applications.Services
             }
             catch (Exception)
             {
-                 _unitOfWork.Rollback();
+                _unitOfWork.Rollback();
                 throw;
             }
         }

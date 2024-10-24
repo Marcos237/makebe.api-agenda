@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="lib.makebe.Applications" Version="1.1.8" />
-    <PackageReference Include="lib.makebe.domain" Version="1.1.1" />
-    <PackageReference Include="lib.makebe.Repository" Version="1.1.8" />
+    <PackageReference Include="lib.makebe.Applications" Version="1.1.9" />
+    <PackageReference Include="lib.makebe.domain" Version="1.1.5" />
+    <PackageReference Include="lib.makebe.Repository" Version="1.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
