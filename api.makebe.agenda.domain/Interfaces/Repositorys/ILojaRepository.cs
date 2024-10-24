@@ -5,6 +5,7 @@ namespace api.makebe.agenda.infra.data.Repositorys.Interfaces
 {
     public interface ILojaRepository
     {
+        Task<IEnumerable<LojaEnderecoDTO>> BuscarTodos(string usuarioId);
         Task<PaginacaoDTO<LojaEnderecoDTO>> BuscarLojas(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId);
         Task<LojaEnderecoDTO> BuscarLojaPorCodigo(int codigo);
         Task<int> Salvar(Loja loja);

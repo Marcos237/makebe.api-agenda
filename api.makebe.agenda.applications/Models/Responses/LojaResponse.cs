@@ -12,11 +12,6 @@ namespace api.makebe.agenda.applications
         public int TipoLojaId { get; set; }
         public string? TipoLojaDescricao { get; set; }
         public DateTime DataCadastro { get; set; }
-        public IEnumerable<Endereco>? Enderecos { get; set; }
 
-        public LojaResponse()
-        {
-            Enderecos = new List<Endereco>();
-        }
     }
 }

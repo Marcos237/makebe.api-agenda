@@ -14,10 +14,5 @@ namespace api.makebe.agenda.domain.DTO
         public string? TipoLojaDescricao { get; set; }
         public DateTime DataCadastro { get; set; }
         public DateTime DataAtualizacao { get; set; }
-        public IEnumerable<Endereco>? Enderecos { get; set; }
-        public LojaEnderecoDTO()
-        {
-            Enderecos = new List<Endereco>();
-        }
     }
 }

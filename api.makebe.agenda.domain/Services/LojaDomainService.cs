@@ -13,10 +13,15 @@ namespace api.makebe.agenda.domain.Services
         {
             _lojaRepository = lojaRepository;
         }
-        public async Task<PaginacaoDTO<LojaEnderecoDTO>> BuscarTodos(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
+        public async Task<IEnumerable<LojaEnderecoDTO>> BuscarTodos(string usuarioId)
+        {
+            var retorno = await _lojaRepository.BuscarTodos(usuarioId) ?? Enumerable.Empty<LojaEnderecoDTO>();
+            return retorno;
+        }
+        public async Task<PaginacaoDTO<LojaEnderecoDTO>> BuscarTodosPaginado(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
         {
             var result = await _lojaRepository.BuscarLojas(paginacao, usuarioId);
-            result.totalPaginas = (result.total + result.quantidadePagina - 1 ) / result.quantidadePagina;
+            result.totalPaginas = (result.total + result.quantidadePagina - 1) / result.quantidadePagina;
             return result;
         }
         public async Task<LojaEnderecoDTO> BuscarPorId(int id)
@@ -28,7 +33,7 @@ namespace api.makebe.agenda.domain.Services
         {
             loja.Status = true;
             loja.DataAtualizacao = DateTime.Now;
-            if(loja.Id == 0)
+            if (loja.Id == 0)
             {
                 loja.DataCadastro = DateTime.Now;
                 var result = await _lojaRepository.Salvar(loja);
@@ -43,6 +48,5 @@ namespace api.makebe.agenda.domain.Services
             var result = await _lojaRepository.Desativar(id);
             return result;
         }
-
     }
 }

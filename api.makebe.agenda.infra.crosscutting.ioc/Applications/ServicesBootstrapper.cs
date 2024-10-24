@@ -11,6 +11,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<ILojaApplicationService, LojaApplicationService>();
             services.AddScoped<ITipoLojaApplicationService, TipoLojaApplicationService>();
             services.AddScoped<IEnderecoApplicationService, EnderecoApplicationService>();
+            services.AddScoped<ILojaEnderecoApplicationService, LojaEnderecoApplicationService>();
         }
     }
 }
