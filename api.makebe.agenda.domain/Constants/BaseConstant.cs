@@ -4,5 +4,6 @@
     {
         public const string ListaVazia = "Nenhum item encontrado.";
         public const string Campos = "Campos inválidos.";
+        public const string urlImagens = "urlImagens";
     }
 }

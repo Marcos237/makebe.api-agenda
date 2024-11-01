@@ -1,6 +1,8 @@
 ﻿using api.makebe.agenda.applications.AutoMapper;
 using api.makebe.agenda.applications.Mappers.EnderecoMappers;
 using api.makebe.agenda.applications.Mappers.LojaMappers;
+using api.makebe.agenda.applications.Mappers.LojaPortifolios;
+using api.makebe.agenda.applications.Mappers.LojaPortifoliosMappers;
 using AutoMapper;
 using lib.makebe.Applications.Mappers;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,10 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new PaginacaoLojaPayloadMap());
                 mc.AddProfile(new SessaoMapper());
                 mc.AddProfile(new EnderecoDTOEnderecoMapper());
+                mc.AddProfile(new LojaPortifolioImagemMap());
+                mc.AddProfile(new LojaPortifolioMap());
+                mc.AddProfile(new LojaPortifolioPayloadMap());
+                mc.AddProfile(new LojaPortifolioImagensArquivoMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
