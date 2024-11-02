@@ -14,7 +14,12 @@ namespace api.makebe.agenda.domain.Services
         public async Task<int> SalvarLojaEndereco(LojaEndereco endereco)
         {
             endereco.DataCadastro = DateTime.Now;
+
+            if(endereco.EnderecoId == 0 ) 
             return await _lojaEnderecoRepository.SalvarLojaEndereco(endereco);
+
+            await _lojaEnderecoRepository.AtualizaLojaEndereco(endereco);
+            return endereco.Id;
         }
     }
 }
