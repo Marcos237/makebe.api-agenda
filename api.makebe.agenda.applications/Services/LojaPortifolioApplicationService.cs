@@ -66,7 +66,7 @@ namespace api.makebe.agenda.applications.Services
             {
                 await _unitOfWork.BeginTransaction();
                 var lojaPortifolioRetorno = await _lojaPortifolioDomainService.Salvar(lojaPortifolio);
-                if (lojaPortifolioRetorno == 0 && (portifolio.LojaPortifolioImagens!.Any()))
+                if (portifolio.LojaPortifolioImagens!.Any())
                     await _lojaPortifolioImagemApplicationService.SalvarImagens(portifolio.LojaPortifolioImagens!);
                 _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);

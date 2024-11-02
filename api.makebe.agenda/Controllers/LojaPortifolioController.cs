@@ -9,44 +9,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.makebe.agenda.Controllers
 {
     [ApiController]
-    [Route("Loja")]
+    [Route("LojaPortifolio")]
     [Authorize]
-    public class LojaController : BaseController
+    public class LojaPortifolioController : BaseController
     {
-        private readonly ILojaApplicationService _lojaApplicationService;
-        public LojaController(ILojaApplicationService lojaApplicationService)
+        private readonly ILojaPortifolioApplicationService _lojaPortifolioApplicationService;
+        public LojaPortifolioController(ILojaPortifolioApplicationService lojaPortifolioApplicationService)
         {
-            _lojaApplicationService = lojaApplicationService;
+            _lojaPortifolioApplicationService = lojaPortifolioApplicationService;
         }
         [HttpPost]
         [Route("BuscarPaginado")]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> BuscarPaginado(PaginacaoDTO<LojaPayload> model)
+        public async Task<IActionResult> BuscarPaginado(PaginacaoDTO<LojaPortifolioDTO> model)
         {
             try
             {
-                var retorno = await _lojaApplicationService.BuscarTodosPaginado(model, Chave ?? string.Empty);
+                var retorno = await _lojaPortifolioApplicationService.BuscarLojaPortifolios(model, Chave ?? string.Empty);
                 if (retorno.data == null)
-                {
-                    return StatusCode(StatusCodes.Status204NoContent, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("BuscarTodos")]
-        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> BuscarTodos()
-        {
-            try
-            {
-                var retorno = await _lojaApplicationService.BuscarTodos(Chave ?? string.Empty);
-                if (!retorno.datas!.Any())
                 {
                     return StatusCode(StatusCodes.Status204NoContent, retorno);
                 }
@@ -64,7 +44,7 @@ namespace api.makebe.agenda.Controllers
         {
             try
             {
-                var retorno = await _lojaApplicationService.BuscarPorId(id);
+                var retorno = await _lojaPortifolioApplicationService.BuscarPorId(id);
                 if (retorno.data == null)
                 {
                     return StatusCode(StatusCodes.Status204NoContent, retorno);
@@ -79,12 +59,12 @@ namespace api.makebe.agenda.Controllers
 
         [HttpPost]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> Post(LojaPayload model)
+        public async Task<IActionResult> Post(LojaPortifolioPayload model)
         {
             try
             {
 
-                var retorno = await _lojaApplicationService.Persitir(model, Chave ?? string.Empty);
+                var retorno = await _lojaPortifolioApplicationService.Persistir(model, Chave ?? string.Empty);
                 if (retorno?.data?.Id == 0)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, retorno);
@@ -98,12 +78,12 @@ namespace api.makebe.agenda.Controllers
         }
         [HttpPut]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> Put(LojaPayload model)
+        public async Task<IActionResult> Put(LojaPortifolioPayload model)
         {
             try
             {
 
-                var retorno = await _lojaApplicationService.Persitir(model, Chave ?? string.Empty);
+                var retorno = await _lojaPortifolioApplicationService.Persistir(model, Chave ?? string.Empty);
                 if (retorno.datas == null || !retorno.datas.Any())
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, retorno);
@@ -123,7 +103,7 @@ namespace api.makebe.agenda.Controllers
         {
             try
             {
-                var retorno = await _lojaApplicationService.Desativar(id, Chave ?? string.Empty);
+                var retorno = await _lojaPortifolioApplicationService.Desativar(id, Chave ?? string.Empty);
                 if (!retorno)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, retorno);

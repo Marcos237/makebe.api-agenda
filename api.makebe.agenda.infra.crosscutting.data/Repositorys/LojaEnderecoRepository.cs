@@ -10,6 +10,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
+
         public async Task<int> SalvarLojaEndereco(LojaEndereco endereco)
         {
             var query = @"INSERT INTO LojaEndereco (LojaId, EnderecoId, DataCadastro) VALUES (@LojaId, @EnderecoId, @DataCadastro);
@@ -17,6 +18,13 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var result = await _dbAgenda.Connection.ExecuteAsync(query, endereco);
             return result;
 
+        }
+
+        public async Task<bool> AtualizaLojaEndereco(LojaEndereco endereco)
+        {
+            var query = @"UPDATE LojaEndereco  SET LojaId = @LojaId, DataCadastro = @DataCadastro WHERE EnderecoId = @EnderecoId";
+            var result = await _dbAgenda.Connection.ExecuteAsync(query, endereco) > 0;
+            return result;
         }
     }
 }

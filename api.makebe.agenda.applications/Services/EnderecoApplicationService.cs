@@ -29,9 +29,9 @@ namespace api.makebe.agenda.applications.Services
             _validationService = validationService;
             _mapper = mapper;
             _notificationContext = notificationContext;
-            _lojaEnderecoApplicationService = lojaEnderecoApplicationService; 
+            _lojaEnderecoApplicationService = lojaEnderecoApplicationService;
             _unitOfWork = unitOfWork;
-            _usuarioSessaoDomainService = usuarioSessaoDomainService;   
+            _usuarioSessaoDomainService = usuarioSessaoDomainService;
         }
         public async Task<ResponseModel<PaginacaoDTO<EnderecoDTO>>> BuscarTodos(PaginacaoDTO<EnderecoDTO> paginacao, string usuarioId)
         {
@@ -58,15 +58,14 @@ namespace api.makebe.agenda.applications.Services
             if (!isValidate)
             {
                 var lojaErro = _mapper.Map<EnderecoDTO>(endereco);
-                return  ResponseModelHelper<EnderecoDTO>.RetornarResponseModel(lojaErro, _notificationContext.Notifications);
+                return ResponseModelHelper<EnderecoDTO>.RetornarResponseModel(lojaErro, _notificationContext.Notifications);
             }
             try
             {
                 await _unitOfWork.BeginTransaction();
                 var enderecoRetorno = await _enderecoDomainService.Salvar(endereco);
                 var lojaEndereco = new LojaEndereco { EnderecoId = enderecoRetorno, LojaId = enderecoDTO.LojaId };
-                if (enderecoDTO.Id == 0)
-                    await _lojaEnderecoApplicationService.SalvarLojaEndereco(lojaEndereco);
+                await _lojaEnderecoApplicationService.SalvarLojaEndereco(lojaEndereco);
                 _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
