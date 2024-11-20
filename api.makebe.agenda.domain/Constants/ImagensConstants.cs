@@ -8,7 +8,7 @@
         public const string ExtensaoJpg = ".JPG";
         public const string ExtensaoPng = ".PNG";
         public const string TipoArquivoInvalido = "Arquivo inválido.";
-        public const long TamanhoArquivo = 5 * 1024 * 1024;
+        public const long TamanhoArquivo = 25 * 1024 * 1024;
         public const string TamanhoArquivoInvalido = "Tamanho de arquivo inválido. Máximo de 3MB";
     }
 }

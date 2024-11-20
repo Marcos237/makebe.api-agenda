@@ -7,6 +7,7 @@ namespace api.makebe.agenda.domain.DTO
         public int Id { get; set; }
 
         public int LojaId { get; set; }
+        public string? RazaoSocial { get; set; }
 
         public string? Titulo { get; set; }
 

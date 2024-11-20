@@ -29,20 +29,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var lojaPortifolio = await _dbAgenda.Connection.QueryAsync<LojaPortifolioDTO>(sql, parametros) ?? Enumerable.Empty<LojaPortifolioDTO>();
             paginacao!.total = lojaPortifolio.Count();
             string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
-            var retorno = await _dbAgenda.Connection.QueryAsync<LojaPortifolioDTO, LojaPortifolioImagemDTO, LojaPortifolioDTO>(
-                 sqlBusca,
-                 (loja, imagem) =>
-                 {
-                     if (loja.LojaPortifolioImagens?.Any() == true)
-                     {
-                         imagens.Add(imagem);
-                         loja.LojaPortifolioImagens = imagens;
-                     }
-                     return loja;
-                 },
-                 parametros,
-                 splitOn: "LojaPortifolioImagemId"
-             ) ?? Enumerable.Empty<LojaPortifolioDTO>();
+            var retorno = await _dbAgenda.Connection.QueryAsync<LojaPortifolioDTO>(sqlBusca, parametros) ?? Enumerable.Empty<LojaPortifolioDTO>();
 
             paginacao.objetos = retorno;
             return paginacao;
@@ -59,8 +46,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             var query = @"INSERT INTO LojaPortifolio (LojaId, Titulo, SubTitulo, Texto, Status, DataCadastro, DataAtualizacao)
                           VALUES 
-                          (@LojaId, @Titulo, @SubTitulo, @Texto, @Status, @DataCadastro, @DataAtualizacao)";
-            var result = await _dbAgenda.Connection.ExecuteScalarAsync<int>(query, portifolio);
+                          (@LojaId, @Titulo, @SubTitulo, @Texto, @Status, @DataCadastro, @DataAtualizacao);
+                        SELECT LAST_INSERT_ID();";
+            var result = await _dbAgenda.Connection.ExecuteScalarAsync<int>(query, portifolio, _dbAgenda.Transaction);
 
             return result;
         }
@@ -80,7 +68,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<bool> Deastivar(int id)
         {
             var query = @"UPDATE LojaPortifolio  SET 
-                          Status  = 0,
+                          Status  = 0
                           WHERE Id = @Id
                           ";
             var result = await _dbAgenda.Connection.ExecuteAsync(query, new { Id = id }) > 0;
@@ -90,11 +78,10 @@ namespace api.makebe.agenda.infra.data.Repositorys
         private Task<string> BuscarConsulta()
         {
             var query = @"
-                        SELECT lp.Id, lp.LojaId, lp.Titulo, lp.SubTitulo, lp.SubTitulo, l.RazaoSocial, lpi.Id as LojaPortifolioImagemId, lpi.UrlImagem FROM LojaPortifolio lp 
+                        SELECT DISTINCT lp.Id, lp.LojaId, lp.Titulo, lp.SubTitulo, l.RazaoSocial FROM LojaPortifolio lp 
                               INNER JOIN UsuarioLoja ul  ON ul.LojaId = lp.LojaId 
                               INNER JOIN  Loja l  ON l.Id  = lp.LojaId 
-                              INNER JOIN LojaPortifolioImagens lpi  ON lp.Id  = lpi.LojaPortifolioId 
-                              WHERE ul.UsuarioId  = @Usuario
+                              WHERE ul.UsuarioId  = @UsuarioId
                                  AND 
                                                         (lp.Titulo LIKE CONCAT('%', @Titulo, '%') OR @Titulo IS NULL OR @Titulo = '')
                                  AND 

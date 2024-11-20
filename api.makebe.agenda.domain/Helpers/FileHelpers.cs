@@ -1,4 +1,6 @@
-﻿namespace api.makebe.agenda.domain.Helpers
+﻿using Google.Protobuf;
+
+namespace api.makebe.agenda.domain.Helpers
 {
     public static class FileHelpers
     {
@@ -37,6 +39,13 @@
             Span<byte> buffer = new Span<byte>(new byte[urlImagem.Length]);
             var retorno = Convert.TryFromBase64String(urlImagem, buffer, out int bytesParsed);
             return retorno;
+        }
+        public static string GetExtensaoArquivo(string arquivo)
+        {
+            if (string.IsNullOrEmpty(arquivo))
+                return string.Empty;
+
+            return  Path.GetExtension(arquivo).ToLower();
         }
     }
 }
