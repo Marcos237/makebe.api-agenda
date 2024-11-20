@@ -20,4 +20,8 @@
     <ProjectReference Include="..\api.makebe.agenda.infra.crosscutting\api.makebe.agenda.infra.crosscutting.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Specifications\LojaEnderecoSpecifications\" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Specifications.LojaSpecifications;
 using api.makebe.agenda.domain.Specifications.TextoSpecifications;
 using FluentValidation;
 
@@ -13,6 +14,12 @@ namespace api.makebe.agenda.domain.Validations
             {
                 return portifolio;
             }).WithMessage(LojaPortifolioConstant.TituloInvalido);
+
+            RuleFor(portifolio => new LojaNaoPodeSerNuloOuVazioSpecification().IsSatisfiedBy(portifolio.LojaId!)).Must((portifolio) =>
+            {
+                return portifolio;
+            }).WithMessage(LojaPortifolioConstant.LojaInvalido);
+
 
             RuleFor(portifolio => portifolio)
             .Must(portifolio =>

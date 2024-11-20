@@ -45,6 +45,7 @@ namespace api.makebe.agenda.applications.Services
         public async Task<ResponseModel<LojaPortifolioDTO>> BuscarPorId(int id)
         {
             var retorno = await _lojaPortifolioDomainService.BuscarPorId(id);
+            retorno.LojaPortifolioImagens = await _lojaPortifolioImagemApplicationService.BuscarImagensPorLojaPortifolioId(id) ?? Enumerable.Empty<LojaPortifolioImagemDTO>();
             if (retorno.Id == 0)
                 _validationLojaPortifolioService.RetornarListaVazia(nameof(LojaPortifolio), BaseConstant.ListaVazia);
 
@@ -57,7 +58,7 @@ namespace api.makebe.agenda.applications.Services
             var arquivos = _mapper.Map<IEnumerable<Arquivo>>(portifolio.LojaPortifolioImagens);
             var arquivoIsvalid = await _lojaPortifolioImagemApplicationService.ValidarArquivos(arquivos);
             var isValidate = await _validationLojaPortifolioService.Validar(lojaPortifolio);
-            if (!isValidate && arquivoIsvalid)
+            if (!isValidate || !arquivoIsvalid)
             {
                 var lojaErro = _mapper.Map<LojaPortifolioDTO>(lojaPortifolio);
                 return ResponseModelHelper<LojaPortifolioDTO>.RetornarResponseModel(lojaErro, _notificationContext.Notifications);
@@ -67,8 +68,9 @@ namespace api.makebe.agenda.applications.Services
                 await _unitOfWork.BeginTransaction();
                 var lojaPortifolioRetorno = await _lojaPortifolioDomainService.Salvar(lojaPortifolio);
                 if (portifolio.LojaPortifolioImagens!.Any())
-                    await _lojaPortifolioImagemApplicationService.SalvarImagens(portifolio.LojaPortifolioImagens!);
+                    await _lojaPortifolioImagemApplicationService.SalvarImagens(portifolio.LojaPortifolioImagens!, lojaPortifolioRetorno);
                 _unitOfWork.Commit();
+
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
 

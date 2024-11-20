@@ -65,7 +65,7 @@ namespace api.makebe.agenda.Controllers
             {
 
                 var retorno = await _lojaPortifolioApplicationService.Persistir(model, Chave ?? string.Empty);
-                if (retorno?.data?.Id == 0)
+                if (retorno.notifications!.Any())
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, retorno);
                 }

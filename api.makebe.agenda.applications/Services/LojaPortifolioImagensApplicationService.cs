@@ -20,19 +20,25 @@ namespace api.makebe.agenda.applications.Services
             _arquivoDomainService = arquivoDomainService;
         }
 
-        public async Task<IEnumerable<LojaPortifolioImagemDTO>> SalvarImagens(IEnumerable<LojaPortifolioImagemDTO> lojaPortifolioImagens)
+        public async Task<IEnumerable<LojaPortifolioImagemDTO>> BuscarImagensPorLojaPortifolioId(int lojaPortifolioId)
         {
-            var id = lojaPortifolioImagens.FirstOrDefault()?.LojaPortifolioId ?? 0;
-            await _lojaImagemDomainService.Desativar(id);
+            var retorno = await _lojaImagemDomainService.BuscarImagensPorIdLojaPortifolio(lojaPortifolioId);
+            return retorno;
+        }
+
+        public async Task<bool> SalvarImagens(IEnumerable<LojaPortifolioImagemDTO> lojaPortifolioImagens, int lojaPortifolioId)
+        {
+            await _lojaImagemDomainService.Desativar(lojaPortifolioId);
+            var retorno = false;
             foreach (var imagem in lojaPortifolioImagens)
             {
-                var arquivo = _arquivoDomainService.MontarArquivo(imagem.UrlImagem ?? string.Empty, imagem?.NomeImagem ?? string.Empty);
+                var arquivo = await _arquivoDomainService.MontarArquivo(imagem.UrlImagem ?? string.Empty, imagem?.NomeImagem ?? string.Empty);
+                arquivo.TituloImagem = imagem?.TituloImagem;
                 var imagemMap = _mapper.Map<LojaPortifolioImagens>(arquivo);
-                await _lojaImagemDomainService.Salvar(imagemMap);
+                imagemMap.LojaPortifolioId = lojaPortifolioId;
+                retorno = await _lojaImagemDomainService.Salvar(imagemMap) > 0;
             }
-            var retornoImegame = await _lojaImagemDomainService.BuscarImagensPorIdLojaPortifolio(id);
-            return retornoImegame;
-
+            return retorno;
         }
 
         public async Task<bool> ValidarArquivos(IEnumerable<Arquivo> arquivos)
