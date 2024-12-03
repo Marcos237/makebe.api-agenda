@@ -75,7 +75,6 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 DataAtualizacao = loja?.DataAtualizacao
             }, _dbAgenda.Transaction);
             return retorno;
-
         }
         public async Task<Loja> Atualizar(Loja loja)
         {

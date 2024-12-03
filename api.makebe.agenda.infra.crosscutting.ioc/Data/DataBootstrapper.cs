@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Data
 {
-    public class DataBootstrapper
+    public static class DataBootstrapper
     {
-        public static void Initialize(IServiceCollection services)
+        public static void InitializeDataBootstrapper(this IServiceCollection services)
         {
             services.AddTransient<DbAgenda>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

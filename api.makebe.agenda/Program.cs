@@ -5,6 +5,7 @@ using api.makebe.agenda.infra.crosscutting.ioc.Domains;
 using api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Repositorys;
 using api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Services;
 using api.makebe.agenda.infra.crosscutting.Notifications;
+using api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Events;
 using lib.makebe.Applications.IOC;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,13 +15,14 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseUrls("http://*:80");
-InfraRepositoryBootstrapper.Initialize(builder.Services);
-RepositoryBootstrapper.Initialize(builder.Services);
-DataBootstrapper.Initialize(builder.Services);
-ApplicationsAutomapperBootstrapper.Initialize(builder.Services);
-ServicesBootstrapper.Initialize(builder.Services);
-DomainServiceBootstrapper.Initialize(builder.Services);
-InfraServiceCrossCuttingBootstrapper.Initialize(builder.Services);
+builder.Services.InitializeInfraRepositoryBootstrapper();
+builder.Services.InitializeRepositoryBootstrapper();
+builder.Services.InitializeDataBootstrapper();
+builder.Services.InitializeApplicationsAutomapperBootstrapper();
+builder.Services.InitializeServicesBootstrapper();
+builder.Services.InitializeDomainServiceBootstrapper();
+builder.Services.InitializeInfraServiceCrossCuttingBootstrapper();
+builder.Services.InitializeInfraEventBootstrapper();
 DependencyInjection.Initialize(builder.Services);
 
 

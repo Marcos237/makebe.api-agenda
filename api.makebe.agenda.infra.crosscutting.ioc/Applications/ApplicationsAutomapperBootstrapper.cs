@@ -1,4 +1,5 @@
 ﻿using api.makebe.agenda.applications.AutoMapper;
+using api.makebe.agenda.applications.Mappers.ColaboradorMappers;
 using api.makebe.agenda.applications.Mappers.EnderecoMappers;
 using api.makebe.agenda.applications.Mappers.LojaMappers;
 using api.makebe.agenda.applications.Mappers.LojaPortifolios;
@@ -9,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
 {
-    public class ApplicationsAutomapperBootstrapper 
+    public static class ApplicationsAutomapperBootstrapper 
     {
-        public static void Initialize(IServiceCollection services)
+        public static void InitializeApplicationsAutomapperBootstrapper(this IServiceCollection services)
         {
             var mapperConfig = new MapperConfiguration(mc =>
             {
@@ -27,6 +28,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new LojaPortifolioMap());
                 mc.AddProfile(new LojaPortifolioPayloadMap());
                 mc.AddProfile(new LojaPortifolioImagensArquivoMap());
+                mc.AddProfile(new ColaboradorPayloadToUsuarioConsultadoEventMap());
+                mc.AddProfile(new ColaboradorPayloadToUsuarioRegistradoEventMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

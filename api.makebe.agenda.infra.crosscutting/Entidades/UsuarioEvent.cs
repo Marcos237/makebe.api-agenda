@@ -1,0 +1,17 @@
+﻿namespace api.makebesession.infra.crosscutting.Entidades
+{
+    public class UsuarioEvent
+    {
+        public Guid Id { get; set; }
+        public string? Nome { get; set; }
+        public string? Cpf { get; set; }
+        public string? Email { get; set; }
+        public string? Telefone { get; set; }
+        public string? Instagran { get; set; }
+        public Guid PermissaoId { get; set; }
+        public string? NomeImagem { get; set; }
+        public string? UrlImagem { get; set; }
+        public DateTime DataCadastro { get; set; }
+        public DateTime DataAtualizacao { get; set; }
+    }
+}

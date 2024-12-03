@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
 {
-    public class DomainServiceBootstrapper
+    public static class DomainServiceBootstrapper
     {
-        public static void Initialize(IServiceCollection services)
+        public static void InitializeDomainServiceBootstrapper(this IServiceCollection services)
         {
             services.AddScoped<IEnderecoDomainService, EnderecoDomainService>();
             services.AddScoped<ILojaDomainService, LojaDomainService>();

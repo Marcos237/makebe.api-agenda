@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
 {
-    public class RepositoryBootstrapper
+    public static class RepositoryBootstrapper
     {
-        public static void Initialize(IServiceCollection services)
+        public static void InitializeRepositoryBootstrapper(this IServiceCollection services)
         {
             services.AddScoped<IEnderecoRepository, EnderecoRepository>();
             services.AddScoped<ILojaRepository, LojaRepository>();
@@ -17,6 +17,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<ILojaEnderecoRepository, LojaEnderecoRepository>();
             services.AddScoped<ILojaPortifolioRepository, LojaPortifolioRepository>();
             services.AddScoped<ILojaPortifolioImagemRepository, LojaPortifolioImagemRepository>();
+            services.AddScoped<ILojaColaboradorRepository, LojaColaboradorRepository>();
+            services.AddScoped<IColaboradorRepository, ColaboradorRepository>();
         }
     }
 }

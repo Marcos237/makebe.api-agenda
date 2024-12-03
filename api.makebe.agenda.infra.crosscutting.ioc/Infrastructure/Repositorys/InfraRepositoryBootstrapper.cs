@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Repositorys
 {
-    public class InfraRepositoryBootstrapper
+    public static class InfraRepositoryBootstrapper
     {
-        public static void Initialize(IServiceCollection services)
+        public static void InitializeInfraRepositoryBootstrapper(this IServiceCollection services)
         {
             services.AddScoped<ILogRepository, LogRepository>(); 
         }

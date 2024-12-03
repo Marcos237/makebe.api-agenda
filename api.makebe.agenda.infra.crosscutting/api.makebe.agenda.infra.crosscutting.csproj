@@ -7,7 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Events\UsuarioEvents\**" />
+    <EmbeddedResource Remove="Events\UsuarioEvents\**" />
+    <None Remove="Events\UsuarioEvents\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="MySql.Data" Version="9.0.0" />

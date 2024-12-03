@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
 {
-    public class ServicesBootstrapper
+    public static class ServicesBootstrapper
     {
-        public static void Initialize(IServiceCollection services)
+        public static void InitializeServicesBootstrapper(this IServiceCollection services)
         {
             services.AddScoped<ILojaApplicationService, LojaApplicationService>();
             services.AddScoped<ITipoLojaApplicationService, TipoLojaApplicationService>();
@@ -14,6 +14,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<ILojaEnderecoApplicationService, LojaEnderecoApplicationService>();
             services.AddScoped<ILojaPortifolioApplicationService, LojaPortifolioApplicationService>();
             services.AddScoped<ILojaPortifolioImagemApplicationService, LojaPortifolioImagensApplicationService>();
+            services.AddScoped<IColaboradorApplicationService, ColaboradorApplicationService>();
         }
     }
 }
