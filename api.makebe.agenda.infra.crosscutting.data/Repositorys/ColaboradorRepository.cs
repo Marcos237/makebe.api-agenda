@@ -12,14 +12,22 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
-        public async Task<LojaColaboradorDTO> BuscarPorId(int id)
+
+        public async Task<ColaboradorDTO> BuscarPorUsuarioId(Guid id)
         {
             var sql = @"SELECT c.*, lc.Id AS LojaColaboradorId FROM LojaColaborador lc 
                         INNER JOIN Colaborador c  ON lc.ColaboradorId  = c.Id 
-                        WHERE c.Id  = @Id";
-            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<LojaColaboradorDTO>(sql, new { Id = id }) ?? new LojaColaboradorDTO();
+                        WHERE c.UsuarioId  = @Id";
+            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorDTO>(sql, new { UsuarioId = id }) ?? new ColaboradorDTO();
             return retorno;
         }
+        public async Task<ColaboradorDTO> BuscarPorId(int id)
+        {
+            var sql = @"SELECT * FROM Colaborador WHERE c.Id = @Id";
+            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorDTO>(sql, new { Id = id }) ?? new ColaboradorDTO();
+            return retorno;
+        }
+
         public async Task<int> Salvar(Colaborador colaborador)
         {
             var sql = @"                      
@@ -45,6 +53,16 @@ namespace api.makebe.agenda.infra.data.Repositorys
                       Where Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
             { Id = id }) > 0;
+            return retorno;
+        }
+
+        public async Task<IEnumerable<ColaboradorDTO>> BuscarBuscarColaboradoresPorId(string id)
+        {
+            var sql = @"SELECT c.* FROM Colaborador c 
+                        INNER JOIN LojaColaborador lc  ON c.Id  = lc.ColaboradorId 
+                        INNER JOIN Loja l  ON l.Id  = lc.LojaId 
+                        INNER JOIN UsuarioLoja ul ON ul.UsuarioId  = @UsuarioId";
+            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, new { UsuarioId = id }) ?? Enumerable.Empty<ColaboradorDTO>();
             return retorno;
         }
     }

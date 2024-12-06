@@ -30,6 +30,10 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new LojaPortifolioImagensArquivoMap());
                 mc.AddProfile(new ColaboradorPayloadToUsuarioConsultadoEventMap());
                 mc.AddProfile(new ColaboradorPayloadToUsuarioRegistradoEventMap());
+                mc.AddProfile(new ColaboradorPayloadToColaboradorMap());
+                mc.AddProfile(new UsuarioEventToUsuarioDTOMap());
+                mc.AddProfile(new ColaboradorPayloadToLojaColaboradorMap());
+                mc.AddProfile(new UsuarioPaginadoDTOToUsuarioPaginadoEvent());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

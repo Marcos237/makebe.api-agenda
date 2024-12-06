@@ -12,7 +12,7 @@ namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers
             CreateMap<ColaboradorPayload, UsuarioRegistradoEvent>()
             .ForMember(dest => dest.UsuarioConsultado, opt => opt.MapFrom(src => new UsuarioEvent
             {
-                Id = src.Id,
+                Id = src.UsuarioId,
                 Nome = src.Nome,
                 Cpf = src.Cpf,
                 Email = src.Email,

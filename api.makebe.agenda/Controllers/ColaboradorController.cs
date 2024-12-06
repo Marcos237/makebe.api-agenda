@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Payloads;
+using api.makebe.agenda.domain.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.makebe.agenda.Controllers
@@ -15,14 +16,15 @@ namespace api.makebe.agenda.Controllers
             _colaboradorApplicationService = colaboradorApplicationService;
         }
 
+
         [HttpPost]
         [Route("BuscarPaginado")]
         //[AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> BuscarColaboradores(ColaboradorPayload model)
+        public async Task<IActionResult> BuscarColaboradores(PaginacaoDTO<UsuarioDTO> model)
         {
             try
             {
-                var retorno = await _colaboradorApplicationService.BuscarUsuario(model, Chave ?? string.Empty);
+                var retorno = await _colaboradorApplicationService.BuscarUsuariosPaginado(model, Chave ?? string.Empty);
                 if (retorno.data == null)
                 {
                     return StatusCode(StatusCodes.Status204NoContent, retorno);
@@ -41,7 +43,7 @@ namespace api.makebe.agenda.Controllers
         {
             try
             {
-                var retorno = await _colaboradorApplicationService.SalvarUsuario(model, Chave ?? string.Empty);
+                var retorno = await _colaboradorApplicationService.Persistir(model, Chave ?? string.Empty);
                 if (retorno.data == null)
                 {
                     return StatusCode(StatusCodes.Status400BadRequest, retorno);

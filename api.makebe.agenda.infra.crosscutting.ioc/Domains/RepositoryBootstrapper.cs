@@ -19,6 +19,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<ILojaPortifolioImagemRepository, LojaPortifolioImagemRepository>();
             services.AddScoped<ILojaColaboradorRepository, LojaColaboradorRepository>();
             services.AddScoped<IColaboradorRepository, ColaboradorRepository>();
+            services.AddScoped<ILojaColaboradorRepository, LojaColaboradorRepository>();
+            services.AddScoped<IServicosRepository, ServicoRepository>();
         }
     }
 }

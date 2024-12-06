@@ -2,7 +2,9 @@
 {
     public  class ColaboradorPayload : BasePayload
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
+        public int LojaId { get; set; }
+        public Guid UsuarioId { get; set; }
         public string? Nome { get; set; }
         public string? Cpf { get; set; }
         public string? Email { get; set; }

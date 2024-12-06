@@ -23,7 +23,7 @@ builder.Services.InitializeServicesBootstrapper();
 builder.Services.InitializeDomainServiceBootstrapper();
 builder.Services.InitializeInfraServiceCrossCuttingBootstrapper();
 builder.Services.InitializeInfraEventBootstrapper();
-DependencyInjection.Initialize(builder.Services);
+builder.Services.InitializeLibDependencyInjection();
 
 
 var chave = builder.Configuration["SysKey"]!.ToString();

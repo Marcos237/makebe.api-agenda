@@ -1,5 +1,4 @@
 ﻿using api.makebe.agenda.infra.crosscutting.Notifications;
-using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebesession.infra.crosscutting.Entidades;
 using api.makebesession.infra.crosscutting.Events.Interfaces.Usuarios;
 
