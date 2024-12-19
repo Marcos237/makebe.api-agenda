@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebesession.infra.crosscutting.Entidades;
 
 namespace api.makebe.agenda.domain.Interfaces.Services
 {
@@ -9,6 +10,7 @@ namespace api.makebe.agenda.domain.Interfaces.Services
         Task<ColaboradorDTO> BuscarColaboradorPorIdUsuario(Guid id);
         Task<ColaboradorDTO> BuscarColaboradorPorId(int id);
         Task<bool> Desativar(int id);
-        Task<PaginacaoDTO<ColaboradorDTO>> MontarColaboradores(PaginacaoDTO<UsuarioDTO>? paginacao, string usuarioId);
+        Task<IEnumerable<string>> MontarIdsPesquisas(string usuarioId);
+        Task<PaginacaoDTO<ColaboradorDTO>> MontarColaboradores(PaginacaoDTO<UsuarioDTO>? paginacao, string usuarioId, IEnumerable<PermissaoEvent> permissoesEvents);
     }
 }

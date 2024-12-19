@@ -14,8 +14,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<int> SalvarLojaEndereco(LojaEndereco endereco)
         {
             var query = @"INSERT INTO LojaEndereco (LojaId, EnderecoId, DataCadastro) VALUES (@LojaId, @EnderecoId, @DataCadastro);
-                           SELECT LAST_INSERT_ID() AS LastInsertedId;";
-            var result = await _dbAgenda.Connection.ExecuteAsync(query, endereco);
+                           SELECT LAST_INSERT_ID();";
+            var parameters = new
+            {
+                LojaId = endereco.LojaId,
+                EnderecoId = endereco.EnderecoId,
+                DataCadastro = endereco.DataCadastro
+
+            };
+            var result = await _dbAgenda.Connection.ExecuteScalarAsync<int>(query, parameters, _dbAgenda.Transaction);
             return result;
 
         }

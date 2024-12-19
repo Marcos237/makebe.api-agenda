@@ -23,10 +23,17 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<int> Salvar(LojaColaborador colaborador)
         {
             var sql = @"                      
-                        INSERT INTO LojaColaborador (LojaId, ColaboradorId, DataCadastro) VALUES(@LojaId, @ColaboradorId, @DataCadastro);                     
+                        INSERT INTO LojaColaborador (LojaId, ColaboradorId, DataCadastro, Status) VALUES (@LojaId, @ColaboradorId, @DataCadastro, @Status);                     
                         SELECT LAST_INSERT_ID();";
-            var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new { colaborador }, _dbAgenda.Transaction);
+            var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
+            {
+                LojaId = colaborador.LojaId,
+                ColaboradorId = colaborador.ColaboradorId,
+                DataCadastro = colaborador.DataCadastro,
+                Status = colaborador.Status
+            }, _dbAgenda.Transaction);
             return retorno;
+
         }
         public async Task<LojaColaborador> Atualizar(LojaColaborador colaborador)
         {
@@ -35,7 +42,12 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         SET LojaId  = @LojaId,
                         ColaboradorId  = @ColaboradorId
                         WHERE Id  = @Id";
-            var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new { colaborador }, _dbAgenda.Transaction);
+            var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
+            {
+                LojaId = colaborador.LojaId,
+                ColaboradorId = colaborador.ColaboradorId,
+                DataCadastro = colaborador.DataCadastro
+            }, _dbAgenda.Transaction);
             return colaborador;
         }
     }

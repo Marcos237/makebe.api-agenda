@@ -9,5 +9,6 @@
         public int registroInicial { get; set; } = 1;
         public IEnumerable<T>? objetos { get; set; }
         public T? objetoPesquisa { get; set; }
+        public IEnumerable<string>? idsPesquisa { get; set; }
     }
 }

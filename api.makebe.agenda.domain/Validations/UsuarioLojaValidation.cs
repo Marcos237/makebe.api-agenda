@@ -6,10 +6,10 @@ using FluentValidation;
 
 namespace api.makebe.agenda.domain.Validations
 {
-    public class UsuarioLojaValidation : AbstractValidator<UsuarioLoja>
+    public class UsuarioLojaValidation : AbstractValidator<ContaLoja>
     {
-        private readonly IUsuarioLojaRepository _usuarioLojaRepository;
-        public UsuarioLojaValidation(IUsuarioLojaRepository usuarioLojaRepository)
+        private readonly IContaLojaRepository _usuarioLojaRepository;
+        public UsuarioLojaValidation(IContaLojaRepository usuarioLojaRepository)
         {
             _usuarioLojaRepository = usuarioLojaRepository;
 

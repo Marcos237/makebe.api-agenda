@@ -7,7 +7,7 @@ public class LojaDTOResponseMapper : Profile
     public LojaDTOResponseMapper()
     {
 
-        CreateMap<LojaEnderecoDTO, LojaResponse>()
+        CreateMap<LojaDTO, LojaResponse>()
             .ReverseMap();
     }
 }

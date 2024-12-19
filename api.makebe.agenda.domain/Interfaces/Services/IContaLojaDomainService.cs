@@ -2,8 +2,8 @@
 
 namespace api.makebe.agenda.domain.Services
 {
-    public interface IUsuarioLojaDomainService
+    public interface IContaLojaDomainService
     {
-        Task<int> Salvar(UsuarioLoja loja);
+        Task<int> Salvar(ContaLoja loja);
     }
 }

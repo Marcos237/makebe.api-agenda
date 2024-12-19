@@ -13,17 +13,17 @@ namespace api.makebe.agenda.infra.data.Repositorys
             _dbAgenda = dbAgenda;
         }
 
-        public async Task<IEnumerable<LojaEnderecoDTO>> BuscarTodos(string usuarioId)
+        public async Task<IEnumerable<LojaDTO>> BuscarTodos(string contaId)
         {
             var sql = @"SELECT DISTINCT l.* FROM Loja l
-                                 INNER JOIN UsuarioLoja ul ON ul.LojaId  = l.Id 
-                                 Where ul.UsuarioId  = @UsuarioId
+                                 INNER JOIN ContaLoja ul ON ul.LojaId  = l.Id 
+                                 Where ul.ContaId  = @ContaId
                                  and l.Status  = 1";
-            var retorno = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO>(sql, new { UsuarioId = usuarioId });
+            var retorno = await _dbAgenda.Connection.QueryAsync<LojaDTO>(sql, new { ContaId = contaId });
             return retorno;
         }
 
-        public async Task<PaginacaoDTO<LojaEnderecoDTO>> BuscarLojas(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
+        public async Task<PaginacaoDTO<LojaDTO>> BuscarLojas(PaginacaoDTO<LojaDTO> paginacao, string contaId)
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
             var sql = await BuscarConsulta();
@@ -36,23 +36,23 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 Email = paginacao?.objetoPesquisa?.Email,
                 Telefone = paginacao?.objetoPesquisa?.Telefone,
                 TipoLojaId = paginacao?.objetoPesquisa?.TipoLojaId,
-                UsuarioId = usuarioId
+                ContaId = contaId
             };
-            var lojas = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO>(sql, parametros) ?? Enumerable.Empty<LojaEnderecoDTO>();
+            var lojas = await _dbAgenda.Connection.QueryAsync<LojaDTO>(sql, parametros) ?? Enumerable.Empty<LojaDTO>();
             paginacao!.total = lojas.Count();
 
             string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
-            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaEnderecoDTO>(sqlBusca, param: parametros) ?? Enumerable.Empty<LojaEnderecoDTO>();
+            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaDTO>(sqlBusca, param: parametros) ?? Enumerable.Empty<LojaDTO>();
 
             return paginacao;
         }
 
-        public async Task<LojaEnderecoDTO> BuscarLojaPorCodigo(int id)
+        public async Task<LojaDTO> BuscarLojaPorCodigo(int id)
         {
             var sql = @"SELECT l.Id, l.RazaoSocial , l.CNPJ , l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao, l.TipoLojaId
                                FROM Loja l 
                       WHERE Id = @Id AND Status = 1";
-            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<LojaEnderecoDTO>(sql, new { Id = id }) ?? new LojaEnderecoDTO();
+            var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<LojaDTO>(sql, new { Id = id }) ?? new LojaDTO();
             return retorno;
         }
 
@@ -115,9 +115,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var query = @"SELECT DISTINCT l.Id, l.RazaoSocial, l.Email, l.Telefone, l.Status, l.DataCadastro, l.DataAtualizacao, l.CNPJ,
                                    l.TipoLojaId, tl.Descricao as TipoLojaDescricao
                             FROM Loja l
-                                 INNER JOIN UsuarioLoja ul ON ul.LojaId = l.Id  
+                                 INNER JOIN ContaLoja ul ON ul.LojaId = l.Id  
                                  INNER JOIN TipoLoja tl ON tl.Id = l.TipoLojaId 
-                            WHERE ul.UsuarioId = @UsuarioId
+                            WHERE ul.ContaId = @ContaId
                               AND l.Status = 1
                               AND (
                                     (@RazaoSocial IS NULL OR @RazaoSocial = '' OR l.RazaoSocial LIKE CONCAT('%', @RazaoSocial, '%')) 

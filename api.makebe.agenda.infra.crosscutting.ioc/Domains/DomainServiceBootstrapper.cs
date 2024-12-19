@@ -13,7 +13,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
         {
             services.AddScoped<IEnderecoDomainService, EnderecoDomainService>();
             services.AddScoped<ILojaDomainService, LojaDomainService>();
-            services.AddScoped<IUsuarioLojaDomainService, UsuarioLojaDomainService>();
+            services.AddScoped<IContaLojaDomainService, ContaLojaDomainService>();
             services.AddScoped<ITipoLojaDomainService, TipoLojaDomainService>();
             services.AddScoped<ILojaEnderecoDomainService, LojaEnderecoDomainService>();
             services.AddScoped<ILojaPortifolioDomainService, LojaPortifolioDomainService>();
@@ -22,6 +22,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IColaboradorDomainService, ColaboradorDomainService>();
             services.AddScoped<ILojaColaboradorDomainService, LojaColaboradorDomainService>();
             services.AddScoped<IServicosDomainService, ServicoDomainService>();
+            services.AddScoped<IContaColaboradorDomainService, ContaColaboradorDomainService>();
 
             services.AddScoped<IValidationService<Loja>, ValidationService<Loja>>();
             services.AddScoped<IValidationService<Endereco>, ValidationService<Endereco>>();
@@ -31,7 +32,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
 
             services.AddScoped<IValidator<Loja>, LojaValidation>();
             services.AddScoped<IValidator<Endereco>, EnderecoValidation>();
-            services.AddScoped<IValidator<UsuarioLoja>, UsuarioLojaValidation>();
+            services.AddScoped<IValidator<ContaLoja>, UsuarioLojaValidation>();
             services.AddScoped<IValidator<LojaEndereco>, LojaEnderecoValidation>();
             services.AddScoped<IValidator<LojaPortifolio>, LojaPortifolioValidation>();
             services.AddScoped<IValidator<Arquivo>, ArquivoValidation>();

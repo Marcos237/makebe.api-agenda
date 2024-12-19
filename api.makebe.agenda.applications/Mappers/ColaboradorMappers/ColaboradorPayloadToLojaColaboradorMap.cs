@@ -9,8 +9,7 @@ namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers
         public ColaboradorPayloadToLojaColaboradorMap()
         {
             CreateMap<ColaboradorPayload, LojaColaborador>()
-                .ForMember(dest => dest.ColaboradorId , opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.LojaId , opt => opt.MapFrom(src => src.LojaId)).ReverseMap();
+                .ForMember(dest => dest.ColaboradorId, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

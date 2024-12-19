@@ -33,7 +33,7 @@ namespace api.makebe.agenda.infra.crosscutting.Events
 
             try
             {
-                var response = await requestClient.GetResponse<TResult>(request, timeout: timeout);
+                var response = await requestClient.GetResponse<TResult>(request ?? null!, timeout: timeout);
                 return response.Message;
             }
             catch (TimeoutException ex)
@@ -42,5 +42,6 @@ namespace api.makebe.agenda.infra.crosscutting.Events
                 throw;
             }
         }
+
     }
 }

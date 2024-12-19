@@ -17,7 +17,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             var sql = @"SELECT c.*, lc.Id AS LojaColaboradorId FROM LojaColaborador lc 
                         INNER JOIN Colaborador c  ON lc.ColaboradorId  = c.Id 
-                        WHERE c.UsuarioId  = @Id";
+                        WHERE c.UsuarioId  = @UsuarioId";
             var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorDTO>(sql, new { UsuarioId = id }) ?? new ColaboradorDTO();
             return retorno;
         }
@@ -33,8 +33,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var sql = @"                      
                         INSERT INTO Colaborador (UsuarioId, DataCadastro, DataAtualizacao, Status) VALUES  (@UsuarioId, @DataCadastro, @DataAtualizacao, @Status);                     
                         SELECT LAST_INSERT_ID();";
-            var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new { colaborador }, _dbAgenda.Transaction);
+            var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
+            {
+                UsuarioId = colaborador.UsuarioId.ToString(),
+                DataCadastro = colaborador.Datacadastro,
+                DataAtualizacao = colaborador.DataAtualizacao,
+                Status = colaborador.Status
+            }, _dbAgenda.Transaction);
             return retorno;
+
         }
         public async Task<Colaborador> Atualizar(Colaborador colaborador)
         {
@@ -53,16 +60,6 @@ namespace api.makebe.agenda.infra.data.Repositorys
                       Where Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
             { Id = id }) > 0;
-            return retorno;
-        }
-
-        public async Task<IEnumerable<ColaboradorDTO>> BuscarBuscarColaboradoresPorId(string id)
-        {
-            var sql = @"SELECT c.* FROM Colaborador c 
-                        INNER JOIN LojaColaborador lc  ON c.Id  = lc.ColaboradorId 
-                        INNER JOIN Loja l  ON l.Id  = lc.LojaId 
-                        INNER JOIN UsuarioLoja ul ON ul.UsuarioId  = @UsuarioId";
-            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, new { UsuarioId = id }) ?? Enumerable.Empty<ColaboradorDTO>();
             return retorno;
         }
     }

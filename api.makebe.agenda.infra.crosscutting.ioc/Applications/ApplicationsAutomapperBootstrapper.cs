@@ -34,6 +34,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new UsuarioEventToUsuarioDTOMap());
                 mc.AddProfile(new ColaboradorPayloadToLojaColaboradorMap());
                 mc.AddProfile(new UsuarioPaginadoDTOToUsuarioPaginadoEvent());
+                mc.AddProfile(new UsuarioDTOToColaboradorDTOMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

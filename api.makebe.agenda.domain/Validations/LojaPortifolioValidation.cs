@@ -15,7 +15,7 @@ namespace api.makebe.agenda.domain.Validations
                 return portifolio;
             }).WithMessage(LojaPortifolioConstant.TituloInvalido);
 
-            RuleFor(portifolio => new LojaNaoPodeSerNuloOuVazioSpecification().IsSatisfiedBy(portifolio.LojaId!)).Must((portifolio) =>
+            RuleFor(portifolio => new LojaNaoPodeSerNuloOuVazioSpecification().IsSatisfiedBy(portifolio!.LojaId)).Must((portifolio) =>
             {
                 return portifolio;
             }).WithMessage(LojaPortifolioConstant.LojaInvalido);

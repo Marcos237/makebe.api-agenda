@@ -7,7 +7,7 @@ namespace api.makebe.agenda.applications.Mappers.LojaMappers
     {
         public PaginacaoLojaResponseMap()
         {
-            CreateMap<PaginacaoDTO<LojaEnderecoDTO>, PaginacaoDTO<LojaResponse>>()
+            CreateMap<PaginacaoDTO<LojaDTO>, PaginacaoDTO<LojaResponse>>()
              .ReverseMap();
         }
     }

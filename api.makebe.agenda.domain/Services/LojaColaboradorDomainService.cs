@@ -20,7 +20,8 @@ namespace api.makebe.agenda.domain.Services
         public async Task<int> Persistir(LojaColaborador colaborador)
         {
             colaborador.DataCadastro = DateTime.Now;
-            if (colaborador.Id > 0)
+            colaborador.Status = true;
+            if (colaborador.Id == 0)
             {
                 return await _lojaColaboradorRepository.Salvar(colaborador);
             }

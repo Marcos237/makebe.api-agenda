@@ -16,6 +16,7 @@ namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers
                 .ForMember("registroInicial", opt => opt.MapFrom("registroInicial"))
                 .ForMember("objetos", opt => opt.MapFrom("objetos"))
                 .ForMember("objetoPesquisa", opt => opt.MapFrom("objetoPesquisa"))
+                .ForMember("idsPesquisa", opt => opt.MapFrom("idsPesquisa"))
                 .ReverseMap();
         }
     }

@@ -8,6 +8,7 @@
         public string? Email { get; set; }
         public string? Telefone { get; set; }
         public string? Instagran { get; set; }
+        public bool Status { get; set; }
         public Guid PermissaoId { get; set; }
         public string? NomeImagem { get; set; }
         public string? UrlImagem { get; set; }

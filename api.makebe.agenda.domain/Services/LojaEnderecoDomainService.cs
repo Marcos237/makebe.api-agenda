@@ -15,7 +15,7 @@ namespace api.makebe.agenda.domain.Services
         {
             endereco.DataCadastro = DateTime.Now;
 
-            if(endereco.EnderecoId == 0 ) 
+            if(endereco.Id == 0 ) 
             return await _lojaEnderecoRepository.SalvarLojaEndereco(endereco);
 
             await _lojaEnderecoRepository.AtualizaLojaEndereco(endereco);
