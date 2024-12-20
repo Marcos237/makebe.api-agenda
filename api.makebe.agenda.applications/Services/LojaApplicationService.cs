@@ -43,7 +43,8 @@ namespace api.makebe.agenda.applications.Services
         }
         public async Task<ResponseModel<LojaDTO>> BuscarTodos(string usuarioId)
         {
-            var lojas = await _lojaDomainService.BuscarTodos(usuarioId);
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
+            var lojas = await _lojaDomainService.BuscarTodos(conta.Id.ToString() ?? string.Empty);
             if (!lojas.Any())
                 _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
 
