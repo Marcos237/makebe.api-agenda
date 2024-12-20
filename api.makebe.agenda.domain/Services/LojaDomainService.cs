@@ -13,18 +13,18 @@ namespace api.makebe.agenda.domain.Services
         {
             _lojaRepository = lojaRepository;
         }
-        public async Task<IEnumerable<LojaEnderecoDTO>> BuscarTodos(string usuarioId)
+        public async Task<IEnumerable<LojaDTO>> BuscarTodos(string usuarioId)
         {
-            var retorno = await _lojaRepository.BuscarTodos(usuarioId) ?? Enumerable.Empty<LojaEnderecoDTO>();
+            var retorno = await _lojaRepository.BuscarTodos(usuarioId) ?? Enumerable.Empty<LojaDTO>();
             return retorno;
         }
-        public async Task<PaginacaoDTO<LojaEnderecoDTO>> BuscarTodosPaginado(PaginacaoDTO<LojaEnderecoDTO> paginacao, string usuarioId)
+        public async Task<PaginacaoDTO<LojaDTO>> BuscarTodosPaginado(PaginacaoDTO<LojaDTO> paginacao, string usuarioId)
         {
             var result = await _lojaRepository.BuscarLojas(paginacao, usuarioId);
             result.totalPaginas = (result.total + result.quantidadePagina - 1) / result.quantidadePagina;
             return result;
         }
-        public async Task<LojaEnderecoDTO> BuscarPorId(int id)
+        public async Task<LojaDTO> BuscarPorId(int id)
         {
             var result = await _lojaRepository.BuscarLojaPorCodigo(id);
             return result;

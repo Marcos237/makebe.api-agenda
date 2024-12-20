@@ -9,7 +9,7 @@ namespace api.makebe.agenda.domain.Validations
     {
         public LojaEnderecoValidation()
         {
-            RuleFor(lojaId => new LojaNaoPodeSerNuloOuVazioSpecification().IsSatisfiedBy(lojaId.Id))
+            RuleFor(lojaId => new LojaNaoPodeSerNuloOuVazioSpecification().IsSatisfiedBy(lojaId!.LojaId))
                     .Must(lojaId => lojaId)
                     .WithMessage(EnderecoConstant.LojaInvalido)
                     .WithName(nameof(LojaEndereco.LojaId));

@@ -1,0 +1,13 @@
+﻿using api.makebe.agenda.infra.crosscutting.Notifications;
+using api.makebesession.infra.crosscutting.Events.Interfaces.Conta;
+
+namespace api.makebesession.infra.crosscutting.Events.Contas
+{
+    public class UsuarioContaDeletadoEvent : IUsuarioContaDeletadoEvent
+    {
+        public Guid? Id { get; set; }
+        public DateTime dataEvento { get; set; }
+        public bool IsDeletado { get; set; }
+        public IEnumerable<Notification>? NotificationContext { get; set; }
+    }
+}

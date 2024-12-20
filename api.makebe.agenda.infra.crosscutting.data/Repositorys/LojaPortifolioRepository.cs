@@ -12,7 +12,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
-        public async Task<PaginacaoDTO<LojaPortifolioDTO>> BuscarLojaPortifolios(PaginacaoDTO<LojaPortifolioDTO> paginacao, string usuarioId)
+        public async Task<PaginacaoDTO<LojaPortifolioDTO>> BuscarLojaPortifolios(PaginacaoDTO<LojaPortifolioDTO> paginacao, string contaId)
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
             var imagens = new List<LojaPortifolioImagemDTO>();
@@ -24,7 +24,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 Titulo = paginacao?.objetoPesquisa?.Titulo,
                 SubTitulo = paginacao?.objetoPesquisa?.SubTitulo,
                 LojaId = paginacao?.objetoPesquisa?.LojaId,
-                UsuarioId = usuarioId
+                ContaId = contaId
             };
             var lojaPortifolio = await _dbAgenda.Connection.QueryAsync<LojaPortifolioDTO>(sql, parametros) ?? Enumerable.Empty<LojaPortifolioDTO>();
             paginacao!.total = lojaPortifolio.Count();
@@ -79,9 +79,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             var query = @"
                         SELECT DISTINCT lp.Id, lp.LojaId, lp.Titulo, lp.SubTitulo, l.RazaoSocial FROM LojaPortifolio lp 
-                              INNER JOIN UsuarioLoja ul  ON ul.LojaId = lp.LojaId 
+                              INNER JOIN ContaLoja ul  ON ul.LojaId = lp.LojaId 
                               INNER JOIN  Loja l  ON l.Id  = lp.LojaId 
-                              WHERE ul.UsuarioId  = @UsuarioId
+                              WHERE ul.ContaId  = @ContaId
                                  AND 
                                                         (lp.Titulo LIKE CONCAT('%', @Titulo, '%') OR @Titulo IS NULL OR @Titulo = '')
                                  AND 

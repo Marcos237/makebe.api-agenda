@@ -1,10 +1,10 @@
 ﻿namespace api.makebe.agenda.domain.Entidades
 {
-    public class LojaFuncionario
+    public class ContaColaborador
     {
         public int Id { get; set; }
-        public string? UsuarioLojaId { get; set; }
-        public bool Status { get; set; }
+        public int ColaboradorId { get; set; }
+        public Guid? ContaId { get; set; }
         public DateTime DataCadastro { get; set; }
     }
 }

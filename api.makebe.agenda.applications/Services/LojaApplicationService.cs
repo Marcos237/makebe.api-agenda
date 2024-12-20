@@ -5,10 +5,13 @@ using api.makebe.agenda.applications.Models.Responses;
 using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.domain.Services;
+using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
+using api.makebesession.infra.crosscutting.Events.Contas;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
@@ -17,47 +20,48 @@ namespace api.makebe.agenda.applications.Services
     public class LojaApplicationService : ILojaApplicationService
     {
         private readonly IValidationService<Loja> _validationService;
-        private readonly IUsuarioLojaDomainService _usarioLojaDomainService;
-        private readonly IEnderecoApplicationService _enderecoApplicationService;
+        private readonly IContaLojaDomainService _contaLojaDomainService;
         private readonly ILojaDomainService _lojaDomainService;
         private readonly INotificationContext _notificationContext;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
+        private readonly IBusEvent _busEvent;
 
-
-        public LojaApplicationService(IValidationService<Loja> validationService, IUsuarioLojaDomainService usarioLojaDomainService, ILojaDomainService lojaDomainService,
-            INotificationContext notificationContext, IMapper mapper, IEnderecoApplicationService enderecoApplicationService, IUnitOfWork unitOfWork,
+        public LojaApplicationService(IValidationService<Loja> validationService, IContaLojaDomainService usarioLojaDomainService, ILojaDomainService lojaDomainService,
+            INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork, IBusEvent busEvent,
             IUsuarioSessaoDomainService usuarioSessaoDomainService)
         {
             _lojaDomainService = lojaDomainService;
             _validationService = validationService;
-            _usarioLojaDomainService = usarioLojaDomainService;
+            _contaLojaDomainService = usarioLojaDomainService;
             _notificationContext = notificationContext;
-            _enderecoApplicationService = enderecoApplicationService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
+            _busEvent = busEvent;
         }
-        public async Task<ResponseModel<LojaEnderecoDTO>> BuscarTodos(string usuarioId)
+        public async Task<ResponseModel<LojaDTO>> BuscarTodos(string usuarioId)
         {
             var lojas = await _lojaDomainService.BuscarTodos(usuarioId);
             if (!lojas.Any())
                 _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
 
-            return ResponseModelHelper<LojaEnderecoDTO>.RetornarResponseModel(lojas, _notificationContext.Notifications);
+            return ResponseModelHelper<LojaDTO>.RetornarResponseModel(lojas, _notificationContext.Notifications);
         }
 
         public async Task<ResponseModel<PaginacaoDTO<LojaResponse>>> BuscarTodosPaginado(PaginacaoDTO<LojaPayload> lojaPayload, string usuarioId)
         {
-            var paginacaoDTO = _mapper.Map<PaginacaoDTO<LojaEnderecoDTO>>(lojaPayload) ?? new PaginacaoDTO<LojaEnderecoDTO>();
-            var result = await _lojaDomainService.BuscarTodosPaginado(paginacaoDTO, usuarioId) ?? new PaginacaoDTO<LojaEnderecoDTO>();
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
+            var paginacaoDTO = _mapper.Map<PaginacaoDTO<LojaDTO>>(lojaPayload) ?? new PaginacaoDTO<LojaDTO>();
+            var result = await _lojaDomainService.BuscarTodosPaginado(paginacaoDTO, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<LojaDTO>();
             if (result != null && !result.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
 
             var lojaResponse = _mapper.Map<PaginacaoDTO<LojaResponse>>(result);
             return ResponseModelHelper<PaginacaoDTO<LojaResponse>>.RetornarResponseModel(lojaResponse, _notificationContext.Notifications);
         }
+
         public async Task<ResponseModel<LojaResponse>> BuscarPorId(int id)
         {
             var result = await _lojaDomainService.BuscarPorId(id);
@@ -77,15 +81,15 @@ namespace api.makebe.agenda.applications.Services
                 var lojaResponseErro = _mapper.Map<LojaResponse>(loja);
                 return ResponseModelHelper<LojaResponse>.RetornarResponseModel(lojaResponseErro, _notificationContext.Notifications);
             }
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
             try
             {
                 await _unitOfWork.BeginTransaction();
                 var lojaRetorno = await _lojaDomainService.Persitir(loja);
-                Guid idGuid = Guid.TryParse(usuarioId, out Guid parsedGuid) ? parsedGuid : Guid.Empty;
-                var usuarioLoja = new UsuarioLoja() { LojaId = lojaRetorno, UsuarioId = idGuid };
+                var contaLoja = new ContaLoja() { LojaId = lojaRetorno, ContaId = conta.Id};
 
                 if (lojaPayload.Id == 0)
-                    await _usarioLojaDomainService.Salvar(usuarioLoja);
+                    await _contaLojaDomainService.Salvar(contaLoja);
                 _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);

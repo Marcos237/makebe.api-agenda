@@ -8,7 +8,7 @@ namespace api.makebe.agenda.applications.Mappers.LojaMappers
     {
         public PaginacaoLojaPayloadMap()
         {
-            CreateMap<PaginacaoDTO<LojaEnderecoDTO>, PaginacaoDTO<LojaPayload>>()
+            CreateMap<PaginacaoDTO<LojaDTO>, PaginacaoDTO<LojaPayload>>()
                 .ForMember(dest => dest.objetoPesquisa, opt => opt.MapFrom(src => new LojaPayload
                 {
                     Id = src.objetoPesquisa!.Id,
@@ -19,7 +19,7 @@ namespace api.makebe.agenda.applications.Mappers.LojaMappers
                     TipoLojaId = src.objetoPesquisa.TipoLojaId
                 }))
                 .ReverseMap()
-                .ForMember(dest => dest.objetoPesquisa, opt => opt.MapFrom(src => new LojaEnderecoDTO
+                .ForMember(dest => dest.objetoPesquisa, opt => opt.MapFrom(src => new LojaDTO
                 {
                     Id = src.objetoPesquisa!.Id,
                     RazaoSocial = src.objetoPesquisa.RazaoSocial,

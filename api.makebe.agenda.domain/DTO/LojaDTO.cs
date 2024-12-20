@@ -1,8 +1,6 @@
-﻿using api.makebe.agenda.domain.Entidades;
-
-namespace api.makebe.agenda.domain.DTO
+﻿namespace api.makebe.agenda.domain.DTO
 {
-    public class LojaEnderecoDTO
+    public class LojaDTO
     {
         public int Id { get; set; }
         public string? RazaoSocial { get; set; }

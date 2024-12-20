@@ -12,7 +12,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
-        public async Task<PaginacaoDTO<EnderecoDTO>> BuscarEnderecos(PaginacaoDTO<EnderecoDTO> paginacao ,string usuarioId)
+        public async Task<PaginacaoDTO<EnderecoDTO>> BuscarEnderecos(PaginacaoDTO<EnderecoDTO> paginacao ,string contaId)
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
             var sql = await BuscarConsulta();
@@ -22,7 +22,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 TamanhoPagina = paginacao.quantidadePagina,
                 Logradouro = paginacao?.objetoPesquisa?.Logradouro,
                 LojaId = paginacao?.objetoPesquisa?.LojaId,
-                UsuarioId = usuarioId
+                ContaId = contaId
             };
             var enderecos = await _dbAgenda.Connection.QueryAsync<EnderecoDTO>(sql, parametros) ?? Enumerable.Empty<EnderecoDTO>();
             paginacao!.total = enderecos.Count();
@@ -33,7 +33,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<EnderecoDTO> BuscarPorId(int id)
         {
-            var query = @"SELECT e.*, le.LojaId FROM  UsuarioLoja ul 
+            var query = @"SELECT e.*, le.LojaId FROM  ContaLoja ul 
                             INNER JOIN LojaEndereco le ON ul.LojaId  = le.LojaId 
                             INNER JOIN Endereco e ON e.Id  = le.EnderecoId 
                             WHERE e.Id = @Id";
@@ -46,7 +46,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var query = @"INSERT INTO Endereco (Logradouro, Numero, Complemento, CEP, Estado, Cidade, Status, DataCadastro, DataAtualizacao) 
                           VALUES(@Logradouro, @Numero, @Complemento, @CEP, @Estado, @Cidade, @Status, @DataCadastro, @DataAtualizacao);
                            SELECT LAST_INSERT_ID() AS LastInsertedId;";
-            var result = await _dbAgenda.Connection.ExecuteScalarAsync<int>(query, endereco);
+            var result = await _dbAgenda.Connection.ExecuteScalarAsync<int>(query, endereco, _dbAgenda.Transaction);
 
             return result;
         }
@@ -79,11 +79,11 @@ namespace api.makebe.agenda.infra.data.Repositorys
         private Task<string> BuscarConsulta()
         {
             var query = @"SELECT DISTINCT e.*, le.LojaId , l.RazaoSocial 
-                            FROM UsuarioLoja ul 
+                            FROM ContaLoja ul 
                             INNER JOIN LojaEndereco le ON ul.LojaId = le.LojaId 
                             INNER JOIN Endereco e ON e.Id = le.EnderecoId 
                             Inner join Loja l on l.Id = le.LojaId 
-                            WHERE ul.UsuarioId = @UsuarioId
+                            WHERE ul.ContaId = @ContaId
                             AND 
                                 (e.Logradouro LIKE CONCAT('%', @Logradouro, '%') OR @Logradouro IS NULL OR @Logradouro = '')
                             AND 
