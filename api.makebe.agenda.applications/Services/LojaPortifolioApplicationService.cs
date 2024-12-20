@@ -6,6 +6,7 @@ using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Interfaces.Services;
+using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
@@ -22,8 +23,10 @@ namespace api.makebe.agenda.applications.Services
         private readonly ILojaPortifolioImagemApplicationService _lojaPortifolioImagemApplicationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
+        private readonly IBusEvent _busEvent;
         public LojaPortifolioApplicationService(ILojaPortifolioDomainService lojaPortifolioDomainService, IMapper mapper, IValidationService<LojaPortifolio> validationLojaPortifolioService,
-            INotificationContext notificationContext, ILojaPortifolioImagemApplicationService lojaPortifolioImagemApplicationService, IUnitOfWork unitOfWork, IUsuarioSessaoDomainService usuarioSessaoDomainService)
+            INotificationContext notificationContext, ILojaPortifolioImagemApplicationService lojaPortifolioImagemApplicationService, 
+            IUnitOfWork unitOfWork, IUsuarioSessaoDomainService usuarioSessaoDomainService, IBusEvent busEvent)
         {
             _lojaPortifolioDomainService = lojaPortifolioDomainService;
             _validationLojaPortifolioService = validationLojaPortifolioService;
@@ -32,10 +35,12 @@ namespace api.makebe.agenda.applications.Services
             _lojaPortifolioImagemApplicationService = lojaPortifolioImagemApplicationService;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
+            _busEvent = busEvent;
         }
         public async Task<ResponseModel<PaginacaoDTO<LojaPortifolioDTO>>> BuscarLojaPortifolios(PaginacaoDTO<LojaPortifolioDTO> paginacao, string usuarioId)
         {
-            var paginacaoRetorno = await _lojaPortifolioDomainService.BuscarLojaPortifolios(paginacao, usuarioId) ?? new PaginacaoDTO<LojaPortifolioDTO>();
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
+            var paginacaoRetorno = await _lojaPortifolioDomainService.BuscarLojaPortifolios(paginacao, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<LojaPortifolioDTO>();
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
                 _validationLojaPortifolioService.RetornarListaVazia(nameof(LojaPortifolio), BaseConstant.ListaVazia);
 
