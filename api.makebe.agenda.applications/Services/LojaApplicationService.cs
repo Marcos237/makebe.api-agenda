@@ -52,14 +52,16 @@ namespace api.makebe.agenda.applications.Services
 
         public async Task<ResponseModel<PaginacaoDTO<LojaResponse>>> BuscarTodosPaginado(PaginacaoDTO<LojaPayload> lojaPayload, string usuarioId)
         {
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
             var paginacaoDTO = _mapper.Map<PaginacaoDTO<LojaDTO>>(lojaPayload) ?? new PaginacaoDTO<LojaDTO>();
-            var result = await _lojaDomainService.BuscarTodosPaginado(paginacaoDTO, usuarioId) ?? new PaginacaoDTO<LojaDTO>();
+            var result = await _lojaDomainService.BuscarTodosPaginado(paginacaoDTO, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<LojaDTO>();
             if (result != null && !result.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
 
             var lojaResponse = _mapper.Map<PaginacaoDTO<LojaResponse>>(result);
             return ResponseModelHelper<PaginacaoDTO<LojaResponse>>.RetornarResponseModel(lojaResponse, _notificationContext.Notifications);
         }
+
         public async Task<ResponseModel<LojaResponse>> BuscarPorId(int id)
         {
             var result = await _lojaDomainService.BuscarPorId(id);
@@ -79,8 +81,7 @@ namespace api.makebe.agenda.applications.Services
                 var lojaResponseErro = _mapper.Map<LojaResponse>(loja);
                 return ResponseModelHelper<LojaResponse>.RetornarResponseModel(lojaResponseErro, _notificationContext.Notifications);
             }
-            var contaEvent = new ContaConsultadoPorIdEvent() { Id = PropiedadesHelper.ParseGuidOrDefault(usuarioId) };
-            var conta = await _busEvent.RequestAsync<ContaConsultadoPorIdEvent, ContaConsultadoPorIdEvent>(contaEvent, TimeSpan.FromSeconds(15));
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
             try
             {
                 await _unitOfWork.BeginTransaction();

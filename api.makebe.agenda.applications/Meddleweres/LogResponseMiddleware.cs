@@ -4,11 +4,14 @@ using api.makebe.agenda.infra.crosscutting.Entidades.Enum;
 using api.makebe.agenda.infra.crosscutting.Notifications;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
+using lib.makebe.applications.Security;
+using lib.makebe.domain.Entidades;
 using lib.makebe.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace api.makebe.agenda.applications.Meddleweres
 {
@@ -23,22 +26,26 @@ namespace api.makebe.agenda.applications.Meddleweres
         public async Task Invoke(HttpContext context)
         {
             var _log = context.RequestServices.GetRequiredService<ILogCrossCuttingService>();
+            var jwtDecode = new JWTDecode();
             var _notification = context.RequestServices.GetRequiredService<INotificationContext>();
             var _sessao = context.RequestServices.GetRequiredService<IUsuarioSessaoDomainService>();
             var originalBodyStream = context.Response.Body;
             var responseBodyStream = new MemoryStream();
             context.Response.Body = responseBodyStream;
             var url = UriHelper.GetDisplayUrl(context.Request);
-            var chave = JwtHelpper.GetJwtToken(context);
-            var usuario = await _sessao.BuscarSessao(chave);
+            var identity = context?.User?.Identity;
+            if (identity != null)
+                jwtDecode = await IdentityExtensions.DecodificarJWT(identity);
+
+
             var notificationResult = Enumerable.Empty<Notification>();
-            var request = context.Request.Method;
+            var request = context?.Request.Method;
             try
             {
                 await _next(context);
                 responseBodyStream.Seek(0, SeekOrigin.Begin);
 
-                var statusCode = context.Response.StatusCode;
+                var statusCode = context?.Response.StatusCode ?? 0;
                 if (statusCode != StatusCodes.Status204NoContent)
                 {
                     var responseBody = new StreamReader(responseBodyStream).ReadToEnd();
@@ -46,7 +53,7 @@ namespace api.makebe.agenda.applications.Meddleweres
                     var tipoStatus = VerificarTipoLog(statusCode);
 
                     notificationResult = VerificarValidacao(_notification.Notifications);
-                    await _log.MontarLog(responseBody, mensagem, url, notificationResult, tipoStatus, usuario?.Id.ToString() ?? string.Empty, request);
+                    await _log.MontarLog(responseBody, mensagem, url, notificationResult, tipoStatus, jwtDecode?.UsuarioId ?? string.Empty, request!);
                     responseBodyStream.Seek(0, SeekOrigin.Begin);
                     await responseBodyStream.CopyToAsync(originalBodyStream);
                 }
@@ -57,8 +64,8 @@ namespace api.makebe.agenda.applications.Meddleweres
             }
             catch (Exception ex)
             {
-                await _log.MontarLog(ex, ex.Message, url, new List<Notification>(), TipoLog.Error, usuario?.Id.ToString() ?? string.Empty, request);
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                await _log.MontarLog(ex, ex.Message, url, new List<Notification>(), TipoLog.Error, jwtDecode?.UsuarioId ?? string.Empty, request!);
+                context!.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/json";
                 var respostaErro = ResponseModelHelper<Exception>.RetornarResponseModel(
                     ex, _notification.Notifications
@@ -69,7 +76,7 @@ namespace api.makebe.agenda.applications.Meddleweres
             }
             finally
             {
-                context.Response.Body = originalBodyStream;
+                context!.Response.Body = originalBodyStream;
             }
         }
 

@@ -14,7 +14,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         }
         public async Task<IEnumerable<ColaboradorDTO>> BuscarColaboradorPorContaId(string contaId)
         {
-            var sql = @"SELECT c.* FROM ContaColaborador uc 
+            var sql = @"SELECT DISTINCT c.* FROM ContaColaborador uc 
                         INNER JOIN Colaborador c ON c.Id  = uc.ColaboradorId 
                         WHERE uc.ContaId  = @ContaId";
             var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, new { ContaId = contaId }) ?? Enumerable.Empty<ColaboradorDTO>();

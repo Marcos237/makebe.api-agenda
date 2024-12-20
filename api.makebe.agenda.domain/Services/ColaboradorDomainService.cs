@@ -1,6 +1,7 @@
 ﻿using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebesession.infra.crosscutting.Entidades;
@@ -46,13 +47,13 @@ namespace api.makebe.agenda.domain.Services
             var colaboradores = await _usuarioColaboradorRepository.BuscarColaboradorPorUsuarioId(usuarioId);
 
             var colaboradoresFiltrados = paginacao?.objetos
-                ?.Where(usuario => colaboradores.Any(colaborador => colaborador.UsuarioId == usuario.Id))
+                ?.Where(usuario => colaboradores.Any(colaborador => colaborador.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id)))
                 ?.Join(permissoesEvents,
-                       usuario => usuario.PermissaoId.ToString(),
+                       usuario => usuario?.PermissaoId?.ToString() ?? string.Empty,
                        permissao => permissao.PermissaoId,
                        (usuario, permissao) =>
                        {
-                           var colaborador = colaboradores.First(c => c.UsuarioId == usuario.Id);
+                           var colaborador = colaboradores.First(c => c.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id));
                            return AdicionarColaborador(usuario, permissao, colaborador);
                        });
 
@@ -73,7 +74,7 @@ namespace api.makebe.agenda.domain.Services
 
         public async Task<IEnumerable<string>> MontarIdsPesquisas(string usuarioId)
         {
-            var usuarioIds = (await _usuarioColaboradorRepository.BuscarColaboradorPorUsuarioId(usuarioId)).Select(colaborador => colaborador.UsuarioId.ToString());
+            var usuarioIds = (await _usuarioColaboradorRepository.BuscarColaboradorPorUsuarioId(usuarioId)).Select(colaborador => colaborador.UsuarioId.ToString()).Distinct();
             return usuarioIds;
         }
         private static ColaboradorDTO AdicionarColaborador(UsuarioDTO usuario, PermissaoEvent permissao, ColaboradorDTO colaborador)
@@ -88,10 +89,10 @@ namespace api.makebe.agenda.domain.Services
                 Cpf = usuario.Cpf,
                 Email = usuario.Email,
                 Telefone = usuario.Telefone,
-                PermissaoId = usuario.PermissaoId.ToString() ?? string.Empty,
+                PermissaoId = usuario?.PermissaoId?.ToString() ?? string.Empty,
                 DescricaoPermissao = permissao.Descricao,
-                UrlImagem = usuario.UrlImagem,
-                NomeImagem = usuario.NomeImagem
+                UrlImagem = usuario?.UrlImagem,
+                NomeImagem = usuario?.NomeImagem
             };
         }
     }

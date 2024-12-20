@@ -84,7 +84,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
                       Email =  @Email, 
                       Telefone  = @Telefone, 
                       Status = @Status, 
-                      DataAtualizacao = @DataAtualizacao
+                      DataAtualizacao = @DataAtualizacao,
+                      TipoLojaId  = @TipoLojaId
                       WHERE Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
             {
@@ -95,7 +96,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 Telefone = loja?.Telefone,
                 Status = loja?.Status,
                 DataCadastro = loja?.DataCadastro,
-                DataAtualizacao = loja?.DataAtualizacao
+                DataAtualizacao = loja?.DataAtualizacao,
+                TipoLojaId = loja?.TipoLojaId
             });
             return loja!;
         }

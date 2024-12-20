@@ -49,10 +49,9 @@ namespace api.makebe.agenda.applications.Services
 
         public async Task<ResponseModel<PaginacaoDTO<ColaboradorDTO>>> BuscarUsuariosPaginado(PaginacaoDTO<UsuarioDTO> paginacao, string usuario)
         {
-            var contaConsultadoEvent = new ContaConsultadoPorIdEvent() { Id = PropiedadesHelper.ParseGuidOrDefault(usuario) };
-            var contaRetorno = await _busEvent.RequestAsync<ContaConsultadoPorIdEvent, ContaConsultadoPorIdEvent>(contaConsultadoEvent, TimeSpan.FromSeconds(15));
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuario, _busEvent);
 
-            paginacao.idsPesquisa = await _colaboradorDomainService.MontarIdsPesquisas(contaRetorno?.ContaEvent?.Id?.ToString() ?? string.Empty);
+            paginacao.idsPesquisa = await _colaboradorDomainService.MontarIdsPesquisas(conta?.Id?.ToString() ?? string.Empty);
             var usuarioMap = _mapper.Map<PaginacaoEvent<UsuarioEvent>>(paginacao) ?? new PaginacaoEvent<UsuarioEvent>();
             var usuarioPaginadoEvent = new UsuariosPaginadoEvent() { paginacao = usuarioMap };
             var usuarioEvent = await _busEvent.RequestAsync<UsuariosPaginadoEvent, UsuariosPaginadoEvent>(usuarioPaginadoEvent, TimeSpan.FromSeconds(15));
@@ -64,7 +63,7 @@ namespace api.makebe.agenda.applications.Services
 
             var usuarioDTOMap = _mapper.Map<PaginacaoDTO<UsuarioDTO>>(usuarioEvent.paginacao) ?? new PaginacaoDTO<UsuarioDTO>();
             var permissaoEvent = await _busEvent.RequestAsync<PermissoesConsultadasEvent, PermissoesConsultadasEvent>(new PermissoesConsultadasEvent(), TimeSpan.FromSeconds(15));
-            var colaboradorFiltado = await _colaboradorDomainService.MontarColaboradores(usuarioDTOMap, contaRetorno?.ContaEvent?.Id?.ToString() ?? string.Empty, permissaoEvent.Permissoes);
+            var colaboradorFiltado = await _colaboradorDomainService.MontarColaboradores(usuarioDTOMap, conta?.Id?.ToString() ?? string.Empty, permissaoEvent.Permissoes);
             return ResponseModelHelper<PaginacaoDTO<ColaboradorDTO>>.RetornarResponseModel(colaboradorFiltado, _notificationContext.Notifications);
         }
 
@@ -135,9 +134,8 @@ namespace api.makebe.agenda.applications.Services
         {
             if (usuarioPayload.Id == 0)
             {
-                var contaConsultadoEvent = new ContaConsultadoPorIdEvent() { Id = PropiedadesHelper.ParseGuidOrDefault(usuario) };
-                var contaRetorno = await _busEvent.RequestAsync<ContaConsultadoPorIdEvent, ContaConsultadoPorIdEvent>(contaConsultadoEvent, TimeSpan.FromSeconds(15));
-                contaEvent.ContaId = contaRetorno?.ContaEvent?.Id;
+                var conta = await ContaHelper.BuscarContaPorUsuarioId(usuario, _busEvent);
+                contaEvent.ContaId = conta.Id;
                 contaEvent.UsuarioId = colaboradorMap.UsuarioId;
                 contaEvent.TipoId = PropiedadesHelper.ParseGuidOrDefault(_configuration[BaseConstant.TipoContaInicialOPeradorLoja]);
                 contaEvent.Id = Guid.NewGuid();
