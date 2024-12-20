@@ -40,9 +40,8 @@ namespace api.makebe.agenda.applications.Services
         }
         public async Task<ResponseModel<PaginacaoDTO<EnderecoDTO>>> BuscarTodos(PaginacaoDTO<EnderecoDTO> paginacao, string usuarioId)
         {
-            var contaEvent = new ContaConsultadoPorIdEvent() { Id = PropiedadesHelper.ParseGuidOrDefault(usuarioId) };
-            var conta = await _busEvent.RequestAsync<ContaConsultadoPorIdEvent, ContaConsultadoPorIdEvent>(contaEvent, TimeSpan.FromSeconds(15));
-            var paginacaoRetorno = await _enderecoDomainService.BuscarTodos(paginacao, conta.Id.ToString()) ?? new PaginacaoDTO<EnderecoDTO>();
+            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
+            var paginacaoRetorno = await _enderecoDomainService.BuscarTodos(paginacao, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<EnderecoDTO>();
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
 
