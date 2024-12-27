@@ -7,5 +7,6 @@ namespace api.makebe.agenda.applications.Interfaces
     {
         Task<IEnumerable<ColaboradorDTO>> BuscarColaboradorPorContaId(string contaId);
         Task<int> Salvar(ContaColaborador colaborador);
+        Task<bool> Atualizar(ContaColaborador colaborador);
     }
 }

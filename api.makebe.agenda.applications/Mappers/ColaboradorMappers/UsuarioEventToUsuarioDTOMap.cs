@@ -1,5 +1,5 @@
 ﻿using api.makebe.agenda.domain.DTO;
-using api.makebesession.infra.crosscutting.Entidades;
+using api.makebe.agenda.infra.crosscutting.Entidades;
 using AutoMapper;
 
 namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers

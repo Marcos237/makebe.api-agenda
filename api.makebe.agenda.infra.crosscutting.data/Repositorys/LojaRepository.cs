@@ -25,6 +25,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<PaginacaoDTO<LojaDTO>> BuscarLojas(PaginacaoDTO<LojaDTO> paginacao, string contaId)
         {
+
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
             var sql = await BuscarConsulta();
             var parametros = new
@@ -45,6 +46,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
             paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaDTO>(sqlBusca, param: parametros) ?? Enumerable.Empty<LojaDTO>();
 
             return paginacao;
+
+
         }
 
         public async Task<LojaDTO> BuscarLojaPorCodigo(int id)

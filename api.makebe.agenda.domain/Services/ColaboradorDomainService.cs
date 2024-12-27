@@ -4,7 +4,7 @@ using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
 using api.makebe.agenda.domain.Interfaces.Services;
-using api.makebesession.infra.crosscutting.Entidades;
+using api.makebe.agenda.infra.crosscutting.Entidades;
 using MassTransit.Initializers;
 
 namespace api.makebe.agenda.domain.Services
@@ -28,11 +28,10 @@ namespace api.makebe.agenda.domain.Services
         {
             return await _colaboradorRepository.BuscarPorId(id);
         }
-        public async Task<int> Salvar(Colaborador colaborador)
+        public async Task<int> Salvar(Colaborador colaborador, string id)
         {
-            colaborador.Status = true;
             colaborador.DataAtualizacao = DateTime.Now;
-            if (colaborador.Id == 0)
+            if (string.IsNullOrEmpty(id))
             {
                 colaborador.Datacadastro = DateTime.Now;
                 var result = await _colaboradorRepository.Salvar(colaborador);
@@ -42,9 +41,9 @@ namespace api.makebe.agenda.domain.Services
             return resultUpdate.Id;
         }
 
-        public async Task<PaginacaoDTO<ColaboradorDTO>> MontarColaboradores(PaginacaoDTO<UsuarioDTO>? paginacao, string usuarioId, IEnumerable<PermissaoEvent> permissoesEvents)
+        public async Task<PaginacaoDTO<ColaboradorDTO>> MontarColaboradoresPaginado(PaginacaoDTO<UsuarioDTO>? paginacao, string usuarioId, IEnumerable<PermissaoEvent> permissoesEvents)
         {
-            var colaboradores = await _usuarioColaboradorRepository.BuscarColaboradorPorUsuarioId(usuarioId);
+            var colaboradores = await _usuarioColaboradorRepository.BuscarColaboradorPorContaId(usuarioId);
 
             var colaboradoresFiltrados = paginacao?.objetos
                 ?.Where(usuario => colaboradores.Any(colaborador => colaborador.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id)))
@@ -67,14 +66,35 @@ namespace api.makebe.agenda.domain.Services
                 objetos = colaboradoresFiltrados?.ToList() ?? new List<ColaboradorDTO>()
             };
         }
+
+        public async Task<IEnumerable<ColaboradorDTO>> MontarColaboradores(IEnumerable<UsuarioDTO>? usuarios, string contaId)
+        {
+            var colaboradores = (await _usuarioColaboradorRepository.BuscarColaboradorPorContaId(contaId)).GroupBy(colaborador => colaborador.UsuarioId)
+                .Select(group => group.First()).Where(colaborador => colaborador.Status == true);
+
+            var colaboradoresFiltrados = usuarios?.Where(usuario => colaboradores.Any(colaborador =>
+                    colaborador.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id)))
+                .Select(usuario => new ColaboradorDTO
+                {
+                    Id = colaboradores
+                        .FirstOrDefault(colaborador =>
+                            colaborador.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id))?.Id ?? 0,
+                    Nome = usuario.Nome,
+                    UsuarioId = PropiedadesHelper.ParseGuidOrDefault(usuario.Id)
+                }) ?? Enumerable.Empty<ColaboradorDTO>();
+
+            return colaboradoresFiltrados;
+        }
+
+
         public async Task<bool> Desativar(int id)
         {
             return await _colaboradorRepository.Desativar(id);
         }
 
-        public async Task<IEnumerable<string>> MontarIdsPesquisas(string usuarioId)
+        public async Task<IEnumerable<string>> MontarIdsPesquisas(string contaId)
         {
-            var usuarioIds = (await _usuarioColaboradorRepository.BuscarColaboradorPorUsuarioId(usuarioId)).Select(colaborador => colaborador.UsuarioId.ToString()).Distinct();
+            var usuarioIds = (await _usuarioColaboradorRepository.BuscarColaboradorPorContaId(contaId)).Select(colaborador => colaborador.UsuarioId.ToString()).Distinct();
             return usuarioIds;
         }
         private static ColaboradorDTO AdicionarColaborador(UsuarioDTO usuario, PermissaoEvent permissao, ColaboradorDTO colaborador)

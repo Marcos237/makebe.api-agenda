@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.applications.AutoMapper;
 using api.makebe.agenda.applications.Mappers.ColaboradorMappers;
+using api.makebe.agenda.applications.Mappers.ColaboradorProfissionalMapper;
 using api.makebe.agenda.applications.Mappers.EnderecoMappers;
 using api.makebe.agenda.applications.Mappers.LojaMappers;
 using api.makebe.agenda.applications.Mappers.LojaPortifolios;
@@ -35,6 +36,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new ColaboradorPayloadToLojaColaboradorMap());
                 mc.AddProfile(new UsuarioPaginadoDTOToUsuarioPaginadoEvent());
                 mc.AddProfile(new UsuarioDTOToColaboradorDTOMap());
+                mc.AddProfile(new ColaboradorProfissionalPayloadToColaboradoProfissionalMap());
+                mc.AddProfile(new ColaboradorProfissionalToColaboradoProfissionalDTOMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

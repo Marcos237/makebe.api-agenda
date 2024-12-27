@@ -64,20 +64,32 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
+    options.AddPolicy("ProductionPolicy",
         policy =>
         {
             policy.WithOrigins(url)
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
+
+    options.AddPolicy("DevelopmentPolicy", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("DevelopmentPolicy");
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseCors("ProductionPolicy");
 }
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -85,7 +97,6 @@ app.UseCors("AllowSpecificOrigin");
 app.UseMiddleware<LogResponseMiddleware>();
 app.UseStaticFiles();
 app.UseAuthorization();
-app.UseCors();
 app.MapControllers();
 app.UseExceptionHandler("/Error");
 app.Run();

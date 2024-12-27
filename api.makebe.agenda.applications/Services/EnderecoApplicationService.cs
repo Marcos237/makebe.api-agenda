@@ -6,10 +6,9 @@ using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
-using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
+using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
-using api.makebesession.infra.crosscutting.Events.Contas;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
@@ -24,10 +23,10 @@ namespace api.makebe.agenda.applications.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
-        private readonly IBusEvent _busEvent;
+        private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
         public EnderecoApplicationService(IEnderecoDomainService enderecoDomainService, IValidationService<Endereco> validationService, IMapper mapper,
-            INotificationContext notificationContext, ILojaEnderecoApplicationService lojaEnderecoApplicationService, IUnitOfWork unitOfWork, IBusEvent busEvent,
-            IUsuarioSessaoDomainService usuarioSessaoDomainService)
+            INotificationContext notificationContext, ILojaEnderecoApplicationService lojaEnderecoApplicationService, IUnitOfWork unitOfWork,
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService)
         {
             _enderecoDomainService = enderecoDomainService;
             _validationService = validationService;
@@ -36,12 +35,12 @@ namespace api.makebe.agenda.applications.Services
             _lojaEnderecoApplicationService = lojaEnderecoApplicationService;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
-            _busEvent = busEvent;
+            _contaEventCrossCuttingService = contaEventCrossCuttingService;
         }
         public async Task<ResponseModel<PaginacaoDTO<EnderecoDTO>>> BuscarTodos(PaginacaoDTO<EnderecoDTO> paginacao, string usuarioId)
         {
-            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
-            var paginacaoRetorno = await _enderecoDomainService.BuscarTodos(paginacao, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<EnderecoDTO>();
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
+            var paginacaoRetorno = await _enderecoDomainService.BuscarTodos(paginacao, conta?.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<EnderecoDTO>();
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
 

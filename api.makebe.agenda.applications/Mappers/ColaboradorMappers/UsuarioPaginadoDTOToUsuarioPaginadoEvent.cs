@@ -1,7 +1,6 @@
 ﻿using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.infra.crosscutting.Entidades;
-using api.makebesession.infra.crosscutting.Entidades;
 using AutoMapper;
 
 namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers

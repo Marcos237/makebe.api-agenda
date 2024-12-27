@@ -5,11 +5,13 @@ using api.makebe.agenda.applications.Models.Responses;
 using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
-using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
+using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
+using ContasEvent;
 using lib.makebe.domain.Interfaces.Services;
 
 namespace api.makebe.agenda.applications.Services
@@ -23,10 +25,10 @@ namespace api.makebe.agenda.applications.Services
         private readonly ILojaPortifolioImagemApplicationService _lojaPortifolioImagemApplicationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
-        private readonly IBusEvent _busEvent;
+        private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
         public LojaPortifolioApplicationService(ILojaPortifolioDomainService lojaPortifolioDomainService, IMapper mapper, IValidationService<LojaPortifolio> validationLojaPortifolioService,
             INotificationContext notificationContext, ILojaPortifolioImagemApplicationService lojaPortifolioImagemApplicationService, 
-            IUnitOfWork unitOfWork, IUsuarioSessaoDomainService usuarioSessaoDomainService, IBusEvent busEvent)
+            IUnitOfWork unitOfWork, IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService)
         {
             _lojaPortifolioDomainService = lojaPortifolioDomainService;
             _validationLojaPortifolioService = validationLojaPortifolioService;
@@ -35,12 +37,12 @@ namespace api.makebe.agenda.applications.Services
             _lojaPortifolioImagemApplicationService = lojaPortifolioImagemApplicationService;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
-            _busEvent = busEvent;
+            _contaEventCrossCuttingService = contaEventCrossCuttingService;
         }
         public async Task<ResponseModel<PaginacaoDTO<LojaPortifolioDTO>>> BuscarLojaPortifolios(PaginacaoDTO<LojaPortifolioDTO> paginacao, string usuarioId)
         {
-            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
-            var paginacaoRetorno = await _lojaPortifolioDomainService.BuscarLojaPortifolios(paginacao, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<LojaPortifolioDTO>();
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
+            var paginacaoRetorno = await _lojaPortifolioDomainService.BuscarLojaPortifolios(paginacao, conta?.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<LojaPortifolioDTO>();
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
                 _validationLojaPortifolioService.RetornarListaVazia(nameof(LojaPortifolio), BaseConstant.ListaVazia);
 

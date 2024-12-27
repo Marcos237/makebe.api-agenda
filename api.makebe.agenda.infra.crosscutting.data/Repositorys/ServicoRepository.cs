@@ -11,10 +11,12 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
-        public async Task<IEnumerable<Servicos>> BuscarServicos()
+        public async Task<IEnumerable<Servicos>> BuscarServicos(string contaId)
         {
-            var sql = @"SELECT ID, Descricao FROM  Servicos WHERE Status = 1";
-            var retorno = await _dbAgenda.Connection.QueryAsync<Servicos>(sql) ?? Enumerable.Empty<Servicos>();
+            var sql = @"SELECT s.ID, s.Descricao FROM  Servicos s
+                        INNER JOIN ContaServico cs  ON cs.ServicoId  = s.Id 
+                        WHERE ContaId = @ContaId  AND s.Status = 1";
+            var retorno = await _dbAgenda.Connection.QueryAsync<Servicos>(sql, new {ContaId = contaId}) ?? Enumerable.Empty<Servicos>();
             return retorno;
         }
     }

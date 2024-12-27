@@ -4,6 +4,6 @@ namespace api.makebe.agenda.domain.Interfaces.Services
 {
     public interface IServicosDomainService
     {
-        Task<IEnumerable<Servicos>> BuscarServicos();
+        Task<IEnumerable<Servicos>> BuscarServicos(string contaId);
     }
 }

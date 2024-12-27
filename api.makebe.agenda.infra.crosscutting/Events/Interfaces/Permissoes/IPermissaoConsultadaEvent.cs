@@ -1,6 +1,6 @@
-﻿using api.makebesession.infra.crosscutting.Entidades;
+﻿using api.makebe.agenda.infra.crosscutting.Entidades;
 
-namespace api.makebesession.infra.crosscutting.Events.Interfaces
+namespace PermissoesEvent
 {
     public interface IPermissaoConsultadaEvent
     {

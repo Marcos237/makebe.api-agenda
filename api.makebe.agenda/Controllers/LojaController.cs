@@ -39,9 +39,8 @@ namespace api.makebe.agenda.Controllers
         }
 
         [HttpGet]
-        [Route("BuscarTodos")]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> BuscarTodos()
+        public async Task<IActionResult> Get()
         {
             try
             {

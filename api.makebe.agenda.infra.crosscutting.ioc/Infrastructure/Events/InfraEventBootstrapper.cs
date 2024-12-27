@@ -30,7 +30,6 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Events
                     configuracao.ConfigureEndpoints(context);
                 });
             });
-
             services.AddScoped<IBusEvent, BusEvent>();
         }
     }

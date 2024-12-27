@@ -23,12 +23,14 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<ILojaColaboradorDomainService, LojaColaboradorDomainService>();
             services.AddScoped<IServicosDomainService, ServicoDomainService>();
             services.AddScoped<IContaColaboradorDomainService, ContaColaboradorDomainService>();
+            services.AddScoped<IColaboradorProfissionalDomainService, ColaboradorProfissionalDomainService>();
 
             services.AddScoped<IValidationService<Loja>, ValidationService<Loja>>();
             services.AddScoped<IValidationService<Endereco>, ValidationService<Endereco>>();
             services.AddScoped<IValidationService<LojaEndereco>, ValidationService<LojaEndereco>>();
             services.AddScoped<IValidationService<LojaPortifolio>, ValidationService<LojaPortifolio>>();
             services.AddScoped<IValidationService<Arquivo>, ValidationService<Arquivo>>();
+            services.AddScoped<IValidationService<ColaboradorProfissional>, ValidationService<ColaboradorProfissional>>();
 
             services.AddScoped<IValidator<Loja>, LojaValidation>();
             services.AddScoped<IValidator<Endereco>, EnderecoValidation>();
@@ -36,6 +38,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IValidator<LojaEndereco>, LojaEnderecoValidation>();
             services.AddScoped<IValidator<LojaPortifolio>, LojaPortifolioValidation>();
             services.AddScoped<IValidator<Arquivo>, ArquivoValidation>();
+            services.AddScoped<IValidator<ColaboradorProfissional>, ColaboradorProfissionalValidation>();
 
         }
     }

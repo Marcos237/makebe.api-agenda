@@ -6,5 +6,6 @@
         public int ColaboradorId { get; set; }
         public Guid? ContaId { get; set; }
         public DateTime DataCadastro { get; set; }
+        public bool Status { get; set; }
     }
 }

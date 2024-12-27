@@ -10,8 +10,8 @@ using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.domain.Services;
 using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
+using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
-using api.makebesession.infra.crosscutting.Events.Contas;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
@@ -26,11 +26,13 @@ namespace api.makebe.agenda.applications.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
+        private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
         private readonly IBusEvent _busEvent;
 
+
         public LojaApplicationService(IValidationService<Loja> validationService, IContaLojaDomainService usarioLojaDomainService, ILojaDomainService lojaDomainService,
-            INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork, IBusEvent busEvent,
-            IUsuarioSessaoDomainService usuarioSessaoDomainService)
+            INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork, 
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService, IBusEvent busEvent)
         {
             _lojaDomainService = lojaDomainService;
             _validationService = validationService;
@@ -39,12 +41,13 @@ namespace api.makebe.agenda.applications.Services
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
+            _contaEventCrossCuttingService = contaEventCrossCuttingService;
             _busEvent = busEvent;
         }
         public async Task<ResponseModel<LojaDTO>> BuscarTodos(string usuarioId)
         {
-            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
-            var lojas = await _lojaDomainService.BuscarTodos(conta.Id.ToString() ?? string.Empty);
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
+            var lojas = await _lojaDomainService.BuscarTodos(conta?.Id.ToString() ?? string.Empty);
             if (!lojas.Any())
                 _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
 
@@ -53,9 +56,9 @@ namespace api.makebe.agenda.applications.Services
 
         public async Task<ResponseModel<PaginacaoDTO<LojaResponse>>> BuscarTodosPaginado(PaginacaoDTO<LojaPayload> lojaPayload, string usuarioId)
         {
-            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
             var paginacaoDTO = _mapper.Map<PaginacaoDTO<LojaDTO>>(lojaPayload) ?? new PaginacaoDTO<LojaDTO>();
-            var result = await _lojaDomainService.BuscarTodosPaginado(paginacaoDTO, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<LojaDTO>();
+            var result = await _lojaDomainService.BuscarTodosPaginado(paginacaoDTO, conta?.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<LojaDTO>();
             if (result != null && !result.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
 
@@ -82,12 +85,12 @@ namespace api.makebe.agenda.applications.Services
                 var lojaResponseErro = _mapper.Map<LojaResponse>(loja);
                 return ResponseModelHelper<LojaResponse>.RetornarResponseModel(lojaResponseErro, _notificationContext.Notifications);
             }
-            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuarioId, _busEvent);
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
             try
             {
                 await _unitOfWork.BeginTransaction();
                 var lojaRetorno = await _lojaDomainService.Persitir(loja);
-                var contaLoja = new ContaLoja() { LojaId = lojaRetorno, ContaId = conta.Id};
+                var contaLoja = new ContaLoja() { LojaId = lojaRetorno, ContaId = conta?.Id};
 
                 if (lojaPayload.Id == 0)
                     await _contaLojaDomainService.Salvar(contaLoja);

@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.domain.DTO;
+using api.makebe.agenda.domain.Helpers;
 using AutoMapper;
 
 namespace api.makebe.agenda.applications.Mappers.LojaMappers
@@ -23,7 +24,7 @@ namespace api.makebe.agenda.applications.Mappers.LojaMappers
                 {
                     Id = src.objetoPesquisa!.Id,
                     RazaoSocial = src.objetoPesquisa.RazaoSocial,
-                    CNPJ = src.objetoPesquisa.CNPJ,
+                    CNPJ = TextoHelper.GetNumeros(src.objetoPesquisa.CNPJ ?? string.Empty),
                     Email = src.objetoPesquisa.Email,
                     Telefone = src.objetoPesquisa.Telefone,
                     TipoLojaId = src.objetoPesquisa.TipoLojaId
