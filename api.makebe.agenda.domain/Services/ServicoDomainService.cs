@@ -11,9 +11,9 @@ namespace api.makebe.agenda.domain.Services
         {
             _servicosRepository = servicosRepository;   
         }
-        public async Task<IEnumerable<Servicos>> BuscarServicos()
+        public async Task<IEnumerable<Servicos>> BuscarServicos(string contaId)
         {
-            return await _servicosRepository.BuscarServicos();
+            return await _servicosRepository.BuscarServicos(contaId);
         }
     }
 }

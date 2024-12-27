@@ -1,7 +1,6 @@
 ﻿using api.makebe.agenda.infra.crosscutting.Notifications;
-using api.makebesession.infra.crosscutting.Events.Interfaces.Conta;
 
-namespace api.makebesession.infra.crosscutting.Events.Contas
+namespace ContasEvent
 {
     public class UsuarioContaDeletadoEvent : IUsuarioContaDeletadoEvent
     {

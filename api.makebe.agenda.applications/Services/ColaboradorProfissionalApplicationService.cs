@@ -1,0 +1,76 @@
+﻿using api.makebe.agenda.applications.Helpers;
+using api.makebe.agenda.applications.Interfaces;
+using api.makebe.agenda.applications.Models.Payloads;
+using api.makebe.agenda.applications.Models.Responses;
+using api.makebe.agenda.domain.Constants;
+using api.makebe.agenda.domain.DTO;
+using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Helpers;
+using api.makebe.agenda.domain.Interfaces.Services;
+using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
+using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
+using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
+using AutoMapper;
+using ContasEvent;
+
+namespace api.makebe.agenda.applications.Services
+{
+    public class ColaboradorProfissionalApplicationService : IColaboradorProfissionalApplicationService
+    {
+        private readonly IColaboradorProfissionalDomainService _colaboradorProfissionalDomainService;
+        private readonly IMapper _mapper;
+        private readonly IValidationService<ColaboradorProfissional> _validationService;
+        private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
+        private readonly INotificationContext _notificationContext;
+
+        public ColaboradorProfissionalApplicationService(IColaboradorProfissionalDomainService ColaboradorProfissionalDomainService, IMapper mapper,
+            IValidationService<ColaboradorProfissional> validationService, IBusEvent busEvent, INotificationContext notificationContext,
+            IContaEventCrossCuttingService contaEventCrossCuttingService)
+        {
+            _colaboradorProfissionalDomainService = ColaboradorProfissionalDomainService;
+            _mapper = mapper;
+            _validationService = validationService;
+            _contaEventCrossCuttingService = contaEventCrossCuttingService;
+            _notificationContext = notificationContext;
+        }
+        public async Task<ResponseModel<PaginacaoDTO<ColaboradorProfissionalDTO>>> BuscarUsuariosPaginado(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, string usuario)
+        {
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
+            var usuarioConsultadoEvent = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta?.Id ??  Guid.Empty };
+            var usuariosConta = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConsultadoEvent);
+            var usuarioMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuariosConta.UsuariosEvents);
+
+            var paginacaoRetorno = await _colaboradorProfissionalDomainService.BuscarPaginado(paginacao, conta?.Id.ToString() ?? string.Empty, usuarioMap);
+            if (!paginacao.objetos!.Any())
+                _validationService.RetornarListaVazia(nameof(ColaboradorProfissional), BaseConstant.ListaVazia);
+
+            var paginacaoResponse = _mapper.Map<PaginacaoDTO<ColaboradorProfissionalDTO>>(paginacaoRetorno);
+            return ResponseModelHelper<PaginacaoDTO<ColaboradorProfissionalDTO>>.RetornarResponseModel(paginacaoResponse, _notificationContext.Notifications);
+        }
+
+        public async Task<ResponseModel<ColaboradorProfissionalDTO>> BuscarUsuarioPorId(int id)
+        {
+            var colaborador = await _colaboradorProfissionalDomainService.BuscarPorId(id);
+            if (colaborador.Id == 0)
+                _validationService.RetornarListaVazia(nameof(ColaboradorProfissional), BaseConstant.ListaVazia);
+            return ResponseModelHelper<ColaboradorProfissionalDTO>.RetornarResponseModel(colaborador, _notificationContext.Notifications);
+        }
+
+        public async Task<ResponseModel<ColaboradorProfissionalDTO>> Persistir(ColaboradorProfissionalPayload usuarioPayload)
+        {
+            var colaboradorMap = _mapper.Map<ColaboradorProfissional>(usuarioPayload);
+            var isValidate = await _validationService.Validar(colaboradorMap);
+            if (!isValidate)
+            {
+                var colaboradorResponseErro = _mapper.Map<ColaboradorProfissionalDTO>(colaboradorMap);
+                return ResponseModelHelper<ColaboradorProfissionalDTO>.RetornarResponseModel(colaboradorResponseErro, _notificationContext.Notifications);
+            }
+            var retornoColaboradorId = await _colaboradorProfissionalDomainService.Salvar(colaboradorMap);
+            return await BuscarUsuarioPorId(retornoColaboradorId);
+        }
+        public async Task<bool> Desativar(int id)
+        {
+            return await _colaboradorProfissionalDomainService.Desativar(id);
+        }
+    }
+}

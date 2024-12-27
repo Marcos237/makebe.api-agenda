@@ -15,8 +15,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<ColaboradorDTO> BuscarPorUsuarioId(Guid id)
         {
-            var sql = @"SELECT c.*, lc.Id AS LojaColaboradorId FROM LojaColaborador lc 
-                        INNER JOIN Colaborador c  ON lc.ColaboradorId  = c.Id 
+            var sql = @"SELECT c.Id, c.UsuarioId , c.DataCadastro , c.DataAtualizacao ,c.Status  FROM ContaColaborador cc 
+                        INNER JOIN Colaborador c  ON cc.ColaboradorId  = c.Id 
                         WHERE c.UsuarioId  = @UsuarioId";
             var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorDTO>(sql, new { UsuarioId = id }) ?? new ColaboradorDTO();
             return retorno;
@@ -50,7 +50,11 @@ namespace api.makebe.agenda.infra.data.Repositorys
                              DataAtualizacao  = @DataAtualizacao,
                              Status  = @Status
                         WHERE Id = @Id";
-            var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new { colaborador }, _dbAgenda.Transaction);
+            var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new {
+                DataAtualizacao = colaborador.DataAtualizacao,
+                Status = colaborador.Status,
+                Id = colaborador.Id
+            }, _dbAgenda.Transaction);
             return colaborador;
         }
         public async Task<bool> Desativar(int id)

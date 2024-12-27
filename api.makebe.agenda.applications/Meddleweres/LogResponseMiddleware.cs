@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System.Security.Claims;
 
 namespace api.makebe.agenda.applications.Meddleweres
 {

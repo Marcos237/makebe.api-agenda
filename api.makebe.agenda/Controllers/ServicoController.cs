@@ -22,8 +22,8 @@ namespace api.makebe.agenda.Controllers
         {
             try
             {
-                var retorno = await _servicoApplicationService.BuscarServicos();
-                if (!retorno.Any())
+                var retorno = await _servicoApplicationService.BuscarServicos(Chave ?? string.Empty);
+                if (!retorno.datas!.Any())
                 {
                     return StatusCode(StatusCodes.Status204NoContent, retorno);
                 }

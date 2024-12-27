@@ -1,8 +1,7 @@
-﻿using api.makebe.agenda.infra.crosscutting.Notifications;
-using api.makebesession.infra.crosscutting.Entidades;
-using api.makebesession.infra.crosscutting.Events.Interfaces.Usuarios;
+﻿using api.makebe.agenda.infra.crosscutting.Entidades;
+using api.makebe.agenda.infra.crosscutting.Notifications;
 
-namespace api.makebesession.infra.crosscutting.Events.Usuarios
+namespace UsuariosEvent
 {
     public class UsuarioConsultadoPorIdEvent : IUsuarioConsultadoPorIdEvent
     {

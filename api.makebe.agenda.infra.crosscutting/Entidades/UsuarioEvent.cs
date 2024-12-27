@@ -1,4 +1,4 @@
-﻿namespace api.makebesession.infra.crosscutting.Entidades
+﻿namespace api.makebe.agenda.infra.crosscutting.Entidades
 {
     public class UsuarioEvent
     {

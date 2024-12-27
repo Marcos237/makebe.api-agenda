@@ -8,24 +8,22 @@ using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Entidades;
-using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Notifications;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
+using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
-using api.makebesession.infra.crosscutting.Entidades;
-using api.makebesession.infra.crosscutting.Events.Conta;
-using api.makebesession.infra.crosscutting.Events.Contas;
-using api.makebesession.infra.crosscutting.Events.Permissoes;
-using api.makebesession.infra.crosscutting.Events.Usuarios;
 using AutoMapper;
+using ContasEvent;
 using lib.makebe.domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using PermissoesEvent;
+using UsuariosEvent;
 
 namespace api.makebe.agenda.applications.Services
 {
     public class ColaboradorApplicationService : IColaboradorApplicationService
     {
-        private readonly IBusEvent _busEvent;
+        private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
         private readonly INotificationContext _notificationContext;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
@@ -33,11 +31,13 @@ namespace api.makebe.agenda.applications.Services
         private readonly IContaColaboradorDomainService _usuarioColaboradorDomainService;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
         private readonly IConfiguration _configuration;
-        public ColaboradorApplicationService(IBusEvent busEvent, INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork,
+        private readonly IUsuarioEventCrossCuttingService _usuarioEventCrossCuttingService;
+        private readonly IPermissaoEventCrossCuttingService _permissaoEventCrossCuttingService;
+        public ColaboradorApplicationService(INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork,
             IColaboradorDomainService colaboradorDomainService, IContaColaboradorDomainService usuarioColaboradorDomainService, IConfiguration configuration,
-            IUsuarioSessaoDomainService usuarioSessaoDomainService)
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService,
+            IUsuarioEventCrossCuttingService usuarioEventCrossCuttingService, IPermissaoEventCrossCuttingService permissaoEventCrossCuttingService)
         {
-            _busEvent = busEvent;
             _notificationContext = notificationContext;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -45,16 +45,18 @@ namespace api.makebe.agenda.applications.Services
             _usuarioColaboradorDomainService = usuarioColaboradorDomainService;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
             _configuration = configuration;
+            _usuarioEventCrossCuttingService = usuarioEventCrossCuttingService;
+            _permissaoEventCrossCuttingService = permissaoEventCrossCuttingService;
+            _contaEventCrossCuttingService = contaEventCrossCuttingService;
         }
 
         public async Task<ResponseModel<PaginacaoDTO<ColaboradorDTO>>> BuscarUsuariosPaginado(PaginacaoDTO<UsuarioDTO> paginacao, string usuario)
         {
-            var conta = await ContaHelper.BuscarContaPorUsuarioId(usuario, _busEvent);
-
-            paginacao.idsPesquisa = await _colaboradorDomainService.MontarIdsPesquisas(conta?.Id?.ToString() ?? string.Empty);
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
+            paginacao.idsPesquisa = await _colaboradorDomainService.MontarIdsPesquisas(conta?.Id.ToString() ?? string.Empty);
             var usuarioMap = _mapper.Map<PaginacaoEvent<UsuarioEvent>>(paginacao) ?? new PaginacaoEvent<UsuarioEvent>();
             var usuarioPaginadoEvent = new UsuariosPaginadoEvent() { paginacao = usuarioMap };
-            var usuarioEvent = await _busEvent.RequestAsync<UsuariosPaginadoEvent, UsuariosPaginadoEvent>(usuarioPaginadoEvent, TimeSpan.FromSeconds(15));
+            var usuarioEvent = await _usuarioEventCrossCuttingService.BuscarPaginado(usuarioPaginadoEvent);
             if (usuarioEvent.NotificationContext!.Any())
             {
                 _notificationContext.AddNotifications(usuarioEvent.NotificationContext ?? Enumerable.Empty<Notification>());
@@ -62,8 +64,8 @@ namespace api.makebe.agenda.applications.Services
             }
 
             var usuarioDTOMap = _mapper.Map<PaginacaoDTO<UsuarioDTO>>(usuarioEvent.paginacao) ?? new PaginacaoDTO<UsuarioDTO>();
-            var permissaoEvent = await _busEvent.RequestAsync<PermissoesConsultadasEvent, PermissoesConsultadasEvent>(new PermissoesConsultadasEvent(), TimeSpan.FromSeconds(15));
-            var colaboradorFiltado = await _colaboradorDomainService.MontarColaboradores(usuarioDTOMap, conta?.Id?.ToString() ?? string.Empty, permissaoEvent.Permissoes);
+            var permissaoEvent = await _permissaoEventCrossCuttingService.BuscarPermissoes(new PermissoesConsultadasEvent());
+            var colaboradorFiltado = await _colaboradorDomainService.MontarColaboradoresPaginado(usuarioDTOMap, conta?.Id.ToString() ?? string.Empty, permissaoEvent.Permissoes);
             return ResponseModelHelper<PaginacaoDTO<ColaboradorDTO>>.RetornarResponseModel(colaboradorFiltado, _notificationContext.Notifications);
         }
 
@@ -71,7 +73,7 @@ namespace api.makebe.agenda.applications.Services
         {
             var idGuid = PropiedadesHelper.ParseGuidOrDefault(id);
             var usuarioConsultadoEvent = new UsuarioConsultadoPorIdEvent() { Id = idGuid };
-            var usuarioEvent = await _busEvent.RequestAsync<UsuarioConsultadoPorIdEvent, UsuarioConsultadoPorIdEvent>(usuarioConsultadoEvent, TimeSpan.FromSeconds(15));
+            var usuarioEvent = await _usuarioEventCrossCuttingService.BuscarUsuarioPorId(usuarioConsultadoEvent);
             var usuarioMap = _mapper.Map<UsuarioDTO>(usuarioEvent.UsuarioConsultadoRetorno) ?? new UsuarioDTO();
             var colaborador = await _colaboradorDomainService.BuscarColaboradorPorIdUsuario(idGuid);
             var colaboradorMap = _mapper.Map<ColaboradorDTO>(usuarioMap);
@@ -79,7 +81,15 @@ namespace api.makebe.agenda.applications.Services
             colaboradorMap.Id = colaborador.Id;
             return ResponseModelHelper<ColaboradorDTO>.RetornarResponseModel(colaboradorMap, _notificationContext.Notifications);
         }
-
+        public async Task<ResponseModel<ColaboradorDTO>> BuscarColaboladoresPorConta(string usuarioId)
+        {
+            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
+            var usuarioConta = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta?.Id ?? Guid.Empty };
+            var usuarioEvent = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConta);
+            var usuarioMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuarioEvent.UsuariosEvents);
+            var colaboradorMap = await _colaboradorDomainService.MontarColaboradores(usuarioMap, conta?.Id.ToString() ?? string.Empty);
+            return ResponseModelHelper<ColaboradorDTO>.RetornarResponseModel(colaboradorMap, _notificationContext.Notifications);
+        }
         public async Task<ResponseModel<ColaboradorDTO>> Persistir(ColaboradorPayload usuarioPayload, string usuario)
         {
             var colaboradorMap = _mapper.Map<Colaborador>(usuarioPayload);
@@ -94,14 +104,15 @@ namespace api.makebe.agenda.applications.Services
                     var colaboradorDTO = _mapper.Map<ColaboradorDTO>(usuarioErro);
                     return ResponseModelHelper<ColaboradorDTO>.RetornarResponseModel(colaboradorDTO, _notificationContext.Notifications);
                 }
-
+                var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
                 colaboradorMap.UsuarioId = usuarioEvent.UsuarioConsultado.Id;
+                colaboradorMap.Status = usuarioPayload.Status;
                 await SalvarUsuarioConta(usuarioPayload, usuario, colaboradorMap, registradoEvent, contaEvent);
 
                 await _unitOfWork.BeginTransaction();
-                var colaborador = await _colaboradorDomainService.Salvar(colaboradorMap);
-                var usuarioColaboradorMap = new ContaColaborador() { ContaId = contaEvent.ContaId, ColaboradorId = colaborador };
-                await _usuarioColaboradorDomainService.Salvar(usuarioColaboradorMap);
+                var colaborador = await _colaboradorDomainService.Salvar(colaboradorMap, usuarioPayload?.UsuarioId ?? string.Empty);
+                var usuarioColaboradorMap = new ContaColaborador() { ContaId = conta.Id, ColaboradorId = colaborador, Status = usuarioPayload!.Status };
+                await _usuarioColaboradorDomainService.Salvar(usuarioColaboradorMap, usuarioPayload.Id);
                 _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuario ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuario ?? string.Empty);
@@ -111,18 +122,17 @@ namespace api.makebe.agenda.applications.Services
             {
                 _unitOfWork.Rollback();
                 var usuarioRollbackEvent = new UsuarioDeletadoEvent() { Id = colaboradorMap.UsuarioId };
-                await _busEvent.PublishAsync(usuarioRollbackEvent);
+                await _usuarioEventCrossCuttingService.DeletarUsuario(usuarioRollbackEvent);
                 var usuarioContaRollBackEvent = new UsuarioContaDeletadoEvent() { Id = registradoEvent?.Conta?.Id };
-                await _busEvent.PublishAsync(usuarioContaRollBackEvent);
+                await _contaEventCrossCuttingService.DeletarContaUsuario(usuarioContaRollBackEvent);
                 throw;
             }
-
         }
 
         public async Task<UsuarioRegistradoEvent> SalvarUsuario(ColaboradorPayload usuarioPayload)
         {
             var usuarioMap = _mapper.Map<UsuarioRegistradoEvent>(usuarioPayload);
-            var usuarioEvent = await _busEvent.RequestAsync<UsuarioRegistradoEvent, UsuarioRegistradoEvent>(usuarioMap, TimeSpan.FromSeconds(15));
+            var usuarioEvent = await _usuarioEventCrossCuttingService.SalvarUsuario(usuarioMap);
             if (usuarioEvent.NotificationContext!.Any())
                 _notificationContext.AddNotifications(usuarioEvent.NotificationContext ?? Enumerable.Empty<Notification>());
 
@@ -134,13 +144,13 @@ namespace api.makebe.agenda.applications.Services
         {
             if (usuarioPayload.Id == 0)
             {
-                var conta = await ContaHelper.BuscarContaPorUsuarioId(usuario, _busEvent);
-                contaEvent.ContaId = conta.Id;
+                var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
+                contaEvent.ContaId = conta?.Id;
                 contaEvent.UsuarioId = colaboradorMap.UsuarioId;
                 contaEvent.TipoId = PropiedadesHelper.ParseGuidOrDefault(_configuration[BaseConstant.TipoContaInicialOPeradorLoja]);
                 contaEvent.Id = Guid.NewGuid();
                 registradoEvent.Conta = contaEvent;
-                var usuarioContaEvent = await _busEvent.RequestAsync<UsuarioContaRegistradoEvent, UsuarioContaRegistradoEvent>(registradoEvent, TimeSpan.FromSeconds(15));
+                var usuarioContaEvent = await _contaEventCrossCuttingService.SalvarUsuarioConta(registradoEvent);
             }
         }
     }

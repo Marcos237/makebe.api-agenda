@@ -1,8 +1,8 @@
 ﻿using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.domain.Helpers;
-using api.makebesession.infra.crosscutting.Entidades;
-using api.makebesession.infra.crosscutting.Events.Usuarios;
+using api.makebe.agenda.infra.crosscutting.Entidades;
 using AutoMapper;
+using UsuariosEvent;
 
 namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers
 {

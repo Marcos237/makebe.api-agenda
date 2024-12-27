@@ -12,14 +12,19 @@ namespace api.makebe.agenda.domain.Services
         {
             _contaColaboradorRepository = contaColaboradorRepository;
         }
-        public async Task<IEnumerable<ColaboradorDTO>> BuscarColaboradorPorUsuarioId(string usuarioId)
+        public async Task<IEnumerable<ColaboradorDTO>> BuscarColaboradorPorContaId(string usuarioId)
         {
             var colaboradores = await  _contaColaboradorRepository.BuscarColaboradorPorContaId(usuarioId);
             return colaboradores;
 
         }
-        public async Task<int> Salvar(ContaColaborador colaborador)
+        public async Task<int> Salvar(ContaColaborador colaborador, int id)
         {
+            if(id > 0)
+            {
+                await _contaColaboradorRepository.Atualizar(colaborador);
+                return id;
+            }
             colaborador.DataCadastro = DateTime.Now;
             var idColaborador = await _contaColaboradorRepository.Salvar(colaborador);
             return idColaborador;
