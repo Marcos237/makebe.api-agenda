@@ -5,10 +5,8 @@ namespace api.makebe.agenda.domain.Interfaces.Services
 {
     public interface ILojaPortifolioDomainService
     {
-        Task<PaginacaoDTO<LojaPortifolioDTO>> BuscarLojaPortifolios(PaginacaoDTO<LojaPortifolioDTO> paginacao, string usuarioId);
-        Task<LojaPortifolioDTO> BuscarPorId(int id);
-        Task<int> Salvar(LojaPortifolio portifolio);
-        Task<LojaPortifolio> Atualizar(LojaPortifolio portifolio);
-        Task<bool> Deastivar(int id);
+        Task<PaginacaoDTO<PortifolioDTO>> BuscarPortifolios(PaginacaoDTO<PortifolioDTO> paginacao, string contaId);
+        Task<int> Salvar(LojaPortifolio item);
+        Task<PaginacaoDTO<PortifolioDTO>> Filtrar(PaginacaoDTO<PortifolioDTO> paginacao);
     }
 }

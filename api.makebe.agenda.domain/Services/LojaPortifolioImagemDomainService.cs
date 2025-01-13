@@ -4,40 +4,40 @@ using api.makebe.agenda.domain.Interfaces.Repositorys;
 
 namespace api.makebe.agenda.domain.Interfaces.Services
 {
-    public class LojaPortifolioImagemDomainService : ILojaPortifolioImagemDomainService
+    public class PortifolioImagemDomainService : IPortifolioImagemDomainService
     {
-        private readonly ILojaPortifolioImagemRepository _lojaPortifolioImagemRepository;
-        public LojaPortifolioImagemDomainService(ILojaPortifolioImagemRepository lojaPortifolioImagemRepository)
+        private readonly IPortifolioImagemRepository _PortifolioImagemRepository;
+        public PortifolioImagemDomainService(IPortifolioImagemRepository PortifolioImagemRepository)
         {
-            _lojaPortifolioImagemRepository = lojaPortifolioImagemRepository;   
+            _PortifolioImagemRepository = PortifolioImagemRepository;   
         }
-        public async Task<IEnumerable<LojaPortifolioImagemDTO>> BuscarImagensPorIdLojaPortifolio(int id)
+        public async Task<IEnumerable<PortifolioImagemDTO>> BuscarImagensPorIdPortifolio(int id)
         {
-            var result = await _lojaPortifolioImagemRepository.BuscarImagensPorIdLojaPortifolio(id);
+            var result = await _PortifolioImagemRepository.BuscarImagensPorIdPortifolio(id);
             return result;
         }
-        public async Task<LojaPortifolioImagemDTO> BuscarImagensPorId(int id)
+        public async Task<PortifolioImagemDTO> BuscarImagensPorId(int id)
         {
-            var result = await _lojaPortifolioImagemRepository.BuscarImagensPorId(id);
+            var result = await _PortifolioImagemRepository.BuscarImagensPorId(id);
             return result;
         }
-        public async Task<int> Salvar(LojaPortifolioImagens lojaPortifolioImagens)
+        public async Task<int> Salvar(PortifolioImagens PortifolioImagens)
         {
-            lojaPortifolioImagens.Status = true;
-            lojaPortifolioImagens.DataAtualizacao = DateTime.Now;
-            if (lojaPortifolioImagens.Id == 0)
+            PortifolioImagens.Status = true;
+            PortifolioImagens.DataAtualizacao = DateTime.Now;
+            if (PortifolioImagens.Id == 0)
             {
-                lojaPortifolioImagens.DataCadastro = DateTime.Now;
-                var result = await _lojaPortifolioImagemRepository.Salvar(lojaPortifolioImagens);
+                PortifolioImagens.DataCadastro = DateTime.Now;
+                var result = await _PortifolioImagemRepository.Salvar(PortifolioImagens);
                 return result;
             }
-            var resultAualizado = await _lojaPortifolioImagemRepository.Atualizar(lojaPortifolioImagens);
+            var resultAualizado = await _PortifolioImagemRepository.Atualizar(PortifolioImagens);
             return resultAualizado.Id;
         }
 
         public async Task<bool> Desativar(int id)
         {
-            var result = await _lojaPortifolioImagemRepository.Desativar(id);
+            var result = await _PortifolioImagemRepository.Desativar(id);
             return result;  
         }
     }
