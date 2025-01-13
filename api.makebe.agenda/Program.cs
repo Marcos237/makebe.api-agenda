@@ -82,7 +82,7 @@ builder.Services.AddCors(options =>
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 12428800;
+    options.Limits.MaxRequestBodySize = 100000000;
 });
 
 
