@@ -69,22 +69,6 @@ namespace api.makebe.agenda.domain.Services
             });
         }
 
-        private static ColaboradorProfissionalDTO AdicionarColaboradorProfissional(ColaboradorProfissionalDTO colaborador, UsuarioDTO usuario)
-        {
-            return new ColaboradorProfissionalDTO
-            {
-                Id = colaborador.Id,
-                ColaboradorId = colaborador.ColaboradorId,
-                UsuarioId = colaborador.UsuarioId,
-                NomeColaborador = usuario.Nome,
-                LojaId = colaborador.LojaId,
-                RazaoSocial = colaborador.RazaoSocial,
-                ServicoId = colaborador.ServicoId,
-                DescricaoServico = colaborador?.DescricaoServico,
-                Descricao = colaborador?.Descricao,
-            };
-        }
-
         public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> Filtrar(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao)
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
@@ -110,6 +94,21 @@ namespace api.makebe.agenda.domain.Services
 
 
             return await Task.FromResult(paginacao);
+        }
+        private static ColaboradorProfissionalDTO AdicionarColaboradorProfissional(ColaboradorProfissionalDTO colaborador, UsuarioDTO usuario)
+        {
+            return new ColaboradorProfissionalDTO
+            {
+                Id = colaborador.Id,
+                ColaboradorId = colaborador.ColaboradorId,
+                UsuarioId = colaborador.UsuarioId,
+                NomeColaborador = usuario.Nome,
+                LojaId = colaborador.LojaId,
+                RazaoSocial = colaborador.RazaoSocial,
+                ServicoId = colaborador.ServicoId,
+                DescricaoServico = colaborador?.DescricaoServico,
+                Descricao = colaborador?.Descricao,
+            };
         }
     }
 }

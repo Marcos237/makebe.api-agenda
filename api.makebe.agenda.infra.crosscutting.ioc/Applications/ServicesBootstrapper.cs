@@ -1,5 +1,9 @@
 ﻿using api.makebe.agenda.applications.Interfaces;
+using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.applications.Services;
+using api.makebe.agenda.applications.Strategys.Interfaces;
+using api.makebe.agenda.applications.Strategys.Services.Portifolios;
+using api.makebe.agenda.domain.DTO;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
@@ -12,11 +16,21 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<ITipoLojaApplicationService, TipoLojaApplicationService>();
             services.AddScoped<IEnderecoApplicationService, EnderecoApplicationService>();
             services.AddScoped<ILojaEnderecoApplicationService, LojaEnderecoApplicationService>();
-            services.AddScoped<ILojaPortifolioApplicationService, LojaPortifolioApplicationService>();
-            services.AddScoped<ILojaPortifolioImagemApplicationService, LojaPortifolioImagensApplicationService>();
+            services.AddScoped<IPortifolioApplicationService, PortifolioApplicationService>();
+            services.AddScoped<IPortifolioImagemApplicationService, PortifolioImagensApplicationService>();
             services.AddScoped<IColaboradorApplicationService, ColaboradorApplicationService>();
             services.AddScoped<IServicoApplicationService, ServicosApplicationService>();
             services.AddScoped<IColaboradorProfissionalApplicationService, ColaboradorProfissionalApplicationService>();
+            services.AddScoped<ITipoPortifolioApplicationService, TipoPortifolioApplicationService>();
+            services.AddScoped<IPortifolioPersisteStrategy<PortifolioPayload>, ColaboradorPortifolioPersiteStrategy>();
+            services.AddScoped<IPortifolioPersisteStrategy<PortifolioPayload>, LojaPortifolioPersisteStrategy>();
+            services.AddScoped<IPortifolioPersisteStrategyContext<PortifolioPayload>, PortifolioPersisteStrategyContext<PortifolioPayload>>();
+
+            services.AddScoped<IPortifolioBuscaStrategyContext, PortifolioBuscaStrategyContext>();
+            services.AddScoped<IPortifolioBuscaStrategy, ColaboradorPortifolioBuscaStrategy>();
+            services.AddScoped<IPortifolioBuscaStrategy, LojaPortifolioBuscaStrategy>();
+
+
         }
     }
 }

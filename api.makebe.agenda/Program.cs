@@ -80,6 +80,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 100000000;
+});
+
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {

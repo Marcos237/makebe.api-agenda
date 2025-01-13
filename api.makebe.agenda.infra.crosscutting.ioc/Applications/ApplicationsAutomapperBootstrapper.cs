@@ -5,6 +5,7 @@ using api.makebe.agenda.applications.Mappers.EnderecoMappers;
 using api.makebe.agenda.applications.Mappers.LojaMappers;
 using api.makebe.agenda.applications.Mappers.LojaPortifolios;
 using api.makebe.agenda.applications.Mappers.LojaPortifoliosMappers;
+using api.makebe.agenda.applications.Mappers.PortifoliosMappers;
 using AutoMapper;
 using lib.makebe.Applications.Mappers;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,10 +26,10 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new PaginacaoLojaPayloadMap());
                 mc.AddProfile(new SessaoMapper());
                 mc.AddProfile(new EnderecoDTOEnderecoMapper());
-                mc.AddProfile(new LojaPortifolioImagemMap());
-                mc.AddProfile(new LojaPortifolioMap());
-                mc.AddProfile(new LojaPortifolioPayloadMap());
-                mc.AddProfile(new LojaPortifolioImagensArquivoMap());
+                mc.AddProfile(new PortifolioImagemMap());
+                mc.AddProfile(new PortifolioMap());
+                mc.AddProfile(new PortifolioPayloadMap());
+                mc.AddProfile(new PortifolioImagensArquivoMap());
                 mc.AddProfile(new ColaboradorPayloadToUsuarioConsultadoEventMap());
                 mc.AddProfile(new ColaboradorPayloadToUsuarioRegistradoEventMap());
                 mc.AddProfile(new ColaboradorPayloadToColaboradorMap());
@@ -38,6 +39,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new UsuarioDTOToColaboradorDTOMap());
                 mc.AddProfile(new ColaboradorProfissionalPayloadToColaboradoProfissionalMap());
                 mc.AddProfile(new ColaboradorProfissionalToColaboradoProfissionalDTOMap());
+                mc.AddProfile(new PortifolioPayloadToColaboradorPortifolioMap());
+                mc.AddProfile(new PortifolioPayloadToLojaPortifolioMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

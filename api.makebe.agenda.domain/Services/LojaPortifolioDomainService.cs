@@ -7,45 +7,51 @@ namespace api.makebe.agenda.domain.Services
 {
     public class LojaPortifolioDomainService : ILojaPortifolioDomainService
     {
-        private readonly ILojaPortifolioRepository _lojaPortifolioRepository;
-        public LojaPortifolioDomainService(ILojaPortifolioRepository lojaPortifolioRepository)
+        private readonly IPortifolioContextRepository<LojaPortifolio, PortifolioDTO> _portifolioContextRepository;
+        public LojaPortifolioDomainService(IPortifolioContextRepository<LojaPortifolio, PortifolioDTO> portifolioContextRepository)
         {
-            _lojaPortifolioRepository = lojaPortifolioRepository;   
+            _portifolioContextRepository = portifolioContextRepository;
         }
-        public async Task<PaginacaoDTO<LojaPortifolioDTO>> BuscarLojaPortifolios(PaginacaoDTO<LojaPortifolioDTO> paginacao, string usuarioId)
-        {
-            var portifolios = await _lojaPortifolioRepository.BuscarLojaPortifolios(paginacao, usuarioId);
 
-            portifolios.totalPaginas = (portifolios.total + portifolios.quantidadePagina - 1) / portifolios.quantidadePagina;
-            return portifolios;
-        }
-        public async Task<LojaPortifolioDTO> BuscarPorId(int id)
+        public async Task<PaginacaoDTO<PortifolioDTO>> BuscarPortifolios(PaginacaoDTO<PortifolioDTO> paginacao, string contaId)
         {
-            var result = await _lojaPortifolioRepository.BuscarPorId(id);
-            return result;
+            var response = await _portifolioContextRepository.BuscarPortifolios(contaId);  
+            paginacao.objetos = response;
+            var filtrados = await Filtrar(paginacao);
+            return filtrados;
         }
-        public async Task<int> Salvar(LojaPortifolio portifolio)
+        public async Task<PaginacaoDTO<PortifolioDTO>> Filtrar(PaginacaoDTO<PortifolioDTO> paginacao)
         {
-            portifolio.Status = true;
-            portifolio.DataAtualizacao = DateTime.Now;
-            if (portifolio.Id == 0)
-            {
-                portifolio.DataCadastro = DateTime.Now;
-                var result = await _lojaPortifolioRepository.Salvar(portifolio);
-                return result;
+            paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
+
+            var filtrados = paginacao?.objetos?.Where(objeto =>
+                 (string.IsNullOrEmpty(paginacao?.objetoPesquisa?.RazaoSocial) ||
+                 objeto.RazaoSocial?.Contains(paginacao.objetoPesquisa.RazaoSocial, StringComparison.OrdinalIgnoreCase) == true) &&
+
+
+                (string.IsNullOrEmpty(paginacao?.objetoPesquisa?.Titulo) ||
+                 objeto.Titulo?.Contains(paginacao.objetoPesquisa.Titulo, StringComparison.OrdinalIgnoreCase) == true) &&
+
+                (string.IsNullOrEmpty(paginacao?.objetoPesquisa?.SubTitulo) ||
+                 objeto.SubTitulo?.Contains(paginacao.objetoPesquisa.SubTitulo, StringComparison.OrdinalIgnoreCase) == true)
+
+            ) ?? Enumerable.Empty<PortifolioDTO>();
+            paginacao!.total = filtrados?.Count() ?? 0;
+            paginacao!.totalPaginas = (paginacao.total + paginacao.quantidadePagina - 1) / paginacao.quantidadePagina;
+
+            paginacao.objetos = filtrados?.Skip(paginacao.registroInicial).Take(paginacao.quantidadePagina);
+            return await Task.FromResult(paginacao);
+        }
+        public async Task<int> Salvar(LojaPortifolio item)
+        {
+            item.Status = true;
+            if(item.Id == 0) {
+                item.DataCadastro = DateTime.Now;
+                var retorno = await _portifolioContextRepository.Salvar(item);
+                return retorno;
             }
-            var resultAualizado = await _lojaPortifolioRepository.Atualizar(portifolio);
-            return resultAualizado.Id;
-        }
-        public async Task<LojaPortifolio> Atualizar(LojaPortifolio portifolio)
-        {
-            var result = await _lojaPortifolioRepository.Atualizar(portifolio);
-            return result;
-        }
-        public async Task<bool> Deastivar(int id)
-        {
-            var resutl = await _lojaPortifolioRepository.Deastivar(id);
-            return resutl;  
+            await _portifolioContextRepository.Atualizar(item);
+            return item.Id;
         }
     }
 }
