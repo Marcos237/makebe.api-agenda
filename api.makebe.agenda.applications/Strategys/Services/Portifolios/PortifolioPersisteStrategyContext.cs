@@ -1,5 +1,5 @@
 ﻿using api.makebe.agenda.applications.Models.Payloads;
-using api.makebe.agenda.applications.Strategys.Interfaces;
+using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
 
 namespace api.makebe.agenda.applications.Strategys.Services.Portifolios
 {

@@ -79,7 +79,7 @@ namespace api.makebe.agenda.domain.Services
                 Id = portifolio.Id,
                 ColaboradorId = portifolio.ColaboradorId,
                 NomeColaborador = usuario.Nome,
-                TipoUsuarioPortifolioId = portifolio.TipoUsuarioPortifolioId,
+                TipoUsuarioId = portifolio.TipoUsuarioId,
                 Titulo = portifolio.Titulo,
                 SubTitulo = portifolio.SubTitulo,
                 Texto = portifolio.Texto,

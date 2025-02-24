@@ -33,9 +33,11 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<EnderecoDTO> BuscarPorId(int id)
         {
-            var query = @"SELECT e.*, le.LojaId FROM  ContaLoja ul 
-                            INNER JOIN LojaEndereco le ON ul.LojaId  = le.LojaId 
-                            INNER JOIN Endereco e ON e.Id  = le.EnderecoId 
+            var query = @"SELECT e.*, le.LojaId, le.Id As LojaEnderecoId, c.Id AS ColaboradorId, ce.Id AS ColaboradorEnderecoId FROM  Endereco e
+                            LEFT JOIN LojaEndereco le ON le.EnderecoId = e.Id 
+                            LEFT JOIN ContaLoja cl ON cl.LojaId  = le.LojaId 
+                            LEFT JOIN ColaboradorEndereco ce ON ce.EnderecoId = e.Id 
+                            LEFT JOIN Colaborador c  ON c.Id = ce.ColaboradorId 
                             WHERE e.Id = @Id";
             var result = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<EnderecoDTO>(query, new { Id = id }) ?? new EnderecoDTO();
             return result;

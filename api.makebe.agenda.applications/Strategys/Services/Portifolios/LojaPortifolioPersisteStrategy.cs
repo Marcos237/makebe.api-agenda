@@ -1,5 +1,5 @@
 ﻿using api.makebe.agenda.applications.Models.Payloads;
-using api.makebe.agenda.applications.Strategys.Interfaces;
+using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Enums;
 using api.makebe.agenda.domain.Interfaces.Services;
@@ -20,7 +20,7 @@ namespace api.makebe.agenda.applications.Strategys.Services.Portifolios
         public async Task<int> Salvar(PortifolioPayload item)
         {
             var itemNaoSalvo = 0;
-            if (item.TipoUsuarioPortifolioId == (int)TipoUsuarioPortifolio.Loja)
+            if (item.TipoUsuarioId == (int)TipoUsuario.Loja)
             {
                 var lojaMap = _mapper.Map<LojaPortifolio>(item);
                 var response = await _lojaPortifolioDomainService.Salvar(lojaMap);

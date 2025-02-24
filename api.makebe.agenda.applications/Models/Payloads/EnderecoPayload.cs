@@ -1,13 +1,11 @@
-﻿namespace api.makebe.agenda.domain.DTO
+﻿namespace api.makebe.agenda.applications.Models.Payloads
 {
-    public class EnderecoDTO
+    public class EnderecoPayload
     {
         public int Id { get; set; }
         public int LojaId { get; set; }
         public string? UsuarioId { get; set; }
         public int ColaboradorId { get; set; }
-        public string? RazaoSocial { get; set; }
-        public string? NomeColaborador { get; set; }
         public string? Logradouro { get; set; }
         public int Numero { get; set; }
         public string? Complemento { get; set; }
@@ -17,6 +15,5 @@
         public int LojaEnderecoId { get; set; }
         public int ColaboradorEnderecoId { get; set; }
         public int TipoUsuarioId { get; set; }
-
     }
 }

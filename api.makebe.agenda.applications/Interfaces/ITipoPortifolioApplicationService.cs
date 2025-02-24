@@ -5,6 +5,6 @@ namespace api.makebe.agenda.applications.Interfaces
 {
     public interface ITipoPortifolioApplicationService
     {
-        Task<ResponseModel<TipoPortifolioDTO>> BuscarPorTipoUsuarioPortifolioId(int tipoPortifolioId);
+        Task<ResponseModel<TipoPortifolioDTO>> BuscarPorTipoUsuarioId(int tipoPortifolioId);
     }
 }

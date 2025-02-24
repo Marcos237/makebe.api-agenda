@@ -11,13 +11,13 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
-        public async Task<IEnumerable<TipoPortifolioDTO>> BuscarPorTipoUsuarioPortifolioId(int tipoPortifolioId)
+        public async Task<IEnumerable<TipoPortifolioDTO>> BuscarPorTipoUsuarioId(int tipoPortifolioId)
         {
-            var sql = @"SELECT tp.Id, tp.TipoUsuarioPortifolioId, tp.Descricao, Label, tup.Descricao AS NomeTipo, Titulo FROM TipoPortifolio tp 
-                        INNER JOIN TipoUsuarioPortifolio tup ON tup.Id = tp.TipoUsuarioPortifolioId 
-                        WHERE tp.TipoUsuarioPortifolioId  = @TipoUsuarioPortifolioId
+            var sql = @"SELECT tp.Id, tp.TipoUsuarioId, tp.Descricao, Label, tup.Descricao AS NomeTipo, Titulo FROM TipoPortifolio tp 
+                        INNER JOIN TipoUsuario tup ON tup.Id = tp.TipoUsuarioId 
+                        WHERE tp.TipoUsuarioId  = @TipoUsuarioId
                         AND tp.Status  = 1";
-            var response = await _dbAgenda.Connection.QueryAsync<TipoPortifolioDTO>(sql, new { TipoUsuarioPortifolioId = tipoPortifolioId }) 
+            var response = await _dbAgenda.Connection.QueryAsync<TipoPortifolioDTO>(sql, new { TipoUsuarioId = tipoPortifolioId }) 
                 ?? Enumerable.Empty<TipoPortifolioDTO>();
             return response;
         }

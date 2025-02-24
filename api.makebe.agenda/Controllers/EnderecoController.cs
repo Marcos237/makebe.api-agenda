@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.applications.Filters.Authorization;
 using api.makebe.agenda.applications.Interfaces;
+using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.domain.DTO;
 using lib.makebe.domain.Enum;
 using Microsoft.AspNetCore.Authorization;
@@ -61,7 +62,7 @@ namespace api.makebe.agenda.Controllers
 
         [HttpPost]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> Post(EnderecoDTO model)
+        public async Task<IActionResult> Post(EnderecoPayload model)
         {
             try
             {
@@ -79,7 +80,7 @@ namespace api.makebe.agenda.Controllers
         }
         [HttpPut]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
-        public async Task<IActionResult> Put(EnderecoDTO model)
+        public async Task<IActionResult> Put(EnderecoPayload model)
         {
             try
             {

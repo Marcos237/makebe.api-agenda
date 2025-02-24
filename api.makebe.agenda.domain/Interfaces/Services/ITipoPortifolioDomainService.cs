@@ -4,6 +4,6 @@ namespace api.makebe.agenda.domain.Interfaces.Services
 {
     public interface ITipoPortifolioDomainService
     {
-        Task<IEnumerable<TipoPortifolioDTO>> BuscarPorTipoUsuarioPortifolioId(int tipoPortifolioId);
+        Task<IEnumerable<TipoPortifolioDTO>> BuscarPorTipoUsuarioId(int tipoPortifolioId);
     }
 }

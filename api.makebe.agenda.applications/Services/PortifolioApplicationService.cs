@@ -2,7 +2,7 @@
 using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.applications.Models.Responses;
-using api.makebe.agenda.applications.Strategys.Interfaces;
+using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
 using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
@@ -51,10 +51,10 @@ namespace api.makebe.agenda.applications.Services
             return ResponseModelHelper<PaginacaoDTO<PortifolioDTO>>.RetornarResponseModel(paginacaoRetorno!, _notificationContext.Notifications);
         }
 
-        public async Task<ResponseModel<PortifolioDTO>> BuscarPorId(int id, int tipoUsuarioPortifolioId)
+        public async Task<ResponseModel<PortifolioDTO>> BuscarPorId(int id, int TipoUsuarioId)
         {
             var retorno = await _portifolioDomainService.BuscarPorId(id);
-            retorno.TipoUsuarioPortifolioId = tipoUsuarioPortifolioId;
+            retorno.TipoUsuarioId = TipoUsuarioId;
             retorno.PortifolioImagens = await _portifolioImagemApplicationService.BuscarImagensPorLojaPortifolioId(id) ?? Enumerable.Empty<PortifolioImagemDTO>();
             if (retorno.Id == 0)
                 _validationLojaPortifolioService.RetornarListaVazia(nameof(Portifolio), BaseConstant.ListaVazia);
@@ -87,7 +87,7 @@ namespace api.makebe.agenda.applications.Services
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
 
-                var retornoPortifolio = await BuscarPorId(lojaPortifolioRetorno, portifolio.TipoUsuarioPortifolioId);
+                var retornoPortifolio = await BuscarPorId(lojaPortifolioRetorno, portifolio.TipoUsuarioId);
                 return retornoPortifolio;
             }
             catch (Exception)

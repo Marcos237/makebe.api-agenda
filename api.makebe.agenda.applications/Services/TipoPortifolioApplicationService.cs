@@ -16,9 +16,9 @@ namespace api.makebe.agenda.applications.Services
             _tipoPortifolioDomainService = tipoPortifolioDomainService;
             _notificationContext = notificationContext;
         }
-        public async Task<ResponseModel<TipoPortifolioDTO>> BuscarPorTipoUsuarioPortifolioId(int tipoPortifolioId)
+        public async Task<ResponseModel<TipoPortifolioDTO>> BuscarPorTipoUsuarioId(int tipoPortifolioId)
         {
-            var request = await _tipoPortifolioDomainService.BuscarPorTipoUsuarioPortifolioId(tipoPortifolioId);
+            var request = await _tipoPortifolioDomainService.BuscarPorTipoUsuarioId(tipoPortifolioId);
             return ResponseModelHelper<TipoPortifolioDTO>.RetornarResponseModel(request, _notificationContext.Notifications);
         }
     }

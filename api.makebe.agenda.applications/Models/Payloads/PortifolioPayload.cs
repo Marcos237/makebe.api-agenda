@@ -12,7 +12,7 @@ namespace api.makebe.agenda.applications.Models.Payloads
 
         public int ColaboradorId { get; set; }
 
-        public int TipoUsuarioPortifolioId { get; set; }
+        public int TipoUsuarioId { get; set; }
 
         public string? Titulo { get; set; }
 

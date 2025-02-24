@@ -17,7 +17,6 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IContaLojaRepository, ContaLojaRepository>();
             services.AddScoped<ILojaRepository, LojaRepository>();
             services.AddScoped<ITipoLojaRepository, TipoLojaRepository>();
-            services.AddScoped<ILojaEnderecoRepository, LojaEnderecoRepository>();
             services.AddScoped<IPortifolioRepository, PortifolioRepository>();
             services.AddScoped<IPortifolioImagemRepository, PortifolioImagemRepository>();
             services.AddScoped<ILojaColaboradorRepository, LojaColaboradorRepository>();
@@ -29,6 +28,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<ITipoPortifolioRepository, TipoPortifolioRepository>();
             services.AddScoped<IPortifolioContextRepository<LojaPortifolio, PortifolioDTO>, LojaPortifolioRepository>();
             services.AddScoped<IPortifolioContextRepository<ColaboradorPortifolio, PortifolioDTO>, ColaboradorPortifolioRepository>();
+            services.AddScoped<IEnderecoContextRepository<LojaEndereco, EnderecoDTO>, LojaEnderecoRepository>();
+            services.AddScoped<IEnderecoContextRepository<ColaboradorEndereco, EnderecoDTO>, ColaboradorEnderecoRepository>();
         }
     }
 }

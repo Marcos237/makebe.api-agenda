@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.applications.Strategys.Interfaces;
+﻿using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
 using api.makebe.agenda.domain.DTO;
 
 public class PortifolioBuscaStrategyContext: IPortifolioBuscaStrategyContext
