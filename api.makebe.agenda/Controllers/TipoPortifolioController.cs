@@ -23,7 +23,7 @@ namespace api.makebe.agenda.Controllers
         {
             try
             {
-                var retorno = await _tipoPortifolioApplicationService.BuscarPorTipoUsuarioPortifolioId(id);
+                var retorno = await _tipoPortifolioApplicationService.BuscarPorTipoUsuarioId(id);
                 if (retorno.datas == null || !retorno.datas.Any())
                 {
                     return StatusCode(StatusCodes.Status204NoContent, retorno);

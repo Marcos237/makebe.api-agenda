@@ -1,6 +1,6 @@
 ﻿namespace api.makebe.agenda.domain.Enums
 {
-    public enum TipoUsuarioPortifolio
+    public enum TipoUsuario
     {
         Loja = 1,
         Colaborador = 2,

@@ -1,13 +1,13 @@
 ﻿using api.makebe.agenda.applications.Helpers;
 using api.makebe.agenda.applications.Interfaces;
+using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.applications.Models.Responses;
+using api.makebe.agenda.applications.Strategys.Interfaces.Enderecos;
 using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
-using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
-using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
@@ -17,30 +17,31 @@ namespace api.makebe.agenda.applications.Services
     public class EnderecoApplicationService : IEnderecoApplicationService
     {
         private readonly IEnderecoDomainService _enderecoDomainService;
-        private readonly ILojaEnderecoApplicationService _lojaEnderecoApplicationService;
         private readonly IValidationService<Endereco> _validationService;
         private readonly INotificationContext _notificationContext;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
-        private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
+        private readonly IEnderecoBuscaStrategyContext _enderecoBuscaStrategyContext;
+        private readonly IEnderecoPersisteStrategyContext<EnderecoPayload> _enderecoPersisteStrategyContext; 
+
         public EnderecoApplicationService(IEnderecoDomainService enderecoDomainService, IValidationService<Endereco> validationService, IMapper mapper,
-            INotificationContext notificationContext, ILojaEnderecoApplicationService lojaEnderecoApplicationService, IUnitOfWork unitOfWork,
-            IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService)
+            INotificationContext notificationContext,  IUnitOfWork unitOfWork,
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IEnderecoBuscaStrategyContext enderecoBuscaStrategyContext, 
+            IEnderecoPersisteStrategyContext<EnderecoPayload> enderecoPersisteStrategyContext)
         {
             _enderecoDomainService = enderecoDomainService;
             _validationService = validationService;
             _mapper = mapper;
             _notificationContext = notificationContext;
-            _lojaEnderecoApplicationService = lojaEnderecoApplicationService;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
-            _contaEventCrossCuttingService = contaEventCrossCuttingService;
+            _enderecoBuscaStrategyContext = enderecoBuscaStrategyContext;
+            _enderecoPersisteStrategyContext = enderecoPersisteStrategyContext;
         }
         public async Task<ResponseModel<PaginacaoDTO<EnderecoDTO>>> BuscarTodos(PaginacaoDTO<EnderecoDTO> paginacao, string usuarioId)
         {
-            var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
-            var paginacaoRetorno = await _enderecoDomainService.BuscarTodos(paginacao, conta?.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<EnderecoDTO>();
+            var paginacaoRetorno = await _enderecoBuscaStrategyContext.Buscar(paginacao, usuarioId);
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
 
@@ -56,9 +57,9 @@ namespace api.makebe.agenda.applications.Services
             return ResponseModelHelper<EnderecoDTO>.RetornarResponseModel(retorno!, _notificationContext.Notifications);
         }
 
-        public async Task<ResponseModel<EnderecoDTO>> Persistir(EnderecoDTO enderecoDTO, string usuarioId)
+        public async Task<ResponseModel<EnderecoDTO>> Persistir(EnderecoPayload enderecoPayload, string usuarioId)
         {
-            var endereco = _mapper.Map<Endereco>(enderecoDTO);
+            var endereco = _mapper.Map<Endereco>(enderecoPayload);
             var isValidate = await _validationService.Validar(endereco);
             if (!isValidate)
             {
@@ -69,8 +70,8 @@ namespace api.makebe.agenda.applications.Services
             {
                 await _unitOfWork.BeginTransaction();
                 var enderecoRetorno = await _enderecoDomainService.Salvar(endereco);
-                var lojaEndereco = new LojaEndereco { EnderecoId = enderecoRetorno, LojaId = enderecoDTO.LojaId };
-                await _lojaEnderecoApplicationService.SalvarLojaEndereco(lojaEndereco);
+                enderecoPayload.Id = enderecoRetorno;
+                await _enderecoPersisteStrategyContext.Salvar(enderecoPayload);
                 _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);

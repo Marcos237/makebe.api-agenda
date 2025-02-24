@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
+﻿using api.makebe.agenda.applications.Strategys.Interfaces.Enderecos;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Enums;
 using api.makebe.agenda.domain.Helpers;
@@ -7,22 +7,21 @@ using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using AutoMapper;
 using ContasEvent;
 
-namespace api.makebe.agenda.applications.Strategys.Services.Portifolios
+namespace api.makebe.agenda.applications.Strategys.Services.Enderecos
 {
-    public class ColaboradorPortifolioBuscaStrategy : IPortifolioBuscaStrategy
+    public class ColaboradorEnderecoBuscaStrategy : IEnderecoBuscaStrategy
     {
-        private readonly IColaboradorPortifolioDomainService _colaboradorPortifolioDomainService;
+        private readonly IColaboradorEnderecoDomainService _colaboradorEnderecoDomainService;
         private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
         private readonly IMapper _mapper;
-
-        public ColaboradorPortifolioBuscaStrategy(IColaboradorPortifolioDomainService colaboradorPortifolioDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService,
-            IMapper mapper)
+        public ColaboradorEnderecoBuscaStrategy(IColaboradorEnderecoDomainService colaboradorEnderecoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService,
+        IMapper mapper)
         {
-            _colaboradorPortifolioDomainService = colaboradorPortifolioDomainService;
+            _colaboradorEnderecoDomainService = colaboradorEnderecoDomainService;
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
-            _mapper = mapper;
+            _mapper = mapper;     
         }
-        public async Task<PaginacaoDTO<PortifolioDTO>> BuscarPortifolios(PaginacaoDTO<PortifolioDTO> paginacao, string usuarioId)
+        public async Task<PaginacaoDTO<EnderecoDTO>> BuscarEnderecos(PaginacaoDTO<EnderecoDTO> paginacao, string usuarioId)
         {
             if (paginacao.objetoPesquisa?.TipoUsuarioId == (int)TipoUsuario.Colaborador)
             {
@@ -30,9 +29,7 @@ namespace api.makebe.agenda.applications.Strategys.Services.Portifolios
                 var usuarioConsultadoEvent = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta.Id ?? Guid.Empty };
                 var usuariosConta = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConsultadoEvent);
                 var usuariosMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuariosConta.UsuariosEvents);
-
-
-                var response = await _colaboradorPortifolioDomainService.BuscarPortifolios(paginacao,  conta.Id.ToString() ?? string.Empty, usuariosMap);
+                var response = await _colaboradorEnderecoDomainService.BuscarEndereco(paginacao, conta.Id.ToString() ?? string.Empty, usuariosMap);
                 return response;
             }
             return paginacao;

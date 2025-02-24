@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.applications.Strategys.Interfaces;
+﻿using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Enums;
 using api.makebe.agenda.domain.Helpers;
@@ -19,7 +19,7 @@ namespace api.makebe.agenda.applications.Strategys.Services.Portifolios
         }
         public async Task<PaginacaoDTO<PortifolioDTO>> BuscarPortifolios(PaginacaoDTO<PortifolioDTO> paginacao, string usuarioId)
         {
-            if (paginacao.objetoPesquisa?.TipoUsuarioPortifolioId == (int)TipoUsuarioPortifolio.Loja)
+            if (paginacao.objetoPesquisa?.TipoUsuarioId == (int)TipoUsuario.Loja)
             {
                 var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
                 var response = await _lojaPortifolioDomainService.BuscarPortifolios(paginacao, conta.Id.ToString() ?? string.Empty);

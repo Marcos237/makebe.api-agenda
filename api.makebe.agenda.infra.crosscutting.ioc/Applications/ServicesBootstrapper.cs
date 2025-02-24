@@ -1,9 +1,10 @@
 ﻿using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.applications.Services;
-using api.makebe.agenda.applications.Strategys.Interfaces;
+using api.makebe.agenda.applications.Strategys.Interfaces.Enderecos;
+using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
+using api.makebe.agenda.applications.Strategys.Services.Enderecos;
 using api.makebe.agenda.applications.Strategys.Services.Portifolios;
-using api.makebe.agenda.domain.DTO;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
@@ -15,7 +16,6 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<ILojaApplicationService, LojaApplicationService>();
             services.AddScoped<ITipoLojaApplicationService, TipoLojaApplicationService>();
             services.AddScoped<IEnderecoApplicationService, EnderecoApplicationService>();
-            services.AddScoped<ILojaEnderecoApplicationService, LojaEnderecoApplicationService>();
             services.AddScoped<IPortifolioApplicationService, PortifolioApplicationService>();
             services.AddScoped<IPortifolioImagemApplicationService, PortifolioImagensApplicationService>();
             services.AddScoped<IColaboradorApplicationService, ColaboradorApplicationService>();
@@ -30,6 +30,13 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<IPortifolioBuscaStrategy, ColaboradorPortifolioBuscaStrategy>();
             services.AddScoped<IPortifolioBuscaStrategy, LojaPortifolioBuscaStrategy>();
 
+            services.AddScoped<IEnderecoBuscaStrategyContext, EnderecoBuscaStrategyContext>();
+            services.AddScoped<IEnderecoBuscaStrategy, LojaEnderecoBuscaStrategy>();
+            services.AddScoped<IEnderecoBuscaStrategy, ColaboradorEnderecoBuscaStrategy>();
+
+            services.AddScoped<IEnderecoPersisteStrategyContext<EnderecoPayload>, EnderecoPersisteStrategyContext<EnderecoPayload>>();
+            services.AddScoped<IEnderecoPersisteStrategy<EnderecoPayload>, LojaEnderecoPersisteStrategy>();
+            services.AddScoped<IEnderecoPersisteStrategy<EnderecoPayload>, ColaboradorEnderecoPersisteStrategy>();
 
         }
     }

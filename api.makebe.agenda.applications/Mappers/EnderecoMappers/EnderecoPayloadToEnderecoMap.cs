@@ -1,15 +1,15 @@
-﻿using api.makebe.agenda.domain.DTO;
+﻿using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Helpers;
 using AutoMapper;
 
 namespace api.makebe.agenda.applications.Mappers.EnderecoMappers
 {
-    public class EnderecoDTOEnderecoMapper:Profile
+    public class EnderecoPayloadToEnderecoMap:Profile
     {
-        public EnderecoDTOEnderecoMapper()
+        public EnderecoPayloadToEnderecoMap()
         {
-            CreateMap<EnderecoDTO, Endereco>()
+            CreateMap<EnderecoPayload, Endereco>()
             .ForMember(dest => dest.CEP, origem => origem.MapFrom(x => TextoHelper.GetNumeros(x.CEP ?? string.Empty)))
                 .ReverseMap();
         }

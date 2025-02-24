@@ -11,9 +11,9 @@ namespace api.makebe.agenda.domain.Services
         {
             _tipoPortifolioRepository = tipoPortifolioRepository;
         }
-        public async Task<IEnumerable<TipoPortifolioDTO>> BuscarPorTipoUsuarioPortifolioId(int tipoPortifolioId)
+        public async Task<IEnumerable<TipoPortifolioDTO>> BuscarPorTipoUsuarioId(int tipoPortifolioId)
         {
-            return await _tipoPortifolioRepository.BuscarPorTipoUsuarioPortifolioId(tipoPortifolioId);
+            return await _tipoPortifolioRepository.BuscarPorTipoUsuarioId(tipoPortifolioId);
         }
     }
 }

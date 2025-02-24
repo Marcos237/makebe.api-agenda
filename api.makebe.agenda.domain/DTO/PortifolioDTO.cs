@@ -6,7 +6,7 @@
 
         public string? ContaId { get; set; }
         public string? UsuarioId { get; set; }
-        public int TipoUsuarioPortifolioId { get; set; }
+        public int TipoUsuarioId { get; set; }
         public string? Titulo { get; set; }
         public string? SubTitulo { get; set; }
         public string? Texto { get; set; }
