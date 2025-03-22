@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public string? Descricao { get; set; }
         public bool Status { get; set; }
+        public decimal Periodo { get; set; }
+        public decimal Valor { get; set; }
         public DateTime? DataCadastro { get; set; }
         public DateTime? DataAtualizacao { get; set; }
     }
