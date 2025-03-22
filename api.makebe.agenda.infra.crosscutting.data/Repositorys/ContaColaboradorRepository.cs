@@ -55,6 +55,5 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
             return retorno > 0;
         }
-
     }
 }

@@ -46,8 +46,6 @@ namespace api.makebe.agenda.infra.data.Repositorys
             paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<LojaDTO>(sqlBusca, param: parametros) ?? Enumerable.Empty<LojaDTO>();
 
             return paginacao;
-
-
         }
 
         public async Task<LojaDTO> BuscarLojaPorCodigo(int id)
