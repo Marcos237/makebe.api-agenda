@@ -50,7 +50,7 @@ namespace api.makebe.agenda.applications.Services
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
             var response = await _servicosDomainService.BuscarTodosPaginado(paginacaoDTO, conta.Id.ToString() ?? string.Empty) ?? new PaginacaoDTO<ServicoDTO>();
             if (response != null && !response.objetos!.Any())
-                _validationService.RetornarListaVazia(nameof(Loja), BaseConstant.ListaVazia);
+                _validationService.RetornarListaVazia(nameof(Servicos), BaseConstant.ListaVazia);
 
             return ResponseModelHelper<PaginacaoDTO<ServicoDTO>>.RetornarResponseModel(response!, _notificationContext.Notifications);
         }

@@ -8,5 +8,8 @@
         public const string Ativo = "Ativo";
         public const string Inativo = "Inativo";
         public const string TipoContaInicialOPeradorLoja = "tipoContaOpradorLoja";
+        public const string InstanciaLoja = "Loja";
+        public const string InstanciaColaborador = "Colaborador";
+
     }
 }

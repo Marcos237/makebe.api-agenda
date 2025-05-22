@@ -23,16 +23,6 @@ namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers
                 .ForMember(dest => dest.DataCadastro, opt => opt.MapFrom(src => src.DataCadastro))
                 .ForMember(dest => dest.DataAtualizacao, opt => opt.MapFrom(src => src.DataAtualizacao)).ReverseMap();
                 
-            CreateMap(typeof(PaginacaoEvent<>), typeof(PaginacaoDTO<>))
-                .ForMember("quantidadePagina", opt => opt.MapFrom("quantidadePagina"))
-                .ForMember("totalPaginas", opt => opt.MapFrom("totalPaginas"))
-                .ForMember("total", opt => opt.MapFrom("total"))
-                .ForMember("paginaAtual", opt => opt.MapFrom("paginaAtual"))
-                .ForMember("registroInicial", opt => opt.MapFrom("registroInicial"))
-                .ForMember("objetos", opt => opt.MapFrom("objetos"))
-                .ForMember("objetoPesquisa", opt => opt.MapFrom("objetoPesquisa"))
-                .ForMember("idsPesquisa", opt => opt.MapFrom("idsPesquisa"))
-                .ReverseMap();
         }
     }
 }

@@ -44,8 +44,7 @@ namespace api.makebe.agenda.applications.Services
             if (!paginacao.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(ColaboradorProfissional), BaseConstant.ListaVazia);
 
-            var paginacaoResponse = _mapper.Map<PaginacaoDTO<ColaboradorProfissionalDTO>>(paginacaoRetorno);
-            return ResponseModelHelper<PaginacaoDTO<ColaboradorProfissionalDTO>>.RetornarResponseModel(paginacaoResponse, _notificationContext.Notifications);
+            return ResponseModelHelper<PaginacaoDTO<ColaboradorProfissionalDTO>>.RetornarResponseModel(paginacaoRetorno, _notificationContext.Notifications);
         }
 
         public async Task<ResponseModel<ColaboradorProfissionalDTO>> BuscarUsuarioPorId(int id)

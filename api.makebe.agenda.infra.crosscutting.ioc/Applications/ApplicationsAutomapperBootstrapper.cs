@@ -1,10 +1,12 @@
 ﻿using api.makebe.agenda.applications.AutoMapper;
+using api.makebe.agenda.applications.Mappers.AgendaMappers;
 using api.makebe.agenda.applications.Mappers.ColaboradorMappers;
 using api.makebe.agenda.applications.Mappers.ColaboradorProfissionalMapper;
 using api.makebe.agenda.applications.Mappers.EnderecoMappers;
 using api.makebe.agenda.applications.Mappers.LojaMappers;
 using api.makebe.agenda.applications.Mappers.LojaPortifolios;
 using api.makebe.agenda.applications.Mappers.LojaPortifoliosMappers;
+using api.makebe.agenda.applications.Mappers.PaginacaoMappers;
 using api.makebe.agenda.applications.Mappers.PortifoliosMappers;
 using api.makebe.agenda.applications.Mappers.ServicoMappers;
 using AutoMapper;
@@ -20,7 +22,6 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new UsuarioSessaoMapper());
-                mc.AddProfile(new PaginacaoLojaResponseMap());
                 mc.AddProfile(new LojaPayloadMapper());
                 mc.AddProfile(new LojaDTOResponseMapper());
                 mc.AddProfile(new LojaResponseMapper());
@@ -45,6 +46,11 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new EnderecoPayloadToLojaEnderecoMap());
                 mc.AddProfile(new EnderecoPayloadToColaboradorEnderecoMap());
                 mc.AddProfile(new ServicoServicoDTOMap());
+                mc.AddProfile(new AgendaPayloadToAgendaMap());
+                mc.AddProfile(new AgendaPayloadToAgendaLojaMap());
+                mc.AddProfile(new AgendaPayloadToAdgendaDTOMap());
+                mc.AddProfile(new AgendaPayloadToAgendaColaboradorMap());
+                mc.AddProfile(new PaginacaoDTOMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

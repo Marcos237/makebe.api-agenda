@@ -1,8 +1,8 @@
-﻿using api.makebe.agenda.applications.Helpers;
+﻿using api.makebe.agenda.applications.Factorys.Interfaces;
+using api.makebe.agenda.applications.Helpers;
 using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.applications.Models.Responses;
-using api.makebe.agenda.applications.Strategys.Interfaces.Portifolios;
 using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
@@ -23,13 +23,12 @@ namespace api.makebe.agenda.applications.Services
         private readonly IPortifolioImagemApplicationService _portifolioImagemApplicationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
-        private readonly IPortifolioBuscaStrategyContext _portifolioBuscaStrategyContext;
-        private readonly IPortifolioPersisteStrategyContext<PortifolioPayload> _portifolioPersisteStrategyContext;
-        
+        private readonly IContextFactory<IPortifolioContextApplicationService> _contextFactory;
+
+
         public PortifolioApplicationService(IPortifolioDomainService lojaPortifolioDomainService, IMapper mapper, IValidationService<Portifolio> validationLojaPortifolioService,
             INotificationContext notificationContext, IPortifolioImagemApplicationService lojaPortifolioImagemApplicationService, 
-            IUnitOfWork unitOfWork, IUsuarioSessaoDomainService usuarioSessaoDomainService, IPortifolioBuscaStrategyContext portifolioBuscaStrategyContext,
-            IPortifolioPersisteStrategyContext<PortifolioPayload> portifolioPersisteStrategyContext)
+            IUnitOfWork unitOfWork, IUsuarioSessaoDomainService usuarioSessaoDomainService, IContextFactory<IPortifolioContextApplicationService> contextFactory)
         {
             _portifolioDomainService = lojaPortifolioDomainService;
             _validationLojaPortifolioService = validationLojaPortifolioService;
@@ -38,13 +37,13 @@ namespace api.makebe.agenda.applications.Services
             _portifolioImagemApplicationService = lojaPortifolioImagemApplicationService;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
-            _portifolioBuscaStrategyContext = portifolioBuscaStrategyContext;
-            _portifolioPersisteStrategyContext = portifolioPersisteStrategyContext;
+            _contextFactory = contextFactory;
 
         }
         public async Task<ResponseModel<PaginacaoDTO<PortifolioDTO>>> BuscarPortifolios(PaginacaoDTO<PortifolioDTO> paginacao, string usuarioId)
-        {       
-            var paginacaoRetorno = await _portifolioBuscaStrategyContext.Buscar(paginacao, usuarioId);
+        {
+            var instancia = await _contextFactory.ExecutarService(paginacao?.objetoPesquisa?.TipoUsuarioId ?? 0);
+            var paginacaoRetorno = await instancia.BuscarPortifolios(paginacao!, usuarioId);
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
                 _validationLojaPortifolioService.RetornarListaVazia(nameof(Portifolio), BaseConstant.ListaVazia);
 
@@ -81,7 +80,8 @@ namespace api.makebe.agenda.applications.Services
                     await _portifolioImagemApplicationService.SalvarImagens(portifolio.PortifolioImagens!, lojaPortifolioRetorno);
 
                 portifolio.Id = lojaPortifolioRetorno;
-                await _portifolioPersisteStrategyContext.Salvar(portifolio);
+                var instancia = await _contextFactory.ExecutarService(portifolio.TipoUsuarioId);
+                await instancia.Salvar(portifolio);
                 _unitOfWork.Commit();
 
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);

@@ -8,7 +8,6 @@ using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.domain.Services;
-using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
@@ -27,12 +26,11 @@ namespace api.makebe.agenda.applications.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
         private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
-        private readonly IBusEvent _busEvent;
 
 
         public LojaApplicationService(IValidationService<Loja> validationService, IContaLojaDomainService usarioLojaDomainService, ILojaDomainService lojaDomainService,
             INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork, 
-            IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService, IBusEvent busEvent)
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService)
         {
             _lojaDomainService = lojaDomainService;
             _validationService = validationService;
@@ -42,7 +40,6 @@ namespace api.makebe.agenda.applications.Services
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
-            _busEvent = busEvent;
         }
         public async Task<ResponseModel<LojaDTO>> BuscarTodos(string usuarioId)
         {
