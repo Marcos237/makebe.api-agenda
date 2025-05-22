@@ -1,8 +1,8 @@
-﻿using api.makebe.agenda.applications.Helpers;
+﻿using api.makebe.agenda.applications.Factorys.Interfaces;
+using api.makebe.agenda.applications.Helpers;
 using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.applications.Models.Responses;
-using api.makebe.agenda.applications.Strategys.Interfaces.Enderecos;
 using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
@@ -22,13 +22,11 @@ namespace api.makebe.agenda.applications.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
-        private readonly IEnderecoBuscaStrategyContext _enderecoBuscaStrategyContext;
-        private readonly IEnderecoPersisteStrategyContext<EnderecoPayload> _enderecoPersisteStrategyContext; 
+        private readonly IContextFactory<IEnderecoContextApplicationService> _contextFactory;
 
         public EnderecoApplicationService(IEnderecoDomainService enderecoDomainService, IValidationService<Endereco> validationService, IMapper mapper,
-            INotificationContext notificationContext,  IUnitOfWork unitOfWork,
-            IUsuarioSessaoDomainService usuarioSessaoDomainService, IEnderecoBuscaStrategyContext enderecoBuscaStrategyContext, 
-            IEnderecoPersisteStrategyContext<EnderecoPayload> enderecoPersisteStrategyContext)
+            INotificationContext notificationContext, IUnitOfWork unitOfWork,
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IContextFactory<IEnderecoContextApplicationService> contextFactory)
         {
             _enderecoDomainService = enderecoDomainService;
             _validationService = validationService;
@@ -36,12 +34,12 @@ namespace api.makebe.agenda.applications.Services
             _notificationContext = notificationContext;
             _unitOfWork = unitOfWork;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
-            _enderecoBuscaStrategyContext = enderecoBuscaStrategyContext;
-            _enderecoPersisteStrategyContext = enderecoPersisteStrategyContext;
+            _contextFactory = contextFactory;
         }
         public async Task<ResponseModel<PaginacaoDTO<EnderecoDTO>>> BuscarTodos(PaginacaoDTO<EnderecoDTO> paginacao, string usuarioId)
         {
-            var paginacaoRetorno = await _enderecoBuscaStrategyContext.Buscar(paginacao, usuarioId);
+            var instancia = await _contextFactory.ExecutarService(paginacao?.objetoPesquisa?.TipoUsuarioId ?? 0);
+            var paginacaoRetorno = await instancia.BuscarEnderecos(paginacao!, usuarioId);
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
 
@@ -71,7 +69,8 @@ namespace api.makebe.agenda.applications.Services
                 await _unitOfWork.BeginTransaction();
                 var enderecoRetorno = await _enderecoDomainService.Salvar(endereco);
                 enderecoPayload.Id = enderecoRetorno;
-                await _enderecoPersisteStrategyContext.Salvar(enderecoPayload);
+                var instancia = await _contextFactory.ExecutarService(enderecoPayload.TipoUsuarioId);
+                await instancia.Salvar(enderecoPayload);
                 _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
@@ -84,7 +83,6 @@ namespace api.makebe.agenda.applications.Services
                 _unitOfWork.Rollback();
                 throw;
             }
-
         }
 
         public async Task<bool> DesativarEnderecos(int id)

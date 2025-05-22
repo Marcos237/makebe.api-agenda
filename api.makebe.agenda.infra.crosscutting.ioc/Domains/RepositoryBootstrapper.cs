@@ -31,6 +31,9 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IPortifolioContextRepository<ColaboradorPortifolio, PortifolioDTO>, ColaboradorPortifolioRepository>();
             services.AddScoped<IEnderecoContextRepository<LojaEndereco, EnderecoDTO>, LojaEnderecoRepository>();
             services.AddScoped<IEnderecoContextRepository<ColaboradorEndereco, EnderecoDTO>, ColaboradorEnderecoRepository>();
+            services.AddScoped<IAgendaRepository,  AgendaRepository>();
+            services.AddScoped<IAgendaContextRepository<AgendaLoja>,  AgendaLojaRepository>();
+            services.AddScoped<IAgendaContextRepository<AgendaColaborador>,  AgendaColaboradorRepository>();
         }
     }
 }
