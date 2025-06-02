@@ -13,5 +13,6 @@
         public string? UrlImagem { get; set; }
         public bool Status { get; set; }
         public string? Instagram { get; set; }
+        public int Tipo { get; set; }
     }
 }

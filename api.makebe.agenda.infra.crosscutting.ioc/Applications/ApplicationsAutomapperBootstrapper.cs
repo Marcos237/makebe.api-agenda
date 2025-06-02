@@ -37,7 +37,6 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new ColaboradorPayloadToColaboradorMap());
                 mc.AddProfile(new UsuarioEventToUsuarioDTOMap());
                 mc.AddProfile(new ColaboradorPayloadToLojaColaboradorMap());
-                mc.AddProfile(new UsuarioPaginadoDTOToUsuarioPaginadoEvent());
                 mc.AddProfile(new UsuarioDTOToColaboradorDTOMap());
                 mc.AddProfile(new ColaboradorProfissionalPayloadToColaboradoProfissionalMap());
                 mc.AddProfile(new ColaboradorProfissionalToColaboradoProfissionalDTOMap());

@@ -1,6 +1,4 @@
-﻿using api.makebe.agenda.applications.Factorys;
-using api.makebe.agenda.applications.Factorys.Interfaces;
-using api.makebe.agenda.applications.Helpers;
+﻿using api.makebe.agenda.applications.Helpers;
 using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.applications.Models.Responses;
@@ -15,7 +13,6 @@ using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace api.makebe.agenda.applications.Services
 {
@@ -55,7 +52,7 @@ namespace api.makebe.agenda.applications.Services
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(usuario);
             var paginacaoDTO = _mapper.Map<PaginacaoDTO<AgendaDTO>>(paginacao);
 
-            var response = paginacao?.objetoPesquisa?.Tipo == (int)TipoAgenda.Loja ?
+            var response = paginacao?.objetoPesquisa?.Tipo == (int)TipoUsuario.Loja ?
                 await _contextFactoryLoja.BuscarPaginado(paginacaoDTO, conta.Id.ToString() ?? string.Empty) :
                  await _contextFactoryColaborador.BuscarPaginado(paginacaoDTO, conta.Id.ToString() ?? string.Empty);
 
@@ -66,7 +63,7 @@ namespace api.makebe.agenda.applications.Services
         }
         public async Task<ResponseModel<AgendaDTO>> BuscarPorId(int id, int tipo)
         {
-            var response = tipo == (int)TipoAgenda.Loja ?
+            var response = tipo == (int)TipoUsuario.Loja ?
                 await _contextFactoryLoja.BuscarPorId(id) :
                  await _contextFactoryColaborador.BuscarPorId(id);
             if (response.Id == 0)
@@ -89,13 +86,13 @@ namespace api.makebe.agenda.applications.Services
                 await _unitOfWork.BeginTransaction();
                 var agendaRetorno = await _agendaDomainService.Persitir(agenda);
 
-                if(payload?.Tipo == (int)TipoAgenda.Loja)
+                if(payload?.Tipo == (int)TipoUsuario.Loja)
                 {
                     var agendaLoja = _mapper.Map<AgendaLoja>(payload);
                     agendaLoja.IdAgenda = agendaRetorno;
                     await _contextFactoryLoja.Persistir(agendaLoja);
                 }
-                if (payload?.Tipo == (int)TipoAgenda.Colaborador)
+                if (payload?.Tipo == (int)TipoUsuario.Colaborador)
                 {
                     var agendaColaborador = _mapper.Map<AgendaColaborador>(payload);
                     agendaColaborador.IdAgenda = agendaRetorno;
