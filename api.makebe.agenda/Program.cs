@@ -19,7 +19,7 @@ builder.Services.InitializeInfraRepositoryBootstrapper();
 builder.Services.InitializeRepositoryBootstrapper();
 builder.Services.InitializeDataBootstrapper();
 builder.Services.InitializeApplicationsAutomapperBootstrapper();
-builder.Services.InitializeServicesBootstrapper();
+builder.Services.InitializeServicesBootstrapper(builder.Configuration);
 builder.Services.InitializeDomainServiceBootstrapper();
 builder.Services.InitializeInfraServiceCrossCuttingBootstrapper();
 builder.Services.InitializeInfraEventBootstrapper();

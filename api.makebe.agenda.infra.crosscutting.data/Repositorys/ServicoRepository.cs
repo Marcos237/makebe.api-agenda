@@ -53,6 +53,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var retorno = await _dbAgenda.Connection.QueryAsync<Servicos>(sql, new { ContaId = contaId }) ?? Enumerable.Empty<Servicos>();
             return retorno;
         }
+        public async Task<IEnumerable<Servicos>> BuscarServicosPorColaboradoId(int id)
+        {
+            var sql = @"SELECT s.Id, s.Descricao FROM ColaboradorProfissional cp
+                        INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId
+                        INNER JOIN Servicos s ON s.Id = cp.ServicoId
+                        WHERE c.Id  = @ColaboradorId AND s.Status = 1";
+            var retorno = await _dbAgenda.Connection.QueryAsync<Servicos>(sql, new { ColaboradorId = id }) ?? Enumerable.Empty<Servicos>();
+            return retorno;
+        }
 
         public async Task<int> Salvar(Servicos servicos)
         {

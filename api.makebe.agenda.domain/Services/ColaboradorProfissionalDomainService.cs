@@ -20,10 +20,20 @@ namespace api.makebe.agenda.domain.Services
             var colaboradorFiltrado = await Filtrar(retornoColaborador);
             return colaboradorFiltrado;
         }
+
         public async Task<ColaboradorProfissionalDTO> BuscarPorId(int id)
         {
             var retorno = await _ColaboradorProfissionalRepository.BuscarPorId(id);
             return retorno;
+        }
+
+        public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorConta(string contaId, IEnumerable<UsuarioDTO> usuarios)
+        {
+            var colaboradores = await _ColaboradorProfissionalRepository.BuscarPorContaId(contaId) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+            var colaboradoresCompletos = colaboradores.Join(usuarios, colaborador => colaborador.UsuarioId, usuario => usuario.Id,
+          (colaborador, usuario) => AdicionarColaboradorProfissional(colaborador, usuario));
+            return colaboradoresCompletos;
+
         }
         public async Task<int> Salvar(ColaboradorProfissional colaborador)
         {

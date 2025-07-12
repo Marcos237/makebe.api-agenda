@@ -37,6 +37,12 @@ namespace api.makebe.agenda.domain.Services
             return response;
         }
 
+        public async Task<IEnumerable<Servicos>> BuscarServicosPorColaboradoId(int id)
+        {
+            var response = await _servicosRepository.BuscarServicosPorColaboradoId(id);
+            return response;
+        }
+
         public async Task<int> Persitir(Servicos item)
         {
             item.Status = true;

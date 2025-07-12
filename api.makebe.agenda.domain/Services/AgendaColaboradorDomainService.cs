@@ -60,11 +60,11 @@ namespace api.makebe.agenda.domain.Services
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
 
-            var pesquisa = paginacao?.objetoPesquisa;
+            var pesquisa = paginacao?.objetoPesquisa ?? new AgendaDTO();
 
             var filtrados = await FiltrarPorDiaSemana(paginacao!, pesquisa);
-            filtrados = await PesquisarPorAgendaAberta(paginacao?.objetoPesquisa!, filtrados);
-            filtrados = await PesquisarPorBloqueio(paginacao?.objetoPesquisa!, filtrados);
+            filtrados = await PesquisarPorAgendaAberta(pesquisa, filtrados);
+            filtrados = await PesquisarPorBloqueio(pesquisa, filtrados);
 
             paginacao!.total = filtrados.Count();
             paginacao.totalPaginas = (paginacao.total + paginacao.quantidadePagina - 1) / paginacao.quantidadePagina;

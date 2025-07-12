@@ -64,6 +64,24 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<AgendaDTO>(sql, new { Id = id }) ?? new AgendaDTO();
             return response;
         }
+        public async Task<IEnumerable<AgendaDTO>> BuscarAgendaLojaDentroDoBloqueio(DateTime dataInicio, DateTime DataFim, int idLoja)
+        {
+            var sql = @"SELECT a.*, al.IdLoja
+                       FROM AgendaLoja al
+                       INNER JOIN Agenda a ON a.Id = al.IdAgenda
+                       WHERE 
+                       	a.AgendaBloqueadaInicio >= @DataInicioAgendamento 
+                         AND a.AgendaBloqueadaFim <= @DataTerminoAgendamento
+                         AND a.Status = 1 
+                         AND al.IdLoja = @LojaId ;";
+            var response = await _dbAgenda.Connection.QueryAsync<AgendaDTO>(sql, new
+            {
+                DataInicioAgendamento = dataInicio,
+                DataTerminoAgendamento = DataFim,
+                IdLoja = idLoja
+            });
+            return response;
+        }
 
         public async Task<int> Salvar(AgendaLoja agendaLoja)
         {
@@ -99,7 +117,6 @@ namespace api.makebe.agenda.infra.data.Repositorys
             }) > 0;
             return response;
         }
-
         private Task<string> BuscarConsulta()
         {
             var query = @"SELECT 

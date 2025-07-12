@@ -58,6 +58,25 @@ namespace api.makebe.agenda.Controllers
             }
         }
 
+        [HttpGet("BuscarPorIdConta")]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> BuscarPorIdConta()
+        {
+            try
+            {
+                var retorno = await _ColaboradorProfissionalApplicationService.BuscarPorConta(Chave ?? string.Empty);
+                if (retorno.datas?.Any() == false)
+                {
+                    return StatusCode(StatusCodes.Status204NoContent, retorno);
+                }
+                return StatusCode(StatusCodes.Status200OK, retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Post(ColaboradorProfissionalPayload model)

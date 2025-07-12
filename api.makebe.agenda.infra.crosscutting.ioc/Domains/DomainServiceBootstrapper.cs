@@ -1,4 +1,5 @@
 ﻿using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Interfaces;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.domain.Services;
 using api.makebe.agenda.domain.Validations;
@@ -33,6 +34,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IAgendaContextDomainService<AgendaLoja>, AgendaLojaDomainService>();
             services.AddScoped<IAgendaContextDomainService<AgendaColaborador>, AgendaColaboradorDomainService>();
             services.AddScoped<IAgendaColaboradorDomainService, AgendaColaboradorDomainService>();
+            services.AddScoped<IFiltrosAgendamentoDomainService, FiltrosAgendamentoDomainService>();
 
 
             services.AddScoped<IValidationService<Loja>, ValidationService<Loja>>();

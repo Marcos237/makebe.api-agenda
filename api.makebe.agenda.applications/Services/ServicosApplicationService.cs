@@ -63,7 +63,15 @@ namespace api.makebe.agenda.applications.Services
             var responseMap = _mapper.Map<ServicoDTO>(response);
             return ResponseModelHelper<ServicoDTO>.RetornarResponseModel(responseMap, _notificationContext.Notifications);
         }
+        public async Task<ResponseModel<ServicoDTO>> BuscarServicosPorColaboradoId(int id)
+        {
+            var response = await _servicosDomainService.BuscarServicosPorColaboradoId(id);
+            if (response.Any() == false)
+                _validationService.RetornarListaVazia(BaseConstant.ListaVazia, nameof(ServicoDTO));
 
+            var responseMap = _mapper.Map<IEnumerable<ServicoDTO>>(response);
+            return ResponseModelHelper<ServicoDTO>.RetornarResponseModel(responseMap, _notificationContext.Notifications);
+        }
         public async Task<ResponseModel<ServicoDTO>> Persitir(ServicoDTO item, string usuarioId)
         {
             var servicoMap = _mapper.Map<Servicos>(item);

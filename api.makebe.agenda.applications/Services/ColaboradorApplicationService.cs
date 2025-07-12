@@ -16,7 +16,6 @@ using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using ContasEvent;
 using lib.makebe.domain.Interfaces.Services;
-using Microsoft.Extensions.Configuration;
 using PermissoesEvent;
 using UsuariosEvent;
 
@@ -31,11 +30,10 @@ namespace api.makebe.agenda.applications.Services
         private readonly IColaboradorDomainService _colaboradorDomainService;
         private readonly IContaColaboradorDomainService _usuarioColaboradorDomainService;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
-        private readonly IConfiguration _configuration;
         private readonly IUsuarioEventCrossCuttingService _usuarioEventCrossCuttingService;
         private readonly IPermissaoEventCrossCuttingService _permissaoEventCrossCuttingService;
         public ColaboradorApplicationService(INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork,
-            IColaboradorDomainService colaboradorDomainService, IContaColaboradorDomainService usuarioColaboradorDomainService, IConfiguration configuration,
+            IColaboradorDomainService colaboradorDomainService, IContaColaboradorDomainService usuarioColaboradorDomainService,
             IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService,
             IUsuarioEventCrossCuttingService usuarioEventCrossCuttingService, IPermissaoEventCrossCuttingService permissaoEventCrossCuttingService)
         {
@@ -45,7 +43,6 @@ namespace api.makebe.agenda.applications.Services
             _colaboradorDomainService = colaboradorDomainService;
             _usuarioColaboradorDomainService = usuarioColaboradorDomainService;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
-            _configuration = configuration;
             _usuarioEventCrossCuttingService = usuarioEventCrossCuttingService;
             _permissaoEventCrossCuttingService = permissaoEventCrossCuttingService;
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
@@ -91,7 +88,10 @@ namespace api.makebe.agenda.applications.Services
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
             var usuarioConta = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta?.Id ?? Guid.Empty };
             var usuarioEvent = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConta);
-            var usuarioMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuarioEvent.UsuariosEvents);
+            var permissaoId = ConfigHelper.GetValue(BaseConstant.ClientePermissao ?? string.Empty);
+            var usuarioContaFiltro = usuarioEvent.UsuariosEvents?.Where(usuario => usuario.PermissaoId != PropiedadesHelper.ParseGuidOrDefault(permissaoId
+                ?? string.Empty));
+            var usuarioMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuarioContaFiltro);
             var colaboradorMap = await _colaboradorDomainService.MontarColaboradores(usuarioMap, conta?.Id.ToString() ?? string.Empty);
             return ResponseModelHelper<ColaboradorDTO>.RetornarResponseModel(colaboradorMap, _notificationContext.Notifications);
         }
@@ -131,7 +131,10 @@ namespace api.makebe.agenda.applications.Services
         public async Task<UsuarioRegistradoEvent> SalvarUsuario(ColaboradorPayload usuarioPayload)
         {
             if(usuarioPayload.Tipo == (int)TipoUsuario.Cliente)
-                usuarioPayload.PermissaoId = _configuration[BaseConstant.ClientePermissao] ?? string.Empty;
+            {
+                usuarioPayload.PermissaoId = ConfigHelper.GetValue(BaseConstant.ClientePermissao ?? string.Empty);
+                usuarioPayload.Status = true;
+            }
 
             var usuarioMap = _mapper.Map<UsuarioRegistradoEvent>(usuarioPayload);
             var usuarioEvent = await _usuarioEventCrossCuttingService.SalvarUsuario(usuarioMap);
@@ -144,12 +147,12 @@ namespace api.makebe.agenda.applications.Services
         public async Task SalvarUsuarioConta(ColaboradorPayload usuarioPayload, string usuario, Colaborador colaboradorMap, 
             UsuarioContaRegistradoEvent registradoEvent, UsuarioContaEvent contaEvent)
         {
-            if (usuarioPayload.Id == 0 && usuarioPayload.Tipo != (int)TipoUsuario.Cliente)
+            if (usuarioPayload.Id == 0)
             {
                 var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
                 contaEvent.ContaId = conta?.Id;
                 contaEvent.UsuarioId = colaboradorMap.UsuarioId;
-                contaEvent.TipoId = PropiedadesHelper.ParseGuidOrDefault(_configuration[BaseConstant.TipoContaInicialOPeradorLoja]);
+                contaEvent.TipoId = PropiedadesHelper.ParseGuidOrDefault(ConfigHelper.GetValue(BaseConstant.TipoContaInicialOPeradorLoja));
                 contaEvent.Id = Guid.NewGuid();
 
                 registradoEvent.Conta = contaEvent;

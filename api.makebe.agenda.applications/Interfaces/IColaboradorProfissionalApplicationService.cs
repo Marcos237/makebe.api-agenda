@@ -10,5 +10,6 @@ namespace api.makebe.agenda.applications.Interfaces
         Task<ResponseModel<ColaboradorProfissionalDTO>> BuscarUsuarioPorId(int id);
         Task<ResponseModel<ColaboradorProfissionalDTO>> Persistir(ColaboradorProfissionalPayload usuarioPayload);
         Task<bool> Desativar(int id);
+        Task<ResponseModel<ColaboradorProfissionalDTO>> BuscarPorConta(string usuario);
     }
 }
