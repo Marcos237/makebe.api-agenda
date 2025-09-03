@@ -12,17 +12,20 @@ namespace api.makebe.agenda.domain.Validations
             RuleFor(colaborador => new IdsObrigatoriosSpecifications().IsSatisfiedBy(colaborador.ColaboradorId!)).Must(colaborador =>
             {
                 return colaborador;
-            }).WithMessage(ColaboradorProfissionalConstant.ColaboradorIdValidacao);
+            }).WithMessage(ColaboradorProfissionalConstant.ColaboradorIdValidacao)
+            .WithName(nameof(ColaboradorProfissional.ColaboradorId));
 
             RuleFor(colaborador => new IdsObrigatoriosSpecifications().IsSatisfiedBy(colaborador.LojaId!)).Must(colaborador =>
             {
                 return colaborador;
-            }).WithMessage(ColaboradorProfissionalConstant.LojaIdValidacao);
+            }).WithMessage(ColaboradorProfissionalConstant.LojaIdValidacao)
+            .WithName(nameof(ColaboradorProfissional.LojaId));
 
             RuleFor(colaborador => new IdsObrigatoriosSpecifications().IsSatisfiedBy(colaborador.ServicoId!)).Must(colaborador =>
             {
                 return colaborador;
-            }).WithMessage(ColaboradorProfissionalConstant.ServicoValidacao);
+            }).WithMessage(ColaboradorProfissionalConstant.ServicoValidacao)
+            .WithName(nameof(ColaboradorProfissional.ServicoId));
 
             RuleFor(colaborador => colaborador).Must(colaborador =>
             {
@@ -35,7 +38,8 @@ namespace api.makebe.agenda.domain.Validations
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);        
                 return new TamanhoCamposSpecification().IsSatisfiedBy(campos);
             })
-            .WithMessage(BaseConstant.Campos);
+            .WithMessage(BaseConstant.Campos)
+            .WithName("Descricao");
 
         }
     }

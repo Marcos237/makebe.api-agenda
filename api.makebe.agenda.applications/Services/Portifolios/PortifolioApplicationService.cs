@@ -12,26 +12,26 @@ using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Portifolios
 {
     public class PortifolioApplicationService : IPortifolioApplicationService
     {
         private readonly IPortifolioDomainService _portifolioDomainService;
         private readonly IMapper _mapper;
-        private readonly IValidationService<Portifolio> _validationLojaPortifolioService;
         private readonly INotificationContext _notificationContext;
         private readonly IPortifolioImagemApplicationService _portifolioImagemApplicationService;
+        private readonly IPortifolioValidacaoAplicationService _portifolioValidacaoAplicationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
         private readonly IContextFactory<IPortifolioContextApplicationService> _contextFactory;
 
 
-        public PortifolioApplicationService(IPortifolioDomainService lojaPortifolioDomainService, IMapper mapper, IValidationService<Portifolio> validationLojaPortifolioService,
-            INotificationContext notificationContext, IPortifolioImagemApplicationService lojaPortifolioImagemApplicationService, 
+        public PortifolioApplicationService(IPortifolioDomainService lojaPortifolioDomainService, IMapper mapper,
+            INotificationContext notificationContext, IPortifolioImagemApplicationService lojaPortifolioImagemApplicationService, IPortifolioValidacaoAplicationService portifolioValidacaoAplicationService,
             IUnitOfWork unitOfWork, IUsuarioSessaoDomainService usuarioSessaoDomainService, IContextFactory<IPortifolioContextApplicationService> contextFactory)
         {
             _portifolioDomainService = lojaPortifolioDomainService;
-            _validationLojaPortifolioService = validationLojaPortifolioService;
+            _portifolioValidacaoAplicationService = portifolioValidacaoAplicationService;
             _mapper = mapper;
             _notificationContext = notificationContext;
             _portifolioImagemApplicationService = lojaPortifolioImagemApplicationService;
@@ -45,7 +45,7 @@ namespace api.makebe.agenda.applications.Services
             var instancia = await _contextFactory.ExecutarService(paginacao?.objetoPesquisa?.TipoUsuarioId ?? 0);
             var paginacaoRetorno = await instancia.BuscarPortifolios(paginacao!, usuarioId);
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
-                _validationLojaPortifolioService.RetornarListaVazia(nameof(Portifolio), BaseConstant.ListaVazia);
+                _portifolioValidacaoAplicationService.RetornarListaVazia(nameof(Portifolio), BaseConstant.ListaVazia);
 
             return ResponseModelHelper<PaginacaoDTO<PortifolioDTO>>.RetornarResponseModel(paginacaoRetorno!, _notificationContext.Notifications);
         }
@@ -56,7 +56,7 @@ namespace api.makebe.agenda.applications.Services
             retorno.TipoUsuarioId = TipoUsuarioId;
             retorno.PortifolioImagens = await _portifolioImagemApplicationService.BuscarImagensPorLojaPortifolioId(id) ?? Enumerable.Empty<PortifolioImagemDTO>();
             if (retorno.Id == 0)
-                _validationLojaPortifolioService.RetornarListaVazia(nameof(Portifolio), BaseConstant.ListaVazia);
+                _portifolioValidacaoAplicationService.RetornarListaVazia(nameof(Portifolio), BaseConstant.ListaVazia);
 
             return ResponseModelHelper<PortifolioDTO>.RetornarResponseModel(retorno!, _notificationContext.Notifications);
         }
@@ -66,7 +66,7 @@ namespace api.makebe.agenda.applications.Services
             var portifolioItem = _mapper.Map<Portifolio>(portifolio);
             var arquivos = _mapper.Map<IEnumerable<Arquivo>>(portifolio.PortifolioImagens);
             var arquivoIsvalid = await _portifolioImagemApplicationService.ValidarArquivos(arquivos);
-            var isValidate = await _validationLojaPortifolioService.Validar(portifolioItem);
+            var isValidate = await _portifolioValidacaoAplicationService.Validar(portifolio);
             if (!isValidate || !arquivoIsvalid)
             {
                 var lojaErro = _mapper.Map<PortifolioDTO>(portifolioItem);

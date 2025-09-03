@@ -2,6 +2,7 @@
 {
     public  class Arquivo
     {
+        public string? Id { get; set; }
         public string? TipoArquivo { get; set; }
         public string? ArquivoBase64 { get; set; }
         public string? NomeArquivo { get; set; }

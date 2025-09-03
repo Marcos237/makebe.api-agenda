@@ -10,6 +10,12 @@ namespace api.makebe.agenda.domain.Validations
     {
         public EnderecoValidation()
         {
+
+            RuleFor(endereco => new TextoObrigatorioSpecification().IsSatisfiedBy(endereco.CEP ?? string.Empty))
+              .Must(endereco => endereco)
+              .WithMessage(EnderecoConstant.CepInvalido)
+              .WithName(nameof(Endereco.CEP));
+
             RuleFor(endereco => new LogradouroSpecifications().IsSatisfiedBy(endereco))
               .Must(endereco => endereco)
               .WithMessage(EnderecoConstant.LogradouroInvalido)
@@ -47,7 +53,7 @@ namespace api.makebe.agenda.domain.Validations
 
                     return new TamanhoCamposSpecification().IsSatisfiedBy(campos);
                 })
-                .WithMessage(BaseConstant.Campos);
+                .WithMessage(BaseConstant.Campos).WithName("LojaColaborador");
         }
     }
 }

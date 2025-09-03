@@ -1,4 +1,7 @@
-﻿using api.makebe.agenda.domain.Entidades;
+﻿using api.makebe.agenda.applications.Interfaces;
+using api.makebe.agenda.applications.Services.Portifolios;
+using api.makebe.agenda.domain.DTO;
+using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Interfaces;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.domain.Services;
@@ -35,26 +38,37 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IAgendaContextDomainService<AgendaColaborador>, AgendaColaboradorDomainService>();
             services.AddScoped<IAgendaColaboradorDomainService, AgendaColaboradorDomainService>();
             services.AddScoped<IFiltrosAgendamentoDomainService, FiltrosAgendamentoDomainService>();
+            services.AddScoped<IPortifolioValidacaoAplicationService, PortifolioValidacaoAplicationService>();
 
 
             services.AddScoped<IValidationService<Loja>, ValidationService<Loja>>();
             services.AddScoped<IValidationService<Endereco>, ValidationService<Endereco>>();
             services.AddScoped<IValidationService<LojaEndereco>, ValidationService<LojaEndereco>>();
+            services.AddScoped<IValidationService<ColaboradorEndereco>, ValidationService<ColaboradorEndereco>>();
             services.AddScoped<IValidationService<Portifolio>, ValidationService<Portifolio>>();
             services.AddScoped<IValidationService<Arquivo>, ValidationService<Arquivo>>();
             services.AddScoped<IValidationService<ColaboradorProfissional>, ValidationService<ColaboradorProfissional>>();
-            services.AddScoped<IValidationService<Servicos>, ValidationService<Servicos>>();
+            services.AddScoped<IValidationService<Servico>, ValidationService<Servico>>();
             services.AddScoped<IValidationService<Agenda>, ValidationService<Agenda>>();
+            services.AddScoped<IValidationService<LojaPortifolio>, ValidationService<LojaPortifolio>>();
+            services.AddScoped<IValidationService<ColaboradorPortifolio>, ValidationService<ColaboradorPortifolio>>();
+            services.AddScoped<IValidationService<AgendaLoja>, ValidationService<AgendaLoja>>();
+            services.AddScoped<IValidationService<AgendaColaborador>, ValidationService<AgendaColaborador>>();
 
             services.AddScoped<IValidator<Loja>, LojaValidation>();
             services.AddScoped<IValidator<Endereco>, EnderecoValidation>();
             services.AddScoped<IValidator<ContaLoja>, UsuarioLojaValidation>();
             services.AddScoped<IValidator<LojaEndereco>, LojaEnderecoValidation>();
+            services.AddScoped<IValidator<ColaboradorEndereco>, ColaboradorEnderecoValidation>();
             services.AddScoped<IValidator<Portifolio>, PortifolioValidation>();
             services.AddScoped<IValidator<Arquivo>, ArquivoValidation>();
             services.AddScoped<IValidator<ColaboradorProfissional>, ColaboradorProfissionalValidation>();
-            services.AddScoped<IValidator<Servicos>, ServicoValidation>();
+            services.AddScoped<IValidator<Servico>, ServicoValidation>();
             services.AddScoped<IValidator<Agenda>, AgendaValidation>();
+            services.AddScoped<IValidator<LojaPortifolio>, LojaPortifolioValidation>();
+            services.AddScoped<IValidator<ColaboradorPortifolio>, ColaboradorPortifolioValidation>();
+            services.AddScoped<IValidator<AgendaLoja>, AgendaLojaValidation>();
+            services.AddScoped<IValidator<AgendaColaborador>, AgendaColaboradorValidation>();
 
         }
     }

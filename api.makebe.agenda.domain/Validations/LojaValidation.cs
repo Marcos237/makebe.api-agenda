@@ -18,8 +18,8 @@ namespace api.makebe.agenda.domain.Validations
 
             RuleFor(loja => new RazaoSocialSpecification().IsSatisfiedBy(loja))
                 .Must(loja => loja)
-                .WithMessage(LojaConstants.CnpjCadastrado)
-                .WithName(nameof(Loja.CNPJ));
+                .WithMessage(LojaConstants.RazaoSocialInvalido)
+                .WithName(nameof(Loja.RazaoSocial));
 
             RuleFor(loja => new EmailSpecifications().IsSatisfiedBy(loja))
                 .Must(loja => loja)
@@ -30,6 +30,11 @@ namespace api.makebe.agenda.domain.Validations
                 .Must(loja => loja)
                 .WithMessage(LojaConstants.TelefoneInvalido)
                 .WithName(nameof(Loja.Telefone));
+
+            RuleFor(loja => new IdsObrigatoriosSpecifications().IsSatisfiedBy(loja.TipoLojaId))
+                .Must(loja => loja)
+                .WithMessage(LojaConstants.TipoLojaInvalido)
+                .WithName("TipoLoja");
 
             RuleFor(loja => loja)
                 .Must(loja =>
@@ -46,7 +51,8 @@ namespace api.makebe.agenda.domain.Validations
 
                     return new TamanhoCamposSpecification().IsSatisfiedBy(campos);
                 })
-                .WithMessage(BaseConstant.Campos);
+                .WithMessage(BaseConstant.Campos)
+                .WithName(nameof(Loja.RazaoSocial));
 
         }
     }

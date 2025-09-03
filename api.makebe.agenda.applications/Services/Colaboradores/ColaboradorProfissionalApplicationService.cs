@@ -13,7 +13,7 @@ using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using AutoMapper;
 using ContasEvent;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Colaboradores
 {
     public class ColaboradorProfissionalApplicationService : IColaboradorProfissionalApplicationService
     {
@@ -36,7 +36,7 @@ namespace api.makebe.agenda.applications.Services
         public async Task<ResponseModel<PaginacaoDTO<ColaboradorProfissionalDTO>>> BuscarUsuariosPaginado(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, string usuario)
         {
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
-            var usuarioConsultadoEvent = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta?.Id ??  Guid.Empty };
+            var usuarioConsultadoEvent = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta?.Id ?? Guid.Empty };
             var usuariosConta = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConsultadoEvent);
             var permissaoId = ConfigHelper.GetValue(BaseConstant.ClientePermissao ?? string.Empty);
             var usuarioContaFiltro = usuariosConta.UsuariosEvents?.Where(usuario => usuario.PermissaoId != PropiedadesHelper.ParseGuidOrDefault(permissaoId

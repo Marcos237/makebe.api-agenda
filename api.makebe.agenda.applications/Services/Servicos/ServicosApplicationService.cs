@@ -12,21 +12,21 @@ using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Servicos
 {
     public class ServicosApplicationService : IServicoApplicationService
     {
         private readonly IServicosDomainService _servicosDomainService;
         private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
         private readonly INotificationContext _notificationContext;
-        private readonly IValidationService<Servicos> _validationService;
+        private readonly IValidationService<Servico> _validationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IContaServicoDomainService _contaServicoDomainService;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
         private readonly IMapper _mapper;
-        public ServicosApplicationService(IServicosDomainService servicosDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService, 
-            INotificationContext notificationContext, IValidationService<Servicos> validationService, IUnitOfWork unitOfWork, IContaServicoDomainService contaServicoDomainService
-           ,IUsuarioSessaoDomainService usuarioSessaoDomainService, IMapper mapper)
+        public ServicosApplicationService(IServicosDomainService servicosDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService,
+            INotificationContext notificationContext, IValidationService<Servico> validationService, IUnitOfWork unitOfWork, IContaServicoDomainService contaServicoDomainService
+           , IUsuarioSessaoDomainService usuarioSessaoDomainService, IMapper mapper)
         {
             _servicosDomainService = servicosDomainService;
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
@@ -34,15 +34,15 @@ namespace api.makebe.agenda.applications.Services
             _validationService = validationService;
             _unitOfWork = unitOfWork;
             _contaServicoDomainService = contaServicoDomainService;
-            _usuarioSessaoDomainService = usuarioSessaoDomainService;   
+            _usuarioSessaoDomainService = usuarioSessaoDomainService;
             _mapper = mapper;
         }
 
-        public async Task<ResponseModel<Servicos>> BuscarServicos(string usuarioId)
+        public async Task<ResponseModel<Servico>> BuscarServicos(string usuarioId)
         {
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
             var retorno = await _servicosDomainService.BuscarServicos(conta?.Id.ToString() ?? string.Empty);
-            return ResponseModelHelper<Servicos>.RetornarResponseModel(retorno, _notificationContext.Notifications);
+            return ResponseModelHelper<Servico>.RetornarResponseModel(retorno, _notificationContext.Notifications);
         }
 
         public async Task<ResponseModel<PaginacaoDTO<ServicoDTO>>> BuscarTodosPaginado(PaginacaoDTO<ServicoDTO> paginacaoDTO, string usuarioId)
@@ -74,7 +74,7 @@ namespace api.makebe.agenda.applications.Services
         }
         public async Task<ResponseModel<ServicoDTO>> Persitir(ServicoDTO item, string usuarioId)
         {
-            var servicoMap = _mapper.Map<Servicos>(item);
+            var servicoMap = _mapper.Map<Servico>(item);
             var isValidate = await _validationService.Validar(servicoMap);
             if (!isValidate)
                 return ResponseModelHelper<ServicoDTO>.RetornarResponseModel(item, _notificationContext.Notifications);
@@ -101,7 +101,7 @@ namespace api.makebe.agenda.applications.Services
                 throw;
             }
         }
-        public async  Task<bool> Desativar(int id, string usuarioId)
+        public async Task<bool> Desativar(int id, string usuarioId)
         {
             var retorno = await _servicosDomainService.Desativar(id);
             var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);

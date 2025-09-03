@@ -14,12 +14,14 @@ using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Agendas
 {
     public class AgendaApplicationService : IAgendaApplicationService
     {
         private readonly IAgendaDomainService _agendaDomainService;
         private readonly IValidationService<Agenda> _validation;
+        private readonly IValidationService<AgendaLoja> _validationLoja;
+        private readonly IValidationService<AgendaColaborador> _validationColaborador;
         private readonly INotificationContext _notificationContext;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
@@ -31,9 +33,10 @@ namespace api.makebe.agenda.applications.Services
             IAgendaContextDomainService<AgendaLoja> contextFactoryLoja,
             IAgendaContextDomainService<AgendaColaborador> contextFactoryColaborador,
             IAgendaDomainService agendaDomainService,
-            IValidationService<Agenda> validation, 
+            IValidationService<Agenda> validation,
             INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork,
-            IContaEventCrossCuttingService contaEventCrossCuttingService, IUsuarioSessaoDomainService usuarioSessaoDomainService)
+            IContaEventCrossCuttingService contaEventCrossCuttingService, IUsuarioSessaoDomainService usuarioSessaoDomainService,
+            IValidationService<AgendaLoja> validationLoja, IValidationService<AgendaColaborador> validationColaborador)
         {
             _agendaDomainService = agendaDomainService;
             _validation = validation;
@@ -44,6 +47,8 @@ namespace api.makebe.agenda.applications.Services
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
             _contextFactoryLoja = contextFactoryLoja;
             _contextFactoryColaborador = contextFactoryColaborador;
+            _validationLoja = validationLoja;
+            _validationColaborador = validationColaborador;
         }
 
         public async Task<ResponseModel<PaginacaoDTO<AgendaDTO>>> BuscarTodosPaginado(PaginacaoDTO<AgendaPayload> paginacao, string usuarioId)
@@ -74,8 +79,17 @@ namespace api.makebe.agenda.applications.Services
         public async Task<ResponseModel<AgendaDTO>> Persitir(AgendaPayload payload, string usuarioId)
         {
             var agenda = _mapper.Map<Agenda>(payload);
+            var agendaColaborador = _mapper.Map<AgendaColaborador>(payload);
+            var isValidateItem = false;
+            var agendaLoja = _mapper.Map<AgendaLoja>(payload);
+            if (payload?.Tipo == (int)TipoUsuario.Loja)
+                isValidateItem = await _validationLoja.Validar(agendaLoja);
+            if (payload?.Tipo == (int)TipoUsuario.Colaborador)
+                isValidateItem = await _validationColaborador.Validar(agendaColaborador);
+
+
             var isValidate = await _validation.Validar(agenda);
-            if (!isValidate)
+            if (!isValidate && !isValidateItem)
             {
                 var agendaResponseErro = _mapper.Map<AgendaDTO>(payload);
                 return ResponseModelHelper<AgendaDTO>.RetornarResponseModel(agendaResponseErro, _notificationContext.Notifications);
@@ -86,20 +100,19 @@ namespace api.makebe.agenda.applications.Services
                 await _unitOfWork.BeginTransaction();
                 var agendaRetorno = await _agendaDomainService.Persitir(agenda);
 
-                if(payload?.Tipo == (int)TipoUsuario.Loja)
+                if (payload?.Tipo == (int)TipoUsuario.Loja)
                 {
-                    var agendaLoja = _mapper.Map<AgendaLoja>(payload);
+
                     agendaLoja.IdAgenda = agendaRetorno;
                     await _contextFactoryLoja.Persistir(agendaLoja);
                 }
                 if (payload?.Tipo == (int)TipoUsuario.Colaborador)
                 {
-                    var agendaColaborador = _mapper.Map<AgendaColaborador>(payload);
                     agendaColaborador.IdAgenda = agendaRetorno;
                     await _contextFactoryColaborador.Persistir(agendaColaborador);
                 }
 
-                    _unitOfWork.Commit();
+                _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
 

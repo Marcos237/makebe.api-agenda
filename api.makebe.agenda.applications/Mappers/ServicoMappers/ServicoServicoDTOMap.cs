@@ -9,7 +9,7 @@ namespace api.makebe.agenda.applications.Mappers.ServicoMappers
     {
         public ServicoServicoDTOMap()
         {
-            CreateMap<Servicos, ServicoDTO>()
+            CreateMap<Servico, ServicoDTO>()
                 .ForMember(dest => dest.ValorExtenso, origem => origem.MapFrom(x => ValoresHelper.SetValorExtenso(x.Valor)))
                 .ForMember(dest => dest.PeriodoExtenso, origem => origem.MapFrom(x => ValoresHelper.SetPeridoExtenso(x.Periodo)))
                 .ReverseMap();

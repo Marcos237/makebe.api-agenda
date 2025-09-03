@@ -8,7 +8,7 @@ using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using AutoMapper;
 using ContasEvent;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Enderecos
 {
     public class EnderecoColaboradorApplicationService : IEnderecoContextApplicationService
     {

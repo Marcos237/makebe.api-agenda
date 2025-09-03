@@ -19,7 +19,7 @@ using lib.makebe.domain.Interfaces.Services;
 using PermissoesEvent;
 using UsuariosEvent;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Colaboradores
 {
     public class ColaboradorApplicationService : IColaboradorApplicationService
     {
@@ -130,7 +130,7 @@ namespace api.makebe.agenda.applications.Services
 
         public async Task<UsuarioRegistradoEvent> SalvarUsuario(ColaboradorPayload usuarioPayload)
         {
-            if(usuarioPayload.Tipo == (int)TipoUsuario.Cliente)
+            if (usuarioPayload.Tipo == (int)TipoUsuario.Cliente)
             {
                 usuarioPayload.PermissaoId = ConfigHelper.GetValue(BaseConstant.ClientePermissao ?? string.Empty);
                 usuarioPayload.Status = true;
@@ -144,7 +144,7 @@ namespace api.makebe.agenda.applications.Services
             return usuarioEvent;
         }
 
-        public async Task SalvarUsuarioConta(ColaboradorPayload usuarioPayload, string usuario, Colaborador colaboradorMap, 
+        public async Task SalvarUsuarioConta(ColaboradorPayload usuarioPayload, string usuario, Colaborador colaboradorMap,
             UsuarioContaRegistradoEvent registradoEvent, UsuarioContaEvent contaEvent)
         {
             if (usuarioPayload.Id == 0)

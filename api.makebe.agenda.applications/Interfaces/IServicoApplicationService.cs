@@ -6,7 +6,7 @@ namespace api.makebe.agenda.applications.Interfaces
 {
     public interface IServicoApplicationService
     {
-        Task<ResponseModel<Servicos>> BuscarServicos(string usuarioId);
+        Task<ResponseModel<Servico>> BuscarServicos(string usuarioId);
         Task<ResponseModel<PaginacaoDTO<ServicoDTO>>> BuscarTodosPaginado(PaginacaoDTO<ServicoDTO> paginacaoDTO, string usuarioId);
         Task<ResponseModel<ServicoDTO>> BuscarPorId(int id);
         Task<ResponseModel<ServicoDTO>> BuscarServicosPorColaboradoId(int id);

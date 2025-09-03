@@ -6,7 +6,7 @@ using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Lojas
 {
     public class TipoLojaApplicationService : ITipoLojaApplicationService
     {
@@ -14,7 +14,7 @@ namespace api.makebe.agenda.applications.Services
         private readonly INotificationContext _notificationContext;
         public TipoLojaApplicationService(ITipoLojaDomainService tipoLojaDomainService, INotificationContext notificationContext)
         {
-            _tipoLojaDomainService = tipoLojaDomainService; 
+            _tipoLojaDomainService = tipoLojaDomainService;
             _notificationContext = notificationContext;
         }
         public async Task<ResponseModel<TipoLoja>> BuscarTodos()

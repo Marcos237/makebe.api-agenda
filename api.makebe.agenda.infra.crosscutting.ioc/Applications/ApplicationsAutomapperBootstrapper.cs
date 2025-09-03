@@ -44,6 +44,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new PortifolioPayloadToLojaPortifolioMap());
                 mc.AddProfile(new EnderecoPayloadToLojaEnderecoMap());
                 mc.AddProfile(new EnderecoPayloadToColaboradorEnderecoMap());
+                mc.AddProfile(new EnderecoToEnderecoDTOMap());
                 mc.AddProfile(new ServicoServicoDTOMap());
                 mc.AddProfile(new AgendaPayloadToAgendaMap());
                 mc.AddProfile(new AgendaPayloadToAgendaLojaMap());

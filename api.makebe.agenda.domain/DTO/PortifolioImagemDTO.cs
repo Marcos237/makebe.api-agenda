@@ -2,6 +2,7 @@
 {
     public class PortifolioImagemDTO
     {
+        public string? Id { get; set; }
         public int LojaPortifolioImagemId { get; set; }
         public int LojaPortifolioId { get; set; }
         public string? UrlImagem { get; set; }

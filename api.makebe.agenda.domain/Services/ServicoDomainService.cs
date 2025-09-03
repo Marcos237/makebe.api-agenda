@@ -14,7 +14,7 @@ namespace api.makebe.agenda.domain.Services
             _servicosRepository = servicosRepository;   
         }
 
-        public async Task<IEnumerable<Servicos>> BuscarServicos(string contaId)
+        public async Task<IEnumerable<Servico>> BuscarServicos(string contaId)
         {
             return await _servicosRepository.BuscarServicos(contaId);
         }
@@ -31,19 +31,19 @@ namespace api.makebe.agenda.domain.Services
             return result;
         }
 
-        public async Task<Servicos> BuscarPorId(int id)
+        public async Task<Servico> BuscarPorId(int id)
         {
             var response = await _servicosRepository.BuscarPorId(id);
             return response;
         }
 
-        public async Task<IEnumerable<Servicos>> BuscarServicosPorColaboradoId(int id)
+        public async Task<IEnumerable<Servico>> BuscarServicosPorColaboradoId(int id)
         {
             var response = await _servicosRepository.BuscarServicosPorColaboradoId(id);
             return response;
         }
 
-        public async Task<int> Persitir(Servicos item)
+        public async Task<int> Persitir(Servico item)
         {
             item.Status = true;
             item.DataAtualizacao = DateTime.Now;

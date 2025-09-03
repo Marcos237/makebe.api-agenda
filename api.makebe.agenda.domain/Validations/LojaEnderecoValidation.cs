@@ -12,7 +12,7 @@ namespace api.makebe.agenda.domain.Validations
             RuleFor(lojaId => new LojaNaoPodeSerNuloOuVazioSpecification().IsSatisfiedBy(lojaId!.LojaId))
                     .Must(lojaId => lojaId)
                     .WithMessage(EnderecoConstant.LojaInvalido)
-                    .WithName(nameof(LojaEndereco.LojaId));
+                    .WithName("Loja");
         }
     }
 }

@@ -9,7 +9,7 @@ using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using ContasEvent;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Agendamentos
 {
     public class AgendamentoApplicationService : IAgendamentoApplicationService
     {

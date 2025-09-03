@@ -5,12 +5,12 @@ namespace api.makebe.agenda.domain.Interfaces.Repositorys
 {
     public interface IServicosRepository
     {
-        Task<IEnumerable<Servicos>> BuscarServicos(string contaId);
-        Task<Servicos> BuscarPorId(int id);
-        Task<IEnumerable<Servicos>> BuscarServicosPorColaboradoId(int id);
+        Task<IEnumerable<Servico>> BuscarServicos(string contaId);
+        Task<Servico> BuscarPorId(int id);
+        Task<IEnumerable<Servico>> BuscarServicosPorColaboradoId(int id);
         Task<PaginacaoDTO<ServicoDTO>> BuscarPaginado(PaginacaoDTO<ServicoDTO> paginacao, string contaId);
-        Task<int> Salvar(Servicos servicos);
-        Task<Servicos> Atualizar(Servicos servicos);
+        Task<int> Salvar(Servico servicos);
+        Task<Servico> Atualizar(Servico servicos);
         Task<bool> Desativar(int id);   
 
     }

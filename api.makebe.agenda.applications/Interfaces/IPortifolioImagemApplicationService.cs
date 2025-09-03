@@ -7,7 +7,6 @@ namespace api.makebe.agenda.applications.Interfaces
     {
         Task<bool> SalvarImagens(IEnumerable<PortifolioImagemDTO> lojaPortifolioImagens, int lojaPortifolioId);
         Task<bool> ValidarArquivos(IEnumerable<Arquivo> arquivos);
-
         Task<IEnumerable<PortifolioImagemDTO>> BuscarImagensPorLojaPortifolioId(int lojaPortifolioId);
     }
 }
