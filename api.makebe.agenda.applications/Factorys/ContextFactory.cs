@@ -16,7 +16,7 @@ namespace api.makebe.agenda.applications.Factorys
         {
             string termoBusca = string.Empty;
 
-            if (tipo == (int)TipoAgenda.Loja)
+            if (tipo == (int)TipoUsuario.Loja)
                 termoBusca = BaseConstant.InstanciaLoja;
             else
                 termoBusca = BaseConstant.InstanciaColaborador;

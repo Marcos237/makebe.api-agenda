@@ -6,30 +6,31 @@ using api.makebe.agenda.applications.Models.Responses;
 using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Enums;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Enderecos
 {
     public class EnderecoApplicationService : IEnderecoApplicationService
     {
         private readonly IEnderecoDomainService _enderecoDomainService;
-        private readonly IValidationService<Endereco> _validationService;
+        private readonly IEnderecoValidacaoApplicationService _enderecoValidacaoApplicationService;
         private readonly INotificationContext _notificationContext;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
         private readonly IContextFactory<IEnderecoContextApplicationService> _contextFactory;
 
-        public EnderecoApplicationService(IEnderecoDomainService enderecoDomainService, IValidationService<Endereco> validationService, IMapper mapper,
+        public EnderecoApplicationService(IEnderecoDomainService enderecoDomainService, IEnderecoValidacaoApplicationService enderecoValidacaoApplicationService, IMapper mapper,
             INotificationContext notificationContext, IUnitOfWork unitOfWork,
             IUsuarioSessaoDomainService usuarioSessaoDomainService, IContextFactory<IEnderecoContextApplicationService> contextFactory)
         {
             _enderecoDomainService = enderecoDomainService;
-            _validationService = validationService;
+            _enderecoValidacaoApplicationService = enderecoValidacaoApplicationService;
             _mapper = mapper;
             _notificationContext = notificationContext;
             _unitOfWork = unitOfWork;
@@ -41,7 +42,7 @@ namespace api.makebe.agenda.applications.Services
             var instancia = await _contextFactory.ExecutarService(paginacao?.objetoPesquisa?.TipoUsuarioId ?? 0);
             var paginacaoRetorno = await instancia.BuscarEnderecos(paginacao!, usuarioId);
             if (paginacaoRetorno != null && !paginacaoRetorno.objetos!.Any())
-                _validationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
+                _enderecoValidacaoApplicationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
 
             return ResponseModelHelper<PaginacaoDTO<EnderecoDTO>>.RetornarResponseModel(paginacaoRetorno!, _notificationContext.Notifications);
 
@@ -50,7 +51,7 @@ namespace api.makebe.agenda.applications.Services
         {
             var retorno = await _enderecoDomainService.BuscarPorId(lojaId);
             if (retorno.Id == 0)
-                _validationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
+                _enderecoValidacaoApplicationService.RetornarListaVazia(nameof(Endereco), BaseConstant.ListaVazia);
 
             return ResponseModelHelper<EnderecoDTO>.RetornarResponseModel(retorno!, _notificationContext.Notifications);
         }
@@ -58,7 +59,7 @@ namespace api.makebe.agenda.applications.Services
         public async Task<ResponseModel<EnderecoDTO>> Persistir(EnderecoPayload enderecoPayload, string usuarioId)
         {
             var endereco = _mapper.Map<Endereco>(enderecoPayload);
-            var isValidate = await _validationService.Validar(endereco);
+            var isValidate = await _enderecoValidacaoApplicationService.Validar(enderecoPayload);
             if (!isValidate)
             {
                 var lojaErro = _mapper.Map<EnderecoDTO>(endereco);

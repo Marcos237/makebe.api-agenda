@@ -10,5 +10,6 @@
         public const string TipoArquivoInvalido = "Arquivo inválido.";
         public const long TamanhoArquivo = 25 * 1024 * 1024;
         public const string TamanhoArquivoInvalido = "Tamanho de arquivo inválido. Máximo de 3MB";
+        public const string CampoImagem = "Imagem";
     }
 }

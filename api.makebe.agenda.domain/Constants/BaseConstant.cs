@@ -10,6 +10,7 @@
         public const string TipoContaInicialOPeradorLoja = "tipoContaOpradorLoja";
         public const string InstanciaLoja = "Loja";
         public const string InstanciaColaborador = "Colaborador";
+        public const string ClientePermissao = "permissaoCliente";
 
     }
 }

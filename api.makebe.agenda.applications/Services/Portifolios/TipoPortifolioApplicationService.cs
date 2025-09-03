@@ -5,7 +5,7 @@ using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Notifications.Interfaces;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Portifolios
 {
     public class TipoPortifolioApplicationService : ITipoPortifolioApplicationService
     {

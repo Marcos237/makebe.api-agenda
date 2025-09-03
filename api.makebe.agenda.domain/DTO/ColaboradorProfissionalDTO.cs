@@ -12,5 +12,9 @@
         public string? RazaoSocial { get; set; }
         public string? DescricaoServico { get; set; }
         public bool Status { get; set; }
+        public string? NomeColaboradorRazaoSocial
+        {
+            get => $"{NomeColaborador} - {RazaoSocial}";
+        }
     }
 }

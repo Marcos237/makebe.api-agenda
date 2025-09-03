@@ -16,6 +16,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Services
             services.AddScoped<IContaEventCrossCuttingService, ContaEventCrossCuttingService>();
             services.AddScoped<IPermissaoEventCrossCuttingService, PermissaoEventCrossCuttingService>();
             services.AddScoped<IUsuarioEventCrossCuttingService, UsuarioEventCrossCuttingService>();
+            services.AddScoped<IUsuarioClienteConsultadosCrosCuttingService, UsuarioClienteConsultadosCrosCuttingService>();
         }
     }
 }

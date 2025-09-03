@@ -4,5 +4,6 @@
     {
         Loja = 1,
         Colaborador = 2,
+        Cliente = 3
     }
 }

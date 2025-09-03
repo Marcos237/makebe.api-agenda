@@ -44,18 +44,17 @@ namespace api.makebe.agenda.domain.Services
         public async Task<PaginacaoDTO<ColaboradorDTO>> MontarColaboradoresPaginado(PaginacaoDTO<UsuarioDTO>? paginacao, string usuarioId, IEnumerable<PermissaoEvent> permissoesEvents)
         {
             var colaboradores = await _usuarioColaboradorRepository.BuscarColaboradorPorContaId(usuarioId);
-
+            var colaboradoresResponse = colaboradores?.Where(colaborador => colaborador.Status == true);
             var colaboradoresFiltrados = paginacao?.objetos
-                ?.Where(usuario => colaboradores.Any(colaborador => colaborador.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id)))
+                ?.Where(usuario => colaboradoresResponse!.Any(colaborador => colaborador.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id)))
                 ?.Join(permissoesEvents,
                        usuario => usuario?.PermissaoId?.ToString() ?? string.Empty,
                        permissao => permissao.PermissaoId,
                        (usuario, permissao) =>
                        {
-                           var colaborador = colaboradores.First(c => c.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id));
-                           return AdicionarColaborador(usuario, permissao, colaborador);
+                           var colaborador = colaboradoresResponse?.First(c => c.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id));
+                           return AdicionarColaborador(usuario, permissao, colaborador!);
                        });
-
             return new PaginacaoDTO<ColaboradorDTO>
             {
                 paginaAtual = paginacao?.paginaAtual ?? 1,

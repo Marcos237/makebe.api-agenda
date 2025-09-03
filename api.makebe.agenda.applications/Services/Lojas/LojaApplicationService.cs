@@ -14,7 +14,7 @@ using api.makebe.agenda.infra.data.interfaces;
 using AutoMapper;
 using lib.makebe.domain.Interfaces.Services;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Lojas
 {
     public class LojaApplicationService : ILojaApplicationService
     {
@@ -29,7 +29,7 @@ namespace api.makebe.agenda.applications.Services
 
 
         public LojaApplicationService(IValidationService<Loja> validationService, IContaLojaDomainService usarioLojaDomainService, ILojaDomainService lojaDomainService,
-            INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork, 
+            INotificationContext notificationContext, IMapper mapper, IUnitOfWork unitOfWork,
             IUsuarioSessaoDomainService usuarioSessaoDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService)
         {
             _lojaDomainService = lojaDomainService;
@@ -87,7 +87,7 @@ namespace api.makebe.agenda.applications.Services
             {
                 await _unitOfWork.BeginTransaction();
                 var lojaRetorno = await _lojaDomainService.Persitir(loja);
-                var contaLoja = new ContaLoja() { LojaId = lojaRetorno, ContaId = conta?.Id};
+                var contaLoja = new ContaLoja() { LojaId = lojaRetorno, ContaId = conta?.Id };
 
                 if (lojaPayload.Id == 0)
                     await _contaLojaDomainService.Salvar(contaLoja);

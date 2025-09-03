@@ -38,23 +38,32 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         }
 
-        public async Task<Servicos> BuscarPorId(int id)
+        public async Task<Servico> BuscarPorId(int id)
         {
             var sql = @"SELECT * from Servicos s  WHERE s.Status = 1 AND s.Id = @Id";
-            var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Servicos>(sql, new { Id = id }) ?? new Servicos();
+            var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Servico>(sql, new { Id = id }) ?? new Servico();
             return response;
         }
 
-        public async Task<IEnumerable<Servicos>> BuscarServicos(string contaId)
+        public async Task<IEnumerable<Servico>> BuscarServicos(string contaId)
         {
             var sql = @"SELECT s.ID, s.Descricao, s.Valor, s.Periodo FROM  Servicos s
                         INNER JOIN ContaServico cs  ON cs.ServicoId  = s.Id 
                         WHERE ContaId = @ContaId  AND s.Status = 1";
-            var retorno = await _dbAgenda.Connection.QueryAsync<Servicos>(sql, new { ContaId = contaId }) ?? Enumerable.Empty<Servicos>();
+            var retorno = await _dbAgenda.Connection.QueryAsync<Servico>(sql, new { ContaId = contaId }) ?? Enumerable.Empty<Servico>();
+            return retorno;
+        }
+        public async Task<IEnumerable<Servico>> BuscarServicosPorColaboradoId(int id)
+        {
+            var sql = @"SELECT s.Id, s.Descricao FROM ColaboradorProfissional cp
+                        INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId
+                        INNER JOIN Servicos s ON s.Id = cp.ServicoId
+                        WHERE c.Id  = @ColaboradorId AND s.Status = 1";
+            var retorno = await _dbAgenda.Connection.QueryAsync<Servico>(sql, new { ColaboradorId = id }) ?? Enumerable.Empty<Servico>();
             return retorno;
         }
 
-        public async Task<int> Salvar(Servicos servicos)
+        public async Task<int> Salvar(Servico servicos)
         {
             var sql = @"INSERT INTO Servicos (Descricao, Status, DataCadastro, DataAtualizacao, Periodo, Valor)
                             VALUES (@Descricao, @Status, @DataCadastro, @DataAtualizacao, @Periodo, @Valor);
@@ -71,7 +80,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
             return response;
         }
-        public async Task<Servicos> Atualizar(Servicos servicos)
+        public async Task<Servico> Atualizar(Servico servicos)
         {
             var sql = @"UPDATE Servicos 
                             SET 

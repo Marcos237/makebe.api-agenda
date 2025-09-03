@@ -7,5 +7,7 @@
         public const string EmailInvalido = "Email inválido.";
         public const string TelefoneInvalido = "Telefone inválido.";
         public const string LojaListaVazia = "Telefone inválido.";
+        public const string RazaoSocialInvalido = "A razão social está inválida.";
+        public const string TipoLojaInvalido = "Selecione um tipo de loja.";
     }
 }

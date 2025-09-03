@@ -4,7 +4,7 @@ using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Interfaces.Services;
 using AutoMapper;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Portifolios
 {
     public class PortifolioImagensApplicationService : IPortifolioImagemApplicationService
     {
@@ -43,17 +43,21 @@ namespace api.makebe.agenda.applications.Services
 
         public async Task<bool> ValidarArquivos(IEnumerable<Arquivo> arquivos)
         {
+            var erro = 0;
+            var countErros = new List<int>();
             if (arquivos.Any())
             {
                 foreach (var arquivo in arquivos)
                 {
                     var isvalid = await _validationArquivoService.Validar(arquivo);
                     if (!isvalid)
-                        return false;
+                        countErros.Add(erro + 1);
                 }
             }
+            if (countErros.Any())
+                return false;
+
             return true;
         }
-
     }
 }

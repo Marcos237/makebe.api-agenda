@@ -1,14 +1,21 @@
 ﻿using api.makebe.agenda.applications.Factorys;
 using api.makebe.agenda.applications.Factorys.Interfaces;
+using api.makebe.agenda.applications.Helpers;
 using api.makebe.agenda.applications.Interfaces;
-using api.makebe.agenda.applications.Services;
+using api.makebe.agenda.applications.Services.Agendas;
+using api.makebe.agenda.applications.Services.Colaboradores;
+using api.makebe.agenda.applications.Services.Enderecos;
+using api.makebe.agenda.applications.Services.Lojas;
+using api.makebe.agenda.applications.Services.Portifolios;
+using api.makebe.agenda.applications.Services.Servicos;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
 {
     public static class ServicesBootstrapper
     {
-        public static void InitializeServicesBootstrapper(this IServiceCollection services)
+        public static void InitializeServicesBootstrapper(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<ILojaApplicationService, LojaApplicationService>();
             services.AddScoped<ITipoLojaApplicationService, TipoLojaApplicationService>();
@@ -23,8 +30,11 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<IEnderecoContextApplicationService, EnderecoColaboradorApplicationService>();
             services.AddScoped<IPortifolioContextApplicationService, PortifolioColaboradorApplicationService>();
             services.AddScoped<IPortifolioContextApplicationService, PortifolioLojaApplicationService>();
+            services.AddScoped<IEnderecoValidacaoApplicationService, EnderecoValidacaoApplicationService>();
             services.AddScoped<IAgendaApplicationService, AgendaApplicationService>();
             services.AddScoped(typeof(IContextFactory<>), typeof(ContextFactory<>));
+
+            ConfigHelper.Initialize(configuration);
 
         }
     }

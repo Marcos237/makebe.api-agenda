@@ -22,19 +22,13 @@ namespace api.makebe.agenda.Controllers
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Get()
         {
-            try
+
+            var retorno = await _servicoApplicationService.BuscarServicos(Chave ?? string.Empty);
+            if (!retorno.datas!.Any())
             {
-                var retorno = await _servicoApplicationService.BuscarServicos(Chave ?? string.Empty);
-                if (!retorno.datas!.Any())
-                {
-                    return StatusCode(StatusCodes.Status204NoContent, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
+                return StatusCode(StatusCodes.Status204NoContent, retorno);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
         }
 
         [HttpPost]
@@ -42,77 +36,66 @@ namespace api.makebe.agenda.Controllers
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> BuscarPaginado(PaginacaoDTO<ServicoDTO> model)
         {
-            try
+            var retorno = await _servicoApplicationService.BuscarTodosPaginado(model, Chave ?? string.Empty);
+            if (retorno.data == null)
             {
-                var retorno = await _servicoApplicationService.BuscarTodosPaginado(model, Chave ?? string.Empty);
-                if (retorno.data == null)
-                {
-                    return StatusCode(StatusCodes.Status204NoContent, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
+                return StatusCode(StatusCodes.Status204NoContent, retorno);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
+
         }
 
         [HttpGet("{id}")]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Get(int id)
         {
-            try
+            var retorno = await _servicoApplicationService.BuscarPorId(id);
+            if (retorno.data == null)
             {
-                var retorno = await _servicoApplicationService.BuscarPorId(id);
-                if (retorno.data == null)
-                {
-                    return StatusCode(StatusCodes.Status204NoContent, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
+                return StatusCode(StatusCodes.Status204NoContent, retorno);
             }
-            catch (Exception ex)
+            return StatusCode(StatusCodes.Status200OK, retorno);
+
+        }
+
+        [HttpGet("GetByColaboradorId/{id}")]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> GetByColaboradorId(int id)
+        {
+
+            var retorno = await _servicoApplicationService.BuscarServicosPorColaboradoId(id);
+            if (retorno?.datas?.Any() == false)
             {
-                throw new Exception(ex.Message);
+                return StatusCode(StatusCodes.Status204NoContent, retorno);
             }
+            return StatusCode(StatusCodes.Status200OK, retorno);
+
         }
 
         [HttpPost]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Post(ServicoDTO model)
         {
-            try
+            var retorno = await _servicoApplicationService.Persitir(model, Chave ?? string.Empty);
+            if (retorno?.data?.Id == 0)
             {
+                return StatusCode(StatusCodes.Status400BadRequest, retorno);
+            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
 
-                var retorno = await _servicoApplicationService.Persitir(model, Chave ?? string.Empty);
-                if (retorno?.data?.Id == 0)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
         }
         [HttpDelete]
         [Route("{id}")]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Delete(int id)
         {
-            try
+
+            var retorno = await _servicoApplicationService.Desativar(id, Chave ?? string.Empty);
+            if (!retorno)
             {
-                var retorno = await _servicoApplicationService.Desativar(id, Chave ?? string.Empty);
-                if (!retorno)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
+                return StatusCode(StatusCodes.Status400BadRequest, retorno);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
         }
     }
 }

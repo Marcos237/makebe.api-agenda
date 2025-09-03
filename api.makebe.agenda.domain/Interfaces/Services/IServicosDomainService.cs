@@ -5,10 +5,11 @@ namespace api.makebe.agenda.domain.Interfaces.Services
 {
     public interface IServicosDomainService
     {
-        Task<IEnumerable<Servicos>> BuscarServicos(string contaId);
+        Task<IEnumerable<Servico>> BuscarServicos(string contaId);
         Task<PaginacaoDTO<ServicoDTO>> BuscarTodosPaginado(PaginacaoDTO<ServicoDTO> paginacao, string usuarioId);
-        Task<Servicos> BuscarPorId(int id);
-        Task<int> Persitir(Servicos item);
+        Task<IEnumerable<Servico>> BuscarServicosPorColaboradoId(int id);
+        Task<Servico> BuscarPorId(int id);
+        Task<int> Persitir(Servico item);
         Task<bool> Desativar(int id);
     }
 }

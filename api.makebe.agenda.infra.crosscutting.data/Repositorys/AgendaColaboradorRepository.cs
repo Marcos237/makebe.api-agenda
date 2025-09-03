@@ -104,5 +104,10 @@ namespace api.makebe.agenda.infra.data.Repositorys
             }) > 0;
             return response;
         }
+
+        public Task<IEnumerable<AgendaDTO>> BuscarAgendaLojaDentroDoBloqueio(DateTime dataInicio, DateTime DataFim, int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

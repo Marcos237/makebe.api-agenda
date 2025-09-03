@@ -12,7 +12,8 @@ namespace api.makebe.agenda.domain.Validations
             RuleFor(portifolio => new TextoObrigatorioSpecification().IsSatisfiedBy(portifolio.Titulo!)).Must((portifolio) =>
             {
                 return portifolio;
-            }).WithMessage(PortifolioConstant.TituloInvalido);
+            }).WithMessage(PortifolioConstant.TituloInvalido)
+            .WithName(nameof(Portifolio.Titulo));
 
             RuleFor(portifolio => portifolio)
             .Must(portifolio =>

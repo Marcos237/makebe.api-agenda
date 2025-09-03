@@ -1,6 +1,6 @@
 ﻿namespace api.makebe.agenda.domain.Entidades
 {
-    public class Servicos
+    public class Servico
     {
         public int Id { get; set; }
         public string? Descricao { get; set; }

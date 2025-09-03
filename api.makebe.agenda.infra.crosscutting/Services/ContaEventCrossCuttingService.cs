@@ -16,7 +16,7 @@ namespace api.makebe.agenda.infra.crosscutting.Services
         {
             var ContaConsultadoPorIdEvent = new ContaConsultadoPorIdEvent() { Id = usuarioId };
             var conta = await _busEvent.RequestAsync<ContaConsultadoPorIdEvent, ContaConsultadoPorIdEvent>(ContaConsultadoPorIdEvent, TimeSpan.FromSeconds(15));
-            return conta.ContaEvent;
+            return conta?.ContaEvent;
         }
 
         public async Task<UsuarioContaConsultadoPorContaEvent> BuscarUsuarioContaPorIdConta(UsuarioContaConsultadoPorContaEvent usuarioContaConsultadoPorContaEvent)

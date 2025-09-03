@@ -7,5 +7,6 @@
         public const string EstadoInvalido = "Nome do estado inválido.";
         public const string LogradouroInvalido = "Endereço inválido.";
         public const string LojaInvalido = "Loja inválida.";
+        public const string ColaboradorInvalido = "Colaborador inválido.";
     }
 }

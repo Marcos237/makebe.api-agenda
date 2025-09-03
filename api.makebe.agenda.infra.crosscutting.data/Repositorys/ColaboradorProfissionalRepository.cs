@@ -15,9 +15,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorContaId(string contaId)
         {
-
             var sql = @"SELECT DISTINCT 
-                                cp.Id,
+                                c.Id,
                                 cp.ColaboradorId, 
                                 CAST(c.UsuarioId AS CHAR) AS UsuarioId,
                                 cp.LojaId, 

@@ -17,14 +17,25 @@ namespace api.makebe.agenda.domain.Validations
             RuleFor(agenda => new DataValidaSpecification().IsSatisfiedBy(agenda.AgendaAbertaFim!))
                     .Must(agenda => agenda)
                     .WithMessage(AgendaConstant.DataFechamentoInvalido)
-                    .WithName(nameof(Agenda.AgendaAbertaInicio));
+                    .WithName(nameof(Agenda.AgendaAbertaFim));
+
+
+            RuleFor(agenda => new IdsObrigatoriosSpecifications().IsSatisfiedBy(agenda.IdAgendaSemanaInicio!))
+                    .Must(agenda => agenda)
+                    .WithMessage(AgendaConstant.DiaSemanaInicioInvalido)
+                    .WithName(nameof(Agenda.IdAgendaSemanaInicio));
+
+            RuleFor(agenda => new IdsObrigatoriosSpecifications().IsSatisfiedBy(agenda.IdAgendaSemanaFim!))
+                    .Must(agenda => agenda)
+                    .WithMessage(AgendaConstant.DiaSemanaFimInvalido)
+                    .WithName(nameof(Agenda.IdAgendaSemanaFim));
 
             RuleFor(agenda => agenda).Custom((agenda, context) =>
             {
                 var isValid = new DatasValidasEntreInicioFimSpecification().IsSatisfiedBy((agenda.AgendaAbertaInicio, agenda.AgendaAbertaFim));
                 if (!isValid)
                 {
-                    context.AddFailure(nameof(Agenda.AgendaAbertaFim), AgendaConstant.DataAbrturaFechamentoInvalido);
+                    context.AddFailure(nameof(Agenda.AgendaAbertaInicio), AgendaConstant.DataAbrturaFechamentoInvalido);
                 }
             });
 
@@ -35,7 +46,7 @@ namespace api.makebe.agenda.domain.Validations
                     var isValid = new DatasValidasEntreInicioFimSpecification().IsSatisfiedBy((agenda.AgendaBloqueadaInicio, agenda.AgendaBloqueadaFim));
                     if (!isValid)
                     {
-                        context.AddFailure(nameof(Agenda.AgendaAbertaFim), AgendaConstant.DataBloqueioFechamentoInvalido);
+                        context.AddFailure(nameof(Agenda.AgendaBloqueadaInicio), AgendaConstant.DataBloqueioFechamentoInvalido);
                     }
                 }
             });

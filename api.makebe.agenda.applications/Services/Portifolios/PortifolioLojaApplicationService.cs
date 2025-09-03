@@ -7,7 +7,7 @@ using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using AutoMapper;
 
-namespace api.makebe.agenda.applications.Services
+namespace api.makebe.agenda.applications.Services.Portifolios
 {
     public class PortifolioLojaApplicationService : IPortifolioContextApplicationService
     {
@@ -19,7 +19,7 @@ namespace api.makebe.agenda.applications.Services
         {
             _lojaPortifolioDomainService = lojaPortifolioDomainService;
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
-            _mapper = mapper;   
+            _mapper = mapper;
         }
         public async Task<PaginacaoDTO<PortifolioDTO>> BuscarPortifolios(PaginacaoDTO<PortifolioDTO> paginacao, string usuarioId)
         {

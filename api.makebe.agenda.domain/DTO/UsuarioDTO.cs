@@ -11,8 +11,9 @@
         public string? PermissaoId { get; set; }
         public string? NomeImagem { get; set; }
         public string? UrlImagem { get; set; }
-        public bool? Status { get; set; }
+        public bool? Status { get; set; } = true;
         public DateTime DataCadastro { get; set; }
         public DateTime DataAtualizacao { get; set; }
+        public int? Tipo { get; set; }
     }
 }
