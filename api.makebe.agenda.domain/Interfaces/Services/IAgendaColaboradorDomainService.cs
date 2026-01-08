@@ -10,6 +10,7 @@ namespace api.makebe.agenda.domain.Interfaces.Services
         Task<IEnumerable<AgendaDTO>> FiltrarPorDiaSemana(PaginacaoDTO<AgendaDTO> paginacao, AgendaDTO? pesquisa);
         Task<IEnumerable<AgendaDTO>> PesquisarPorAgendaAberta(AgendaDTO agenda, IEnumerable<AgendaDTO> agendas);
         Task<IEnumerable<AgendaDTO>> PesquisarPorBloqueio(AgendaDTO agenda, IEnumerable<AgendaDTO> agendas);
+        Task<AgendaDTO> BuscarPorIdColaborador(int idColaborador);
 
     }
 }

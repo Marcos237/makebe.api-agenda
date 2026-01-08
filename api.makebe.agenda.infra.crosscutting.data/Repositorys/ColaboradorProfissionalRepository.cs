@@ -16,7 +16,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorContaId(string contaId)
         {
             var sql = @"SELECT DISTINCT 
-                                c.Id,
+                                cp.Id,
                                 cp.ColaboradorId, 
                                 CAST(c.UsuarioId AS CHAR) AS UsuarioId,
                                 cp.LojaId, 
@@ -101,7 +101,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<bool> Desativar(int id)
         {
             var sql = @"UPDATE ColaboradorProfissional SET 
-                      Status = false 
+                      Status = 0 
                       Where Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
             { Id = id }) > 0;

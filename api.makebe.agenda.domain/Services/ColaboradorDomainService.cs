@@ -79,7 +79,8 @@ namespace api.makebe.agenda.domain.Services
                         .FirstOrDefault(colaborador =>
                             colaborador.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id))?.Id ?? 0,
                     Nome = usuario.Nome,
-                    UsuarioId = PropiedadesHelper.ParseGuidOrDefault(usuario.Id)
+                    UsuarioId = PropiedadesHelper.ParseGuidOrDefault(usuario.Id),
+                    UrlImagem = usuario.UrlImagem
                 }) ?? Enumerable.Empty<ColaboradorDTO>();
 
             return colaboradoresFiltrados;

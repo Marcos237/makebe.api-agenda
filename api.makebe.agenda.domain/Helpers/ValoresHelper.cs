@@ -66,5 +66,21 @@ namespace api.makebe.agenda.domain.Helpers
 
             return null;
         }
+        public static DateTime? MontarDate(string? valor, string? data)
+        {
+            if (string.IsNullOrWhiteSpace(data) || string.IsNullOrWhiteSpace(valor))
+                return null;
+
+            var ptBR = CultureInfo.GetCultureInfo("pt-BR");
+            if (!DateTime.TryParseExact(data.Trim(), "dd/MM/yyyy", ptBR, DateTimeStyles.None, out var baseDate))
+                return null;
+            if (DateTime.TryParse(valor.Trim(), ptBR, DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AllowWhiteSpaces, out var dt))
+                return baseDate.Date.Add(dt.TimeOfDay);
+
+            if (TimeSpan.TryParse(valor.Trim(), out var ts))
+                return baseDate.Date.Add(ts);
+
+            return null;
+        }
     }
 }

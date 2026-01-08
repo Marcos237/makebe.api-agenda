@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.applications.Filters.Authorization;
+﻿        using api.makebe.agenda.applications.Filters.Authorization;
 using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Payloads;
 using api.makebe.agenda.domain.DTO;
@@ -23,58 +23,43 @@ namespace api.makebe.agenda.Controllers
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> BuscarPaginado(PaginacaoDTO<AgendaPayload> model)
         {
-            try
+
+            var retorno = await _agendaLojaApplicationService.BuscarTodosPaginado(model, Chave ?? string.Empty);
+            if (retorno.data == null)
             {
-                var retorno = await _agendaLojaApplicationService.BuscarTodosPaginado(model, Chave ?? string.Empty);
-                if (retorno.data == null)
-                {
-                    return StatusCode(StatusCodes.Status204NoContent, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
+                return StatusCode(StatusCodes.Status204NoContent, retorno);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
+
         }
 
         [HttpGet("{id}/{tipo}")]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Get(int id, int tipo)
         {
-            try
+
+            var retorno = await _agendaLojaApplicationService.BuscarPorId(id, tipo);
+            if (retorno.data == null)
             {
-                var retorno = await _agendaLojaApplicationService.BuscarPorId(id, tipo);
-                if (retorno.data == null)
-                {
-                    return StatusCode(StatusCodes.Status204NoContent, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
+                return StatusCode(StatusCodes.Status204NoContent, retorno);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
+
         }
 
         [HttpPost]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Post(AgendaPayload model)
         {
-            try
-            {
 
-                var retorno = await _agendaLojaApplicationService.Persitir(model, Chave ?? string.Empty);
-                if (retorno?.data?.Id == 0)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
-            }
-            catch (Exception ex)
+
+            var retorno = await _agendaLojaApplicationService.Persitir(model, Chave ?? string.Empty);
+            if (retorno?.data?.Id == 0)
             {
-                throw new Exception(ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, retorno);
             }
+            return StatusCode(StatusCodes.Status200OK, retorno);
+
         }
 
         [HttpDelete]
@@ -82,19 +67,14 @@ namespace api.makebe.agenda.Controllers
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Delete(int id)
         {
-            try
+
+            var retorno = await _agendaLojaApplicationService.Desativar(id, Chave ?? string.Empty);
+            if (!retorno)
             {
-                var retorno = await _agendaLojaApplicationService.Desativar(id, Chave ?? string.Empty);
-                if (!retorno)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, retorno);
-                }
-                return StatusCode(StatusCodes.Status200OK, retorno);
+                return StatusCode(StatusCodes.Status400BadRequest, retorno);
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
+
         }
     }
 }

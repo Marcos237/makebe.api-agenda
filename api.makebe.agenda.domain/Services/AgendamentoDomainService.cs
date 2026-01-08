@@ -11,11 +11,14 @@ namespace api.makebe.agenda.domain.Services
     public class AgendamentoDomainService : IAgendamentoDomainService
     {
         private readonly IAgendamentoRepository _agendamentoRepository;
+        private readonly IAgendaColaboradorDomainService _agendaColaboradorDomainService;
         private readonly IFiltrosAgendamentoDomainService _filtrosAgendamentoDomainService;
-        public AgendamentoDomainService(IAgendamentoRepository agendamentoRepository, IFiltrosAgendamentoDomainService filtrosAgendamentoDomainService)
+        public AgendamentoDomainService(IAgendamentoRepository agendamentoRepository, IFiltrosAgendamentoDomainService filtrosAgendamentoDomainService
+            , IAgendaColaboradorDomainService agendaColaboradorDomainService)
         {
             _agendamentoRepository = agendamentoRepository;
             _filtrosAgendamentoDomainService = filtrosAgendamentoDomainService;
+            _agendaColaboradorDomainService = agendaColaboradorDomainService;
         }
         public async Task<PaginacaoDTO<AgendamentoDTO>> MontarAgendamento(PaginacaoDTO<AgendamentoDTO> paginacao, string contaId,
             IEnumerable<UsuarioEvent>? UsuariosEvents, IEnumerable<UsuarioEvent>? ColaboradoresEvents)
@@ -61,9 +64,22 @@ namespace api.makebe.agenda.domain.Services
             var response = await _agendamentoRepository.BuscarPorId(id);
             return response;
         }
-
-        public async Task<int> Salvar(Agendamento agendamento)
+        public async Task<IEnumerable<AgendamentoDTO>> BuscarPorAnoConta(int ano, int id, string conta)
         {
+            var response = await _agendamentoRepository.BuscarPorAnoConta(ano, id, conta);
+            return response;
+        }
+
+        public Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoPorData(DateTime data, int id,  string conta)
+        {
+            var response = _agendamentoRepository.BuscarAgendamentoPorData(data, id,  conta);
+            return response;
+        }
+
+        public async Task<int> Salvar(Agendamento agendamento, int idColaborador)
+        {
+            var idMaxAgendaColaborador = await _agendaColaboradorDomainService.BuscarPorIdColaborador(idColaborador);
+            agendamento.IdAgendaColaborador = idMaxAgendaColaborador.Id;
             agendamento.DataAtualizacao = DateTime.Now;
             agendamento.Ativo = true;
             if (agendamento.Id > 0)
@@ -71,8 +87,8 @@ namespace api.makebe.agenda.domain.Services
                 await _agendamentoRepository.Atualizar(agendamento);
                 return agendamento.Id;
             }
-            agendamento.DataCadastro = DateTime.Now;    
-            return await _agendamentoRepository.Salvar(agendamento);    
+            agendamento.DataCadastro = DateTime.Now;
+            return await _agendamentoRepository.Salvar(agendamento);
         }
         public async Task<bool> Desativa(int id)
         {

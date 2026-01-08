@@ -3,7 +3,7 @@
     public class Agendamento
     {
         public int Id { get; set; }
-        public int IdAgendaColaborado { get; set; }
+        public int IdAgendaColaborador { get; set; }
         public int IdServico { get; set; }
         public string? IdUsuario { get; set; }
         public DateTime DataInicioAgendamento { get; set; }

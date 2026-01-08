@@ -5,7 +5,7 @@ using Dapper;
 
 namespace api.makebe.agenda.infra.data.Repositorys
 {
-    public class AgendaColaboradorRepository : IAgendaContextRepository<AgendaColaborador>
+    public class AgendaColaboradorRepository : IAgendaContextRepository<AgendaColaborador>, IAgendaColaboradorRepository
     {
 
         private readonly DbAgenda _dbAgenda;
@@ -105,9 +105,11 @@ namespace api.makebe.agenda.infra.data.Repositorys
             return response;
         }
 
-        public Task<IEnumerable<AgendaDTO>> BuscarAgendaLojaDentroDoBloqueio(DateTime dataInicio, DateTime DataFim, int id)
+        public async Task<AgendaDTO> BuscarPorIdColaborador(int idColaborador)
         {
-            throw new NotImplementedException();
+            var sql = @"SELECT MAX(Id) AS Id FROM AgendaColaborador WHERE IdColaborador = @Id";
+            var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<AgendaDTO>(sql, new { Id = idColaborador }) ?? new AgendaDTO();
+            return response;
         }
     }
 }

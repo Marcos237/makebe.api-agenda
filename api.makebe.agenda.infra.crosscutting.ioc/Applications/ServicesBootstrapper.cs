@@ -2,6 +2,7 @@
 using api.makebe.agenda.applications.Factorys.Interfaces;
 using api.makebe.agenda.applications.Helpers;
 using api.makebe.agenda.applications.Interfaces;
+using api.makebe.agenda.applications.Services.Agendamentos;
 using api.makebe.agenda.applications.Services.Agendas;
 using api.makebe.agenda.applications.Services.Colaboradores;
 using api.makebe.agenda.applications.Services.Enderecos;
@@ -32,6 +33,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<IPortifolioContextApplicationService, PortifolioLojaApplicationService>();
             services.AddScoped<IEnderecoValidacaoApplicationService, EnderecoValidacaoApplicationService>();
             services.AddScoped<IAgendaApplicationService, AgendaApplicationService>();
+            services.AddScoped<IAgendamentoApplicationService, AgendamentoApplicationService>();
+            services.AddScoped<IAgendamentoColaboradorApplicationService, AgendamentoColaboradorApplicationService>();
             services.AddScoped(typeof(IContextFactory<>), typeof(ContextFactory<>));
 
             ConfigHelper.Initialize(configuration);

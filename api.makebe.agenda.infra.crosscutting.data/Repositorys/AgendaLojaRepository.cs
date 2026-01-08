@@ -5,7 +5,7 @@ using Dapper;
 
 namespace api.makebe.agenda.infra.data.Repositorys
 {
-    public class AgendaLojaRepository : IAgendaContextRepository<AgendaLoja>
+    public class AgendaLojaRepository : IAgendaContextRepository<AgendaLoja>, IAgendaLojaRepository
     {
         private readonly DbAgenda _dbAgenda;
         public AgendaLojaRepository(DbAgenda dbAgenda)

@@ -13,11 +13,14 @@ namespace api.makebe.agenda.domain.Services
     public class AgendaColaboradorDomainService : IAgendaContextDomainService<AgendaColaborador>, IAgendaColaboradorDomainService
     {
         private readonly IAgendaContextRepository<AgendaColaborador> _repository;
+        private readonly IAgendaColaboradorRepository _agendaColaboradorRepository;
         private readonly IContaEventCrossCuttingService _contaEventCrossCuttingService;
-        public AgendaColaboradorDomainService(IAgendaContextRepository<AgendaColaborador> repository, IContaEventCrossCuttingService contaEventCrossCuttingService)
+        public AgendaColaboradorDomainService(IAgendaContextRepository<AgendaColaborador> repository, IContaEventCrossCuttingService contaEventCrossCuttingService,
+            IAgendaColaboradorRepository agendaColaboradorRepository)
         {
             _repository = repository;
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
+            _agendaColaboradorRepository = agendaColaboradorRepository;
         }
         public async Task<PaginacaoDTO<AgendaDTO>> BuscarPaginado(PaginacaoDTO<AgendaDTO> paginacao, string contaId)
         {
@@ -41,6 +44,11 @@ namespace api.makebe.agenda.domain.Services
             response!.Bloqueado = dataFinalDia == DateTime.Today.AddDays(1).AddMinutes(-1) ? true : false;
 
             return response!;
+        }
+        public async Task<AgendaDTO> BuscarPorIdColaborador(int idColaborador)
+        {
+            var response = await _agendaColaboradorRepository.BuscarPorIdColaborador(idColaborador);
+            return response;
         }
         public async Task<int> Persistir(AgendaColaborador agendaColaborador)
         {

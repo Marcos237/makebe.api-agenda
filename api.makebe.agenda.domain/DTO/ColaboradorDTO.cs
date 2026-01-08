@@ -3,7 +3,8 @@
     public class ColaboradorDTO
     {
         public int Id { get; set; }
-        public Guid UsuarioId { get; set; }
+        public Guid? UsuarioId { get; set; }
+        public string? UsuarioCodigo { get; set; }
         public bool? Status { get; set; }
         public string? Nome { get; set; }
         public string? Cpf { get; set; }
