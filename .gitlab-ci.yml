@@ -41,10 +41,9 @@ deploy:
        -v /etc/localtime:/etc/localtime:ro api-agenda:latest
        -v /mnt/arquivos/makebeserver/dockercompose/App/data_protection_keys:/home/makebe-user/.aspnet/DataProtection-Keys
     - docker network connect dockercompose_makebe-rede makebe-agenda 
-  tags:
-    - docker
-  only:
-    - main 
+  tags: [docker]
+  only: [main]
+  when: manual
 
 deploy-prod:
   stage: deploy-prod
