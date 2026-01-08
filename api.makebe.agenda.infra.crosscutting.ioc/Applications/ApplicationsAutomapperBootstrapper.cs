@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.applications.AutoMapper;
 using api.makebe.agenda.applications.Mappers.AgendaMappers;
+using api.makebe.agenda.applications.Mappers.AgendamentoMappers;
 using api.makebe.agenda.applications.Mappers.ColaboradorMappers;
 using api.makebe.agenda.applications.Mappers.ColaboradorProfissionalMapper;
 using api.makebe.agenda.applications.Mappers.EnderecoMappers;
@@ -51,6 +52,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new AgendaPayloadToAdgendaDTOMap());
                 mc.AddProfile(new AgendaPayloadToAgendaColaboradorMap());
                 mc.AddProfile(new PaginacaoDTOMap());
+                mc.AddProfile(new AgendamentoDtoToAgendamentoMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

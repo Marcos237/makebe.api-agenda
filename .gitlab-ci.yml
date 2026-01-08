@@ -72,7 +72,3 @@ deploy-prod:
   when: manual
   environment:
     name: production
-
-
-
-

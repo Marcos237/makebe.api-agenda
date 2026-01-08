@@ -23,6 +23,13 @@ namespace api.makebe.agenda.infra.crosscutting.Services
             return usuario;
         }
 
+        public async Task<UsuariosConsutadosPorIdsEvent> BuscarUsuariosPorIds(UsuariosConsutadosPorIdsEvent usuariosConsultadosPorIdEvent)
+        {
+            var usuarios = await _busEvent.RequestAsync<UsuariosConsutadosPorIdsEvent
+                , UsuariosConsutadosPorIdsEvent>(usuariosConsultadosPorIdEvent, TimeSpan.FromSeconds(15));
+            return usuarios;
+        }
+
         public async Task DeletarUsuario(UsuarioDeletadoEvent usuarioDeletadoEvent)
         {
             await _busEvent.PublishAsync(usuarioDeletadoEvent);

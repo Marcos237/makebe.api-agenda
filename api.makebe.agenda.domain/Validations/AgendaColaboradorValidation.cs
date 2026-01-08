@@ -9,12 +9,10 @@ namespace api.makebe.agenda.domain.Validations
     {
         public AgendaColaboradorValidation()
         {
-
             RuleFor(colaborador => new IdsObrigatoriosSpecifications().IsSatisfiedBy(colaborador.IdColaborador!))
                     .Must(colaborador => colaborador)
                     .WithMessage(AgendaConstant.ColaboradorInvalido)
                     .WithName(nameof(AgendaColaborador.IdColaborador));
-
         }
     }
 }

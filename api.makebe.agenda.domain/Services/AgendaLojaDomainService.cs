@@ -23,12 +23,14 @@ namespace api.makebe.agenda.domain.Services
         public async Task<AgendaDTO> BuscarPorId(int id)
         {
             var response = await _agendaLojaRepository.BuscarPorId(id);
-            var horaFim = ValoresHelper.SetDateTimeCustomer(response?.AgendaBloqueadaFim)!.Value;
-            var horaLimite = DateTime.Today;
-            var horaFimHM = new TimeSpan(horaFim.Hour, horaFim.Minute, 0);
-            var horaLimiteHM = new TimeSpan(horaLimite.Hour, horaLimite.Minute, 0);
-
-            response!.Bloqueado = horaFimHM == horaLimiteHM;
+            if (!string.IsNullOrEmpty(response.AgendaBloqueadaFim))
+            {
+                var horaFim = ValoresHelper.SetDateTimeCustomer(response?.AgendaBloqueadaFim)!.Value;
+                var horaLimite = DateTime.Today;
+                var horaFimHM = new TimeSpan(horaFim.Hour, horaFim.Minute, 0);
+                var horaLimiteHM = new TimeSpan(horaLimite.Hour, horaLimite.Minute, 0);
+                response!.Bloqueado = horaFimHM == horaLimiteHM;
+            }
             return response!;
         }
 

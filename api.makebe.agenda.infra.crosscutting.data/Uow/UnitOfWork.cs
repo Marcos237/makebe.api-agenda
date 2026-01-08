@@ -26,10 +26,12 @@ namespace api.makebe.agenda.infra.data.Uow.interfaces
 
         public void Rollback()
         {
+
             _agenda?.Transaction?.Rollback();
             Dispose();
+
         }
 
-        public  void Dispose() => _agenda.Transaction?.Dispose();
+        public void Dispose() => _agenda.Transaction?.Dispose();
     }
 }

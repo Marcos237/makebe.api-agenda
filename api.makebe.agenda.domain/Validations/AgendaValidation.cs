@@ -19,16 +19,19 @@ namespace api.makebe.agenda.domain.Validations
                     .WithMessage(AgendaConstant.DataFechamentoInvalido)
                     .WithName(nameof(Agenda.AgendaAbertaFim));
 
+            When(a => !a.IsTodoDia, () =>
+            { 
+               RuleFor(agenda => new IdsObrigatoriosSpecifications().IsSatisfiedBy(agenda.IdAgendaSemanaInicio!))
+                         .Must(agenda => agenda)
+                         .WithMessage(AgendaConstant.DiaSemanaInicioInvalido)
+                         .WithName(nameof(Agenda.IdAgendaSemanaInicio));
 
-            RuleFor(agenda => new IdsObrigatoriosSpecifications().IsSatisfiedBy(agenda.IdAgendaSemanaInicio!))
-                    .Must(agenda => agenda)
-                    .WithMessage(AgendaConstant.DiaSemanaInicioInvalido)
-                    .WithName(nameof(Agenda.IdAgendaSemanaInicio));
+                RuleFor(agenda => new IdsObrigatoriosSpecifications().IsSatisfiedBy(agenda.IdAgendaSemanaFim!))
+                        .Must(agenda => agenda)
+                        .WithMessage(AgendaConstant.DiaSemanaFimInvalido)
+                        .WithName(nameof(Agenda.IdAgendaSemanaFim));
+            });
 
-            RuleFor(agenda => new IdsObrigatoriosSpecifications().IsSatisfiedBy(agenda.IdAgendaSemanaFim!))
-                    .Must(agenda => agenda)
-                    .WithMessage(AgendaConstant.DiaSemanaFimInvalido)
-                    .WithName(nameof(Agenda.IdAgendaSemanaFim));
 
             RuleFor(agenda => agenda).Custom((agenda, context) =>
             {
@@ -39,17 +42,6 @@ namespace api.makebe.agenda.domain.Validations
                 }
             });
 
-            RuleFor(agenda => agenda).Custom((agenda, context) =>
-            {
-                if (!agenda.IsBloqueadoHoje & (agenda.AgendaBloqueadaInicio != null && agenda.AgendaBloqueadaFim != null))
-                {
-                    var isValid = new DatasValidasEntreInicioFimSpecification().IsSatisfiedBy((agenda.AgendaBloqueadaInicio, agenda.AgendaBloqueadaFim));
-                    if (!isValid)
-                    {
-                        context.AddFailure(nameof(Agenda.AgendaBloqueadaInicio), AgendaConstant.DataBloqueioFechamentoInvalido);
-                    }
-                }
-            });
         }
     }
 }

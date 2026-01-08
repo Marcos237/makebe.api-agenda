@@ -121,6 +121,7 @@ namespace api.makebe.agenda.applications.Services.Agendas
             }
             catch (Exception)
             {
+
                 _unitOfWork.Rollback();
                 throw;
             }

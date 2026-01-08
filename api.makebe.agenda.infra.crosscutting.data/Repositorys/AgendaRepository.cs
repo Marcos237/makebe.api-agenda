@@ -79,7 +79,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<bool> Desativar(int id)
         {
             var sql = @"UPDATE Agenda SET 
-                      Status = false 
+                      Status = 0 
                       Where Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
             { Id = id }) > 0;

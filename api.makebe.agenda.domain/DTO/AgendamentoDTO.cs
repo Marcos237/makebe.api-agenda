@@ -12,6 +12,7 @@
         public string? DescricaoServico { get; set; }
         public string? IdUsuario { get; set; }
         public string? NomeUsuario { get; set; }
+        public string? Data { get; set; }
         public DateTime DataInicioAgendamento { get; set; }
         public DateTime DataTerminoAgendamento { get; set; }
         public string? DataInicioAgendamentoExtenso { get; set; }

@@ -39,6 +39,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IAgendaColaboradorDomainService, AgendaColaboradorDomainService>();
             services.AddScoped<IFiltrosAgendamentoDomainService, FiltrosAgendamentoDomainService>();
             services.AddScoped<IPortifolioValidacaoAplicationService, PortifolioValidacaoAplicationService>();
+            services.AddScoped<IAgendamentoDomainService, AgendamentoDomainService>();
+            services.AddScoped<IAgendamentoColaboradorDomainService, AgendamentoColaboradorDomainServices>();
 
 
             services.AddScoped<IValidationService<Loja>, ValidationService<Loja>>();
@@ -54,6 +56,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IValidationService<ColaboradorPortifolio>, ValidationService<ColaboradorPortifolio>>();
             services.AddScoped<IValidationService<AgendaLoja>, ValidationService<AgendaLoja>>();
             services.AddScoped<IValidationService<AgendaColaborador>, ValidationService<AgendaColaborador>>();
+            services.AddScoped<IValidationService<AgendamentoDTO>, ValidationService<AgendamentoDTO>>();
 
             services.AddScoped<IValidator<Loja>, LojaValidation>();
             services.AddScoped<IValidator<Endereco>, EnderecoValidation>();
@@ -69,6 +72,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IValidator<ColaboradorPortifolio>, ColaboradorPortifolioValidation>();
             services.AddScoped<IValidator<AgendaLoja>, AgendaLojaValidation>();
             services.AddScoped<IValidator<AgendaColaborador>, AgendaColaboradorValidation>();
+            services.AddScoped<IValidator<AgendamentoDTO>, AgendamentoValidation>();
 
         }
     }

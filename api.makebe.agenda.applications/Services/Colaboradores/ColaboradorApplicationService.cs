@@ -83,6 +83,15 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
             colaboradorMap.Id = colaborador.Id;
             return ResponseModelHelper<ColaboradorDTO>.RetornarResponseModel(colaboradorMap, _notificationContext.Notifications);
         }
+
+
+        public async Task<ResponseModel<ColaboradorDTO>> BuscarColaboradorPorId(int id)
+        {
+            var colaborador = await _colaboradorDomainService.BuscarColaboradorPorId(id);
+            var response = await BuscarUsuarioPorId(colaborador?.UsuarioCodigo ?? string.Empty);
+            return response;
+        }
+
         public async Task<ResponseModel<ColaboradorDTO>> BuscarColaboladoresPorConta(string usuarioId)
         {
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
@@ -164,5 +173,6 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
                 _unitOfWork.Commit();
             }
         }
+
     }
 }
