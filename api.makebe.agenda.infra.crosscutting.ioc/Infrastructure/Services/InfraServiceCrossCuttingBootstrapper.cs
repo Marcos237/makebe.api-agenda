@@ -11,6 +11,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Services
         public static void InitializeInfraServiceCrossCuttingBootstrapper(this IServiceCollection services)
         {
             services.AddScoped<ILogCrossCuttingService, LogCrossCuttingService>();
+            services.AddScoped<ILojaEventCrossCuttingService, LojaEventCrossCuttingService>();
             services.AddScoped<IRecaptchaValidatorCrossCuttingService, RecaptchaValidatorCrossCuttingService>();
             services.AddScoped<INotificationContext, NotificationContext>();
             services.AddScoped<IContaEventCrossCuttingService, ContaEventCrossCuttingService>();

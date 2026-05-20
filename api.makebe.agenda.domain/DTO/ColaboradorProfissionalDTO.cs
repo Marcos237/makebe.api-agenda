@@ -11,6 +11,7 @@
         public string? NomeColaborador { get; set; }
         public string? RazaoSocial { get; set; }
         public string? DescricaoServico { get; set; }
+        public string? UrlImagem { get; set; }
         public bool Status { get; set; }
         public string? NomeColaboradorRazaoSocial
         {

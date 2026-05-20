@@ -21,8 +21,7 @@ namespace api.makebe.agenda.infra.crosscutting.Events
 
         public Task PublishAsync<T>(T item, CancellationToken cancellationToken = default) where T : class
         {
-            var retorno = _publishEndpoint.Publish(item, cancellationToken);
-            return Task.FromResult(retorno);
+            return _publishEndpoint.Publish(item, cancellationToken);
         }
 
         public async Task<TResult> RequestAsync<TRequest, TResult>(TRequest request, TimeSpan timeout)

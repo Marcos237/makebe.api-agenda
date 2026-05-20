@@ -41,6 +41,32 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
             return retorno;
         }
+
+        public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorLojaId(int id)
+        {
+            var sql = @"SELECT DISTINCT 
+                                cp.Id,
+                                cp.ColaboradorId, 
+                                CAST(c.UsuarioId AS CHAR) AS UsuarioId,
+                                cp.LojaId, 
+                                cp.ServicoId, 
+                                s.Descricao as DescricaoServico
+                                
+                       FROM ColaboradorProfissional cp
+                       INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId 
+                       INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
+                       INNER JOIN Loja l on l.Id = cp.LojaId 
+                       INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                       WHERE 
+                              l.Id = @Id
+                       AND    cp.Status = 1";
+            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(
+                sql,
+                new { Id = id }
+            ) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+
+            return retorno;
+        }
         public async Task<ColaboradorProfissionalDTO> BuscarPorId(int id)
         {
             var sql = @"SELECT cp.Id, cp.ColaboradorId, cp.LojaId, l.RazaoSocial, cp.ServicoId, s.Descricao as DescricaoServico, cp.Descricao  FROM ColaboradorProfissional cp
