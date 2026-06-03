@@ -111,5 +111,50 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<AgendaDTO>(sql, new { Id = idColaborador }) ?? new AgendaDTO();
             return response;
         }
+
+        public async Task<AgendaDTO> BuscarAgendaPorColaboradorId(int idColaborador)
+        {
+            var sql = @"SELECT 
+                            a.IsBloqueadoHoje,
+                            DATE_FORMAT(a.AgendaAbertaInicio, '%d/%m/%Y %H:%i:%s') AS AgendaAbertaInicio,
+                            DATE_FORMAT(a.AgendaAbertaFim, '%d/%m/%Y %H:%i:%s') AS AgendaAbertaFim,
+                            DATE_FORMAT(a.AgendaBloqueadaInicio, '%d/%m/%Y %H:%i:%s') AS AgendaBloqueadaInicio,
+                            DATE_FORMAT(a.AgendaBloqueadaFim, '%d/%m/%Y %H:%i:%s') AS AgendaBloqueadaFim
+                        FROM AgendaColaborador ac
+                        INNER JOIN Agenda a ON a.Id = ac.IdAgenda
+                        WHERE ac.IdColaborador = @Id
+                          AND a.Status = 1
+                        ORDER BY a.Id DESC
+                        LIMIT 1";
+
+            var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<AgendaDTO>(sql, new { Id = idColaborador }) ?? new AgendaDTO();
+            return response;
+        }
+
+        public async Task<IEnumerable<AgendaDTO>> BuscarAgendamentosPorColaboradorId(int idColaborador)
+        {
+            var sql = @"SELECT DISTINCT
+                            a.Id,
+                            ac.Id AS IdAgendaColaborador,
+                            a.IsBloqueadoHoje,
+                            DATE_FORMAT(a.AgendaAbertaInicio, '%d/%m/%Y %H:%i:%s') AS AgendaAbertaInicio,
+                            DATE_FORMAT(a.AgendaAbertaFim, '%d/%m/%Y %H:%i:%s') AS AgendaAbertaFim,
+                            DATE_FORMAT(a.AgendaBloqueadaInicio, '%d/%m/%Y %H:%i:%s') AS AgendaBloqueadaInicio,
+                            DATE_FORMAT(a.AgendaBloqueadaFim, '%d/%m/%Y %H:%i:%s') AS AgendaBloqueadaFim,
+                            CAST(c.UsuarioId AS CHAR) AS UsuarioId,
+                            CAST(cc.ContaId AS CHAR) AS ContaId
+                           
+                        FROM AgendaColaborador ac
+                        INNER JOIN Agenda a ON a.Id = ac.IdAgenda
+                        INNER JOIN Colaborador c ON c.Id = ac.IdColaborador
+                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
+                        WHERE ac.IdColaborador = @IdColaborador
+                          AND a.Status = 1
+                        ORDER BY a.Id DESC";
+
+            var response = await _dbAgenda.Connection.QueryAsync<AgendaDTO>(sql, new { IdColaborador = idColaborador })
+                ?? Enumerable.Empty<AgendaDTO>();
+            return response;
+        }
     }
 }

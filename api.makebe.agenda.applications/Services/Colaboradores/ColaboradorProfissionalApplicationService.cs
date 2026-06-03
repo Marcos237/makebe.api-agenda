@@ -55,11 +55,15 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
             var colaborador = await _colaboradorProfissionalDomainService.BuscarPorId(id);
             if (colaborador.Id == 0)
                 _validationService.RetornarListaVazia(nameof(ColaboradorProfissional), BaseConstant.ListaVazia);
+
+            colaborador.PeriodoInativoInicioExtenso = colaborador.PeriodoInativoInicio.ToString("dd/MM/yyyy HH:mm:ss"); 
+            colaborador.PeriodoInativoFimExtenso = colaborador.PeriodoInativoFim.ToString("dd/MM/yyyy HH:mm:ss"); ;
             return ResponseModelHelper<ColaboradorProfissionalDTO>.RetornarResponseModel(colaborador, _notificationContext.Notifications);
         }
 
         public async Task<ResponseModel<ColaboradorProfissionalDTO>> Persistir(ColaboradorProfissionalPayload usuarioPayload)
         {
+
             var colaboradorMap = _mapper.Map<ColaboradorProfissional>(usuarioPayload);
             var isValidate = await _validationService.Validar(colaboradorMap);
             if (!isValidate)

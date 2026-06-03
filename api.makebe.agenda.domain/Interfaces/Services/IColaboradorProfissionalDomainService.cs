@@ -13,5 +13,6 @@ namespace api.makebe.agenda.domain.Interfaces.Services
         Task<PaginacaoDTO<ColaboradorProfissionalDTO>> MontarColaboradorProfissional(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, IEnumerable<UsuarioDTO> usuarios);
         Task<PaginacaoDTO<ColaboradorProfissionalDTO>> Filtrar(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao);
         Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorConta(string contaId, IEnumerable<UsuarioDTO> usuarios);
+        Task<bool> BuscarAgendaVisible(int colaboradorId);
     }
 }

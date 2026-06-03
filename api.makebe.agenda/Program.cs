@@ -9,12 +9,15 @@ using api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Events;
 using lib.makebe.Applications.IOC;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://*:80");
+var urls = builder.Configuration["Urls"] ?? "http://localhost:5222";
+builder.WebHost.UseUrls(urls);
+builder.Logging.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.None);
 builder.Services.InitializeInfraRepositoryBootstrapper();
 builder.Services.InitializeRepositoryBootstrapper();
 builder.Services.InitializeDataBootstrapper();
@@ -98,12 +101,21 @@ else
 {
     app.UseCors("ProductionPolicy");
 }
+app.UseExceptionHandler(exceptionApp =>
+{
+    exceptionApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync("{\"message\":\"Erro interno no servidor.\"}");
+    });
+});
+
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("AllowSpecificOrigin");
 app.UseMiddleware<LogResponseMiddleware>();
 app.UseStaticFiles();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseExceptionHandler("/Error");
 app.Run();

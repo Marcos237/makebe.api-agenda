@@ -1,5 +1,6 @@
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
+using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Services.Interfaces;
 using ColaboradoresProfissionalEvent;
 using MassTransit;
@@ -11,13 +12,16 @@ namespace api.makebe.agenda.applications.Consumers
         : IConsumer<ColaboradorProfissionalPublicadoEvent>
     {
         private readonly IColaboradorProfissionalRepository _colaboradorProfissionalRepository;
+        private readonly IColaboradorProfissionalDomainService _colaboradorProfissionalDomainService;
         private readonly IUsuarioEventCrossCuttingService _usuarioEventCrossCuttingService;
 
         public ColaboradorProfissionalPublicadoConsumer(
             IColaboradorProfissionalRepository colaboradorProfissionalRepository,
+            IColaboradorProfissionalDomainService colaboradorProfissionalDomainService,
             IUsuarioEventCrossCuttingService usuarioEventCrossCuttingService)
         {
             _colaboradorProfissionalRepository = colaboradorProfissionalRepository;
+            _colaboradorProfissionalDomainService = colaboradorProfissionalDomainService;
             _usuarioEventCrossCuttingService = usuarioEventCrossCuttingService;
 
         }
@@ -26,7 +30,7 @@ namespace api.makebe.agenda.applications.Consumers
         {
             var message = context.Message;
 
-            var colaboradoresProfissionais = Enumerable.Empty<ColaboradorProfissionalEvent>();
+            var colaboradoresProfissionais = new List<ColaboradorProfissionalEvent>();
 
             if (message.LojaId > 0)
             {
@@ -40,19 +44,23 @@ namespace api.makebe.agenda.applications.Consumers
                         var usuario = await _usuarioEventCrossCuttingService.BuscarUsuarioPorId(usuarioEvent);
                         colaborador.NomeColaborador = usuario?.UsuarioConsultadoRetorno?.Nome ?? colaborador.NomeColaborador;
                         colaborador.UrlImagem = usuario?.UsuarioConsultadoRetorno?.UrlImagem ?? colaborador.UrlImagem;
+                        var isAgendaVisible = await _colaboradorProfissionalDomainService.BuscarAgendaVisible(colaborador.ColaboradorId);
+                        colaboradoresProfissionais.Add(new ColaboradorProfissionalEvent()
+                        {
+                            NomeColaborador = usuario?.UsuarioConsultadoRetorno?.Nome,
+                            UrlImagem = colaborador.UrlImagem,
+                            ColaboradorId = colaborador.ColaboradorId,  
+                            DescricaoServico = colaborador.DescricaoServico,
+                            Id = colaborador.Id,
+                            LojaId = colaborador.LojaId,
+                            ServicoId = colaborador.ServicoId,
+                            UsuarioId = colaborador.UsuarioId,
+                            Texto = colaborador.Texto,
+                            IsAgendaVisible = isAgendaVisible
+                        });
+                            
                     }
                 }
-                colaboradoresProfissionais = colaboradores.Select(x => new ColaboradorProfissionalEvent
-                {
-                    Id = x.Id,
-                    ColaboradorId = x.ColaboradorId,
-                    UsuarioId = x.UsuarioId,
-                    Nome = x.NomeColaborador,
-                    LojaId = x.LojaId,
-                    ServicoId = x.ServicoId,
-                    DescricaoServico = x.DescricaoServico,
-                    UrlImagem = x.UrlImagem
-                });
             }
 
             await context.RespondAsync(new ColaboradorProfissionalPublicadoEvent

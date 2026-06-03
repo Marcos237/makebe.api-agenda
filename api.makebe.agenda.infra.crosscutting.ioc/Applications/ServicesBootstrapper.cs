@@ -35,6 +35,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<IAgendaApplicationService, AgendaApplicationService>();
             services.AddScoped<IAgendamentoApplicationService, AgendamentoApplicationService>();
             services.AddScoped<IAgendamentoColaboradorApplicationService, AgendamentoColaboradorApplicationService>();
+            services.AddScoped<IPeriodoDisponivelAgendamentoApplicationService, PeriodoDisponivelAgendamentoApplicationService>();
             services.AddScoped(typeof(IContextFactory<>), typeof(ContextFactory<>));
 
             ConfigHelper.Initialize(configuration);

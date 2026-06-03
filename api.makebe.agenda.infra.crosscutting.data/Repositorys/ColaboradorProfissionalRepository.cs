@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.domain.DTO;
+using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
 using Dapper;
@@ -23,7 +23,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
                                 l.RazaoSocial, 
                                 cp.ServicoId, 
                                 s.Descricao as DescricaoServico, 
-                                cp.Descricao, 
+                                cp.Descricao,
+                                cp.PeriodoInativoInicio,
+                                cp.PeriodoInativoFim,
                                 cp.DataCadastro, 
                                 cc.ContaId 
                        FROM ColaboradorProfissional cp
@@ -50,8 +52,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
                                 CAST(c.UsuarioId AS CHAR) AS UsuarioId,
                                 cp.LojaId, 
                                 cp.ServicoId, 
-                                s.Descricao as DescricaoServico
-                                
+                                s.Descricao as DescricaoServico,
+                                cp.PeriodoInativoInicio,
+                                cp.PeriodoInativoFim
                        FROM ColaboradorProfissional cp
                        INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId 
                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
@@ -69,7 +72,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
         }
         public async Task<ColaboradorProfissionalDTO> BuscarPorId(int id)
         {
-            var sql = @"SELECT cp.Id, cp.ColaboradorId, cp.LojaId, l.RazaoSocial, cp.ServicoId, s.Descricao as DescricaoServico, cp.Descricao  FROM ColaboradorProfissional cp
+            var sql = @"SELECT cp.Id, cp.ColaboradorId, cp.LojaId, l.RazaoSocial, cp.ServicoId, s.Descricao as DescricaoServico,
+                               cp.Descricao, cp.PeriodoInativoInicio, cp.PeriodoInativoFim
+                        FROM ColaboradorProfissional cp
                             INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId 
                             INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
                             INNER JOIN Loja l on l.Id = cp.LojaId 
@@ -81,8 +86,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
         }
         public async Task<int> Salvar(ColaboradorProfissional colaborador)
         {
-            var sql = @"INSERT INTO ColaboradorProfissional (ColaboradorId, LojaId, ServicoId, Descricao, Status, DataCadastro, DataAtualizacao) VALUES
-                                   (@ColaboradorId, @LojaId, @ServicoId, @Descricao, @Status, @DataCadastro, @DataAtualizacao);
+            var sql = @"INSERT INTO ColaboradorProfissional (ColaboradorId, LojaId, ServicoId, Descricao, Status, DataCadastro, DataAtualizacao, PeriodoInativoInicio, PeriodoInativoFim) VALUES
+                                   (@ColaboradorId, @LojaId, @ServicoId, @Descricao, @Status, @DataCadastro, @DataAtualizacao, @PeriodoInativoInicio, @PeriodoInativoFim);
                                     SELECT LAST_INSERT_ID();";
 
             var parametros = new
@@ -93,7 +98,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 Descricao = colaborador.Descricao,
                 Status = colaborador.Status,
                 DataCadastro = colaborador.DataCadastro,
-                DataAtualizacao = colaborador.DataAtualizacao
+                DataAtualizacao = colaborador.DataAtualizacao,
+                PeriodoInativoInicio = colaborador.PeriodoInativoInicio,
+                PeriodoInativoFim = colaborador.PeriodoInativoFim
             };
             var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, parametros, _dbAgenda.Transaction);
             return retorno;
@@ -108,7 +115,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
                                 LojaId = @LojaId,
                                 ServicoId = @ServicoId,
                                 Descricao = @Descricao,
-                                DataAtualizacao = @DataAtualizacao
+                                DataAtualizacao = @DataAtualizacao,
+                                PeriodoInativoInicio = @PeriodoInativoInicio,
+                                PeriodoInativoFim = @PeriodoInativoFim
                             WHERE 
                                 Id = @Id;";
             var parametros = new
@@ -119,6 +128,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 Descricao = colaborador.Descricao,
                 DataCadastro = colaborador.DataCadastro,
                 DataAtualizacao = colaborador.DataAtualizacao,
+                PeriodoInativoInicio = colaborador.PeriodoInativoInicio,
+                PeriodoInativoFim = colaborador.PeriodoInativoFim,
                 Id = colaborador.Id,
             };
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, parametros) > 0;

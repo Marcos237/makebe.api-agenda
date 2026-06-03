@@ -3,6 +3,7 @@ using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Responses;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Extensions;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Entidades;
@@ -25,11 +26,12 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
         private readonly IMapper _mapper;
         private readonly IValidationService<AgendamentoDTO> _validationService;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
+        private readonly IServicosDomainService _servicosDomainService;
 
         public AgendamentoApplicationService(IAgendamentoDomainService agendamentoDomainService, INotificationContext notificationContext,
             IContaEventCrossCuttingService contaEventCrossCuttingService, IUsuarioEventCrossCuttingService usuarioEventCrossCuttingService,
             IUsuarioClienteConsultadosCrosCuttingService consultadosCrosCuttingService, IMapper mapper, IValidationService<AgendamentoDTO> validationService,
-            IUsuarioSessaoDomainService usuarioSessaoDomainService)
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IServicosDomainService servicosDomainService)
         {
             _agendamentoDomainService = agendamentoDomainService;
             _notificationContext = notificationContext;
@@ -39,6 +41,7 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
             _mapper = mapper;
             _validationService = validationService;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
+            _servicosDomainService = servicosDomainService;
         }
         public async Task<ResponseModel<PaginacaoDTO<AgendamentoDTO>>> BuscarAgendamentoPaginado(PaginacaoDTO<AgendamentoDTO> paginacao, string usuario)
         {
@@ -95,6 +98,10 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
         }
         public async Task<ResponseModel<AgendamentoDTO>> Persistir(AgendamentoDTO agendamentoDTO, string usuario)
         {
+            var servico = await _servicosDomainService.BuscarPorId(agendamentoDTO.IdServico);
+            agendamentoDTO.Periodo = servico?.Periodo ?? 0;
+            agendamentoDTO.DataInicioAgendamento = ValoresHelper.MontarDate(agendamentoDTO.DataInicioAgendamentoExtenso, agendamentoDTO.Data) ?? DateTime.Now;
+            agendamentoDTO.DataTerminoAgendamento = agendamentoDTO.MontarDataTermino();
 
             var isValid = await _validationService.Validar(agendamentoDTO);
             if (!isValid)

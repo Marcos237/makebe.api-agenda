@@ -24,6 +24,27 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var result = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<PortifolioImagemDTO>(sql, new { id = id }) ?? new PortifolioImagemDTO();
             return result;
         }
+        public async Task<IEnumerable<ColaboradorPortifolioImagemDTO>> BuscarImagensPorColaboradorId(int id)
+        {
+            var sql = @"SELECT 
+	                        t.NomeImagem, 
+	                        t.UrlImagem, 
+	                        t.TituloImagem, 
+	                        cp.ColaboradorId,
+	                        CAST(c.UsuarioId AS CHAR) AS UsuarioId,
+                            p.Texto 
+                        FROM ColaboradorProfissional cp 
+                        INNER JOIN Colaborador c On c.Id  = cp.ColaboradorId 
+                        INNER JOIN ColaboradorPortifolio cp2 ON cp2.ColaboradorId  = cp.ColaboradorId 
+                        INNER JOIN Portifolio p ON p.Id  = cp2.PortifolioId 
+                        INNER JOIN PortifolioImagens t ON t.PortifolioId = p.Id 
+                        WHERE t.Status = 1 AND cp.ColaboradorId  = @Id";
+
+            var result = await _dbAgenda.Connection.QueryAsync<ColaboradorPortifolioImagemDTO>(sql, new { Id = id })
+                ?? Enumerable.Empty<ColaboradorPortifolioImagemDTO>();
+
+            return result;
+        }
         public async Task<int> Salvar(PortifolioImagens PortifolioImagens)
         {
             var sql = @"INSERT INTO PortifolioImagens (PortifolioId, TituloImagem, UrlImagem, NomeImagem, Status, DataCadastro, DataAtualizacao)

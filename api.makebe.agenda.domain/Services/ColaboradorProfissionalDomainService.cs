@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
 using api.makebe.agenda.domain.Interfaces.Services;
 
@@ -8,9 +9,12 @@ namespace api.makebe.agenda.domain.Services
     public class ColaboradorProfissionalDomainService : IColaboradorProfissionalDomainService
     {
         private readonly IColaboradorProfissionalRepository _ColaboradorProfissionalRepository;
-        public ColaboradorProfissionalDomainService(IColaboradorProfissionalRepository ColaboradorProfissionalRepository)
+        private readonly IAgendaColaboradorRepository _agendaColaboradorRepository;
+        public ColaboradorProfissionalDomainService(IColaboradorProfissionalRepository ColaboradorProfissionalRepository,
+            IAgendaColaboradorRepository agendaColaboradorRepository)
         {
             _ColaboradorProfissionalRepository = ColaboradorProfissionalRepository;
+            _agendaColaboradorRepository = agendaColaboradorRepository;
         }
         public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> BuscarPaginado(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, string contaId, IEnumerable<UsuarioDTO> usuarios)
         {
@@ -34,6 +38,27 @@ namespace api.makebe.agenda.domain.Services
           (colaborador, usuario) => AdicionarColaboradorProfissional(colaborador, usuario));
             return colaboradoresCompletos;
 
+        }
+        public async Task<bool> BuscarAgendaVisible(int colaboradorId)
+        {
+            var agenda = await _agendaColaboradorRepository.BuscarAgendaPorColaboradorId(colaboradorId);
+            if (agenda == null)
+                return false;
+
+            if (agenda.IsBloqueadoHoje)
+                return false;
+
+            var hoje = DateTime.Today;
+            var agendaInicio = ValoresHelper.SetDateTimeCustomer(agenda.AgendaAbertaInicio);
+            var agendaFim = ValoresHelper.SetDateTimeCustomer(agenda.AgendaAbertaFim);
+            var agendaBloqueadaInicio = ValoresHelper.SetDateTimeCustomer(agenda.AgendaBloqueadaInicio);
+            var agendaBloqueadaFim = ValoresHelper.SetDateTimeCustomer(agenda.AgendaBloqueadaFim);
+
+            var hojeDentroAberta = agendaInicio.HasValue &&
+                                         agendaFim.HasValue &&
+                                         (hoje > agendaInicio.Value.Date && hoje < agendaFim.Value.Date);
+
+            return hojeDentroAberta;
         }
         public async Task<int> Salvar(ColaboradorProfissional colaborador)
         {
@@ -118,6 +143,8 @@ namespace api.makebe.agenda.domain.Services
                 ServicoId = colaborador.ServicoId,
                 DescricaoServico = colaborador?.DescricaoServico,
                 Descricao = colaborador?.Descricao,
+                PeriodoInativoInicio = colaborador.PeriodoInativoInicio,
+                PeriodoInativoFim = colaborador.PeriodoInativoFim,
             };
         }
     }

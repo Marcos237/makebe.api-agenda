@@ -2,9 +2,12 @@
 using api.makebe.agenda.infra.crosscutting.Entidades.Constants;
 using api.makebe.agenda.infra.crosscutting.Events;
 using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
+using AgendamentoPersistenciaEvent;
+using ColaboradorAgendamentoEvent;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PeriodoDisponivelAgendamentoEvent;
 using System.Net.Mime;
 
 
@@ -18,7 +21,11 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Events
             {
                 busConfigurator.AddConsumer<LojasVitrinePublicadasConsumer>();
                 busConfigurator.AddConsumer<ColaboradorProfissionalPublicadoConsumer>();
+                busConfigurator.AddConsumer<ColaboradorPortifolioImagemPublicadoConsumer>();
                 busConfigurator.AddConsumer<EnderecoLojaConsumer>();
+                busConfigurator.AddConsumer<ColaboradorAgendamentoConsumer>();
+                busConfigurator.AddConsumer<PeriodoDisponivelAgendamentoConsumer>();
+                busConfigurator.AddConsumer<AgendamentoPersistidoConsumer>();
 
                 busConfigurator.UsingRabbitMq((context, configuracao) =>
                 {
@@ -42,9 +49,29 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Events
                         e.ConfigureConsumer<ColaboradorProfissionalPublicadoConsumer>(context);
                     });
 
+                    configuracao.ReceiveEndpoint("colaborador-portifolio-imagem-publicado-queue", e =>
+                    {
+                        e.ConfigureConsumer<ColaboradorPortifolioImagemPublicadoConsumer>(context);
+                    });
+
                     configuracao.ReceiveEndpoint("endereco-loja-publicado-queue", e =>
                     {
                         e.ConfigureConsumer<EnderecoLojaConsumer>(context);
+                    });
+
+                    configuracao.ReceiveEndpoint("colaborador-agendamento-publicado-queue", e =>
+                    {
+                        e.ConfigureConsumer<ColaboradorAgendamentoConsumer>(context);
+                    });
+
+                    configuracao.ReceiveEndpoint("periodo-disponivel-agendamento-publicado-queue", e =>
+                    {
+                        e.ConfigureConsumer<PeriodoDisponivelAgendamentoConsumer>(context);
+                    });
+
+                    configuracao.ReceiveEndpoint("agendamento-persistido-queue", e =>
+                    {
+                        e.ConfigureConsumer<AgendamentoPersistidoConsumer>(context);
                     });
                 });
             });
