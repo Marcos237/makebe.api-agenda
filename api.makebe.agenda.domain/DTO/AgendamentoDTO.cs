@@ -20,6 +20,7 @@
         public DateTime PeriodoInativoInicio { get; set; }
         public DateTime PeriodoInativoFim { get; set; }
         public bool Ativo { get; set; }
+        public bool IsBloqueadoHoje { get; set; }
         public Decimal Periodo { get; set; }
     }
 }

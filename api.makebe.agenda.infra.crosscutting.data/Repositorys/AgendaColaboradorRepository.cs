@@ -141,6 +141,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             DATE_FORMAT(a.AgendaAbertaFim, '%d/%m/%Y %H:%i:%s') AS AgendaAbertaFim,
                             DATE_FORMAT(a.AgendaBloqueadaInicio, '%d/%m/%Y %H:%i:%s') AS AgendaBloqueadaInicio,
                             DATE_FORMAT(a.AgendaBloqueadaFim, '%d/%m/%Y %H:%i:%s') AS AgendaBloqueadaFim,
+                            a.IdAgendaSemanaInicio AS IdAgendaSemanaInicio,
+                            a.IdAgendaSemanaFim AS IdAgendaSemanaFim,
                             CAST(c.UsuarioId AS CHAR) AS UsuarioId,
                             CAST(cc.ContaId AS CHAR) AS ContaId
                            

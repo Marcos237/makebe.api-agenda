@@ -47,6 +47,8 @@ namespace api.makebe.agenda.applications.Consumers
                         AgendaBloqueadaFim = x.AgendaBloqueadaFim,
                         UsuarioId = x.UsuarioId,
                         DataInicioAgendamento = x.DataInicioAgendamento,
+                        IdAgendaSemanaInicio = x.IdAgendaSemanaInicio,
+                        IdAgendaSemanaFim = x.IdAgendaSemanaFim,
                         DataTerminoAgendamento = x.DataTerminoAgendamento,
                         Servicos = servicos.Select(servico => new ServicoEvent
                         {

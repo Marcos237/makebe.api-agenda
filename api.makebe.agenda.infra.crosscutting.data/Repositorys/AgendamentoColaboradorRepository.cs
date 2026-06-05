@@ -155,8 +155,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             a.DataInicioAgendamento,
                             a.DataTerminoAgendamento,
                             c.Id AS IdColaborador,
-                            s.Descricao AS DescricaoServico,
-                            
+                            s.Descricao AS DescricaoServico,                   
                             s.Valor,
                             s.Periodo
                         FROM Agendamento a
@@ -175,7 +174,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<IEnumerable<AgendamentoColaboradorPeriodoDTO>> BuscarPeriodosPorColaboradorId(int idColaborador)
         {
-            var sql = @"SELECT
+            var sql = @"SELECT DISTINCT
                             ac.Id AS IdAgendaColaborador,
                             cp.ColaboradorId,
                             cp.PeriodoInativoInicio,
@@ -183,14 +182,13 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             a.AgendaBloqueadaInicio,
                             a.AgendaBloqueadaFim,
                             ag.DataInicioAgendamento,
-                            ag.DataTerminoAgendamento
+                            ag.DataTerminoAgendamento,
+                            s.Periodo 
                         FROM ColaboradorProfissional cp
-                        INNER JOIN AgendaColaborador ac
-                            ON ac.IdColaborador = cp.ColaboradorId
-                        INNER JOIN Agenda a
-                            ON a.Id = ac.IdAgenda
-                        LEFT JOIN Agendamento ag
-                            ON ag.IdAgendaColaborador = ac.Id
+                        INNER JOIN AgendaColaborador ac ON ac.IdColaborador = cp.ColaboradorId
+                        INNER JOIN Agenda a ON a.Id = ac.IdAgenda
+                        LEFT JOIN Agendamento ag ON ag.IdAgendaColaborador = ac.Id
+                        INNER JOIN Servicos s ON s.Id = ag.IdServico
                         WHERE ac.Status = 1
                         AND ac.IdColaborador = @IdColaborador";
 

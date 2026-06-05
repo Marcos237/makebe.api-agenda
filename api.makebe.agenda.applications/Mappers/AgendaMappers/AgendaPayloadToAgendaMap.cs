@@ -30,7 +30,7 @@ namespace api.makebe.agenda.applications.Mappers.AgendaMappers
                  .ForMember(dest => dest.AgendaAbertaFim, opt => opt.MapFrom(src => ValoresHelper.SetDateTimeCustomer(src.AgendaAbertaFim)))
                  .ForMember(dest => dest.AgendaBloqueadaInicio, opt => opt.MapFrom(src => ValoresHelper.SetDateTimeCustomer(src.AgendaBloqueadaInicio)))
                  .ForMember(dest => dest.AgendaBloqueadaFim, opt => opt.MapFrom(src => ValoresHelper.SetDateTimeCustomer(src.AgendaBloqueadaFim)))
-                 .ForMember(dest => dest.IsBloqueadoHoje, opt => opt.MapFrom(src => src.Bloqueado));
+                 .ForMember(dest => dest.IsBloqueadoHoje, opt => opt.MapFrom(src => src.IsBloqueadoHoje));
 
         }
     }

@@ -24,10 +24,6 @@ namespace api.makebe.agenda.domain.Validations
                     .WithMessage(AgendamentoConstant.AgendamentoLojaFechada)
                     .WithName(nameof(Agendamento.DataInicioAgendamento));
 
-            RuleFor(agendamento => new AgendamentoLojaBloqueadaSpecification(_agendamentoLojaRepository).IsSatisfiedBy(agendamento))
-                    .Must(agendamento => agendamento)
-                    .WithMessage(AgendamentoConstant.AgendamentoLojaBloqueada)
-                    .WithName(nameof(Agendamento.DataInicioAgendamento));
 
             RuleFor(agendamento => new AgendamentoColaboradorAgendaPeriodoSpecification(_agendamentoColaboradorRepository).IsSatisfiedBy(agendamento))
                     .Must(agendamento => agendamento)

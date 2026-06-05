@@ -12,6 +12,8 @@ namespace ColaboradorAgendamentoEvent
         public string? UsuarioId { get; set; }
         public string? DataInicioAgendamento { get; set; }
         public string? DataTerminoAgendamento { get; set; }
+        public int IdAgendaSemanaInicio { get; set; }
+        public int IdAgendaSemanaFim { get; set; }
         public IEnumerable<ServicoEvent> Servicos { get; set; } = Enumerable.Empty<ServicoEvent>();
         public IEnumerable<AgendamentoEvent> Agendamentos { get; set; } = Enumerable.Empty<AgendamentoEvent>(); 
     }
