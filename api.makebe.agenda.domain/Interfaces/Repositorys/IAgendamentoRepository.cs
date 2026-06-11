@@ -7,6 +7,7 @@ namespace api.makebe.agenda.domain.Interfaces.Repositorys
     {
         Task<PaginacaoDTO<AgendamentoDTO>> BuscarPaginado(PaginacaoDTO<AgendamentoDTO> paginacao, string contaId);
         Task<AgendamentoDTO> BuscarPorId(int id);
+        Task<IEnumerable<AgendamentoConsultaDTO>> BuscarMeusAgendamentos(string idUsuario);
         Task<IEnumerable<AgendamentoDTO>> BuscarPorAnoConta(int ano, int id, string conta);
         Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoPorData(DateTime data, int id, string conta);
         Task<int> Salvar(Agendamento agendamento);

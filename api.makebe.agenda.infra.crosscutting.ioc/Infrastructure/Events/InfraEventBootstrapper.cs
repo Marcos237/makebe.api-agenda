@@ -4,9 +4,12 @@ using api.makebe.agenda.infra.crosscutting.Events;
 using api.makebe.agenda.infra.crosscutting.Events.Interfaces;
 using AgendamentoPersistenciaEvent;
 using ColaboradorAgendamentoEvent;
+using DesativarAgendamentoEvent;
 using MassTransit;
+using MeusAgendamentosEvent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PesquisarVitrineEvent;
 using PeriodoDisponivelAgendamentoEvent;
 using System.Net.Mime;
 
@@ -26,6 +29,9 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Events
                 busConfigurator.AddConsumer<ColaboradorAgendamentoConsumer>();
                 busConfigurator.AddConsumer<PeriodoDisponivelAgendamentoConsumer>();
                 busConfigurator.AddConsumer<AgendamentoPersistidoConsumer>();
+                busConfigurator.AddConsumer<MeusAgendamentosConsumer>();
+                busConfigurator.AddConsumer<DesativarAgendamentoConsumer>();
+                busConfigurator.AddConsumer<PesquisarVitrineConsumer>();
 
                 busConfigurator.UsingRabbitMq((context, configuracao) =>
                 {
@@ -72,6 +78,21 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Infrastructure.Events
                     configuracao.ReceiveEndpoint("agendamento-persistido-queue", e =>
                     {
                         e.ConfigureConsumer<AgendamentoPersistidoConsumer>(context);
+                    });
+
+                    configuracao.ReceiveEndpoint("meus-agendamentos-publicado-queue", e =>
+                    {
+                        e.ConfigureConsumer<MeusAgendamentosConsumer>(context);
+                    });
+
+                    configuracao.ReceiveEndpoint("desativar-agendamento-queue", e =>
+                    {
+                        e.ConfigureConsumer<DesativarAgendamentoConsumer>(context);
+                    });
+
+                    configuracao.ReceiveEndpoint("pesquisar-vitrine-queue", e =>
+                    {
+                        e.ConfigureConsumer<PesquisarVitrineConsumer>(context);
                     });
                 });
             });

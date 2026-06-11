@@ -10,6 +10,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Data
         public static void InitializeDataBootstrapper(this IServiceCollection services)
         {
             services.AddScoped<DbAgenda>();
+            services.AddScoped<DbManutencao>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
         }
     }

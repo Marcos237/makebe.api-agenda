@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Extensions;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
@@ -64,15 +65,35 @@ namespace api.makebe.agenda.domain.Services
             var response = await _agendamentoRepository.BuscarPorId(id);
             return response;
         }
+
+        public async Task<PaginacaoDTO<AgendamentoConsultaDTO>> BuscarMeusAgendamentos(PaginacaoDTO<AgendamentoConsultaDTO> paginacao, string idUsuario)
+        {
+            var agendamentos = (await _agendamentoRepository.BuscarMeusAgendamentos(idUsuario)).ToList();
+            agendamentos.ForEach(agendamento => agendamento.EhDesativado = agendamento.CalcularEhDesativado());
+
+            paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
+            paginacao.total = agendamentos.Count;
+            paginacao.totalPaginas = paginacao.total.CalcularTotalPaginas(paginacao.quantidadePagina);
+            paginacao.objetos = agendamentos
+                .Skip(paginacao.registroInicial)
+                .Take(paginacao.quantidadePagina)
+                .ToList();
+
+            return paginacao;
+        }
+
         public async Task<IEnumerable<AgendamentoDTO>> BuscarPorAnoConta(int ano, int id, string conta)
         {
             var response = await _agendamentoRepository.BuscarPorAnoConta(ano, id, conta);
             return response;
         }
 
-        public Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoPorData(DateTime data, int id,  string conta)
+        public async Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoPorData(DateTime data, int id,  string conta)
         {
-            var response = _agendamentoRepository.BuscarAgendamentoPorData(data, id,  conta);
+            var response = await  _agendamentoRepository.BuscarAgendamentoPorData(data, id,  conta);
+            foreach (var item in response)       
+                item.DataTerminoAgendamento = item.DataTerminoAgendamento.AddMinutes(1);
+            
             return response;
         }
 

@@ -9,7 +9,8 @@ namespace api.makebe.agenda.domain.DTO
         public DateTime AgendaBloqueadaInicio { get; set; }
         public DateTime AgendaBloqueadaFim { get; set; }
         public DateTime? DataInicioAgendamento { get; set; }
-        public decimal? Perido { get; set; }
+        public DateTime? DataTerminoAgendamento { get; set; }
+        public decimal? Periodo { get; set; }
 
     }
 }

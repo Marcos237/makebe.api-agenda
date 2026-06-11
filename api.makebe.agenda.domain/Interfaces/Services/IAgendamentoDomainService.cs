@@ -9,6 +9,7 @@ namespace api.makebe.agenda.domain.Interfaces.Services
         Task<PaginacaoDTO<AgendamentoDTO>> MontarAgendamento(PaginacaoDTO<AgendamentoDTO> paginacao, string constaId, IEnumerable<UsuarioEvent>? UsuariosEvents, IEnumerable<UsuarioEvent>? ColaboradoresEvents);
         PaginacaoDTO<AgendamentoDTO> Filtrar(PaginacaoDTO<AgendamentoDTO> paginacao);
         Task<AgendamentoDTO> BuscarPorId(int id);
+        Task<PaginacaoDTO<AgendamentoConsultaDTO>> BuscarMeusAgendamentos(PaginacaoDTO<AgendamentoConsultaDTO> paginacao, string idUsuario);
         Task<IEnumerable<AgendamentoDTO>> BuscarPorAnoConta(int ano, int id, string conta);
         Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoPorData(DateTime data, int id, string conta);
         Task<int> Salvar(Agendamento agendamento, int idColaborador);

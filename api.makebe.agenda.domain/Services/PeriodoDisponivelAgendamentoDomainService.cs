@@ -27,21 +27,7 @@ namespace api.makebe.agenda.domain.Services
             var indisponiveisMesclados = MesclarIntervalos(indisponiveis, inicioDia, fimDiaExclusivo);
             var disponiveis = MontarIntervalosDisponiveis(inicioDia, fimDiaExclusivo, indisponiveisMesclados);
 
-            var periodos = new List<PeriodoDTO>();
-            foreach (var intervalo in disponiveis)
-            {
-                for (var slotInicio = intervalo.Inicio; slotInicio.Add(duracaoSlot) <= intervalo.Fim; slotInicio = slotInicio.Add(duracaoSlot))
-                {
-                    var slotFim = slotInicio.Add(duracaoSlot);
-                    periodos.Add(new PeriodoDTO
-                    {
-                        Inicio = slotInicio,
-                        Fim = slotFim,
-                        IsAgendado = ExisteAgendamento(agendasLista, slotInicio, slotFim)
-                    });
-                }
-            }
-
+            var periodos = ReagruparPeriodosMarcar(disponiveis, agendasLista, duracaoSlot);
             var retorno = periodos
                 .GroupBy(periodo => new { periodo.Inicio, periodo.Fim })
                 .Select(grupo => grupo.OrderByDescending(periodo => periodo.IsAgendado).First())
@@ -51,14 +37,6 @@ namespace api.makebe.agenda.domain.Services
             return await Task.FromResult(retorno);
         }
 
-        private static bool ExisteAgendamento(IEnumerable<AgendamentoColaboradorPeriodoDTO> agendas, DateTime slotInicio, DateTime slotFim)
-        {
-            return agendas.Any(agenda =>
-                agenda.DataInicioAgendamento.HasValue &&
-                agenda.DataTerminoAgendamento.HasValue &&
-                slotInicio < agenda.DataTerminoAgendamento.Value.AddMinutes(1) &&
-                slotFim > agenda.DataInicioAgendamento.Value);
-        }
 
         private static IEnumerable<(DateTime Inicio, DateTime Fim)> MontarIntervalosDiarios(DateTime dataBase, DateTime inicio, DateTime fim)
         {
@@ -138,6 +116,63 @@ namespace api.makebe.agenda.domain.Services
                 retorno.Add((cursor, fimDiaExclusivo));
 
             return retorno;
+        }
+        public List<PeriodoDTO> ReagruparPeriodosMarcar(
+            List<(DateTime Inicio, DateTime Fim)> disponiveis,
+            List<AgendamentoColaboradorPeriodoDTO>? agendas,
+            TimeSpan duracaoSlot)
+        {
+            var periodos = new List<PeriodoDTO>();
+
+            DateTime? proximoInicio = null;
+
+            foreach (var intervalo in disponiveis.OrderBy(x => x.Inicio))
+            {
+                var cursor = proximoInicio ?? intervalo.Inicio;
+
+                while (cursor.Add(duracaoSlot) <= intervalo.Fim)
+                {
+                    var agenda = agendas?
+                        .FirstOrDefault(a =>
+                            cursor >= a.DataInicioAgendamento &&
+                            cursor < a.DataTerminoAgendamento);
+
+                    if (agenda != null)
+                    {
+                        var duracaoAgendada = agenda.Periodo?.ParaTimeSpan() ?? TimeSpan.Zero;
+                        var fimAgendamento = cursor.Add(duracaoAgendada);
+
+                        periodos.Add(new PeriodoDTO
+                        {
+                            Inicio = cursor,
+                            Fim = fimAgendamento,
+                            IsAgendado = true
+                        });
+
+                        cursor = fimAgendamento;
+                    }
+                    else
+                    {
+                        var fim = cursor.Add(duracaoSlot);
+
+                        if (fim > intervalo.Fim)
+                            break;
+
+                        periodos.Add(new PeriodoDTO
+                        {
+                            Inicio = cursor,
+                            Fim = fim,
+                            IsAgendado = false
+                        });
+
+                        cursor = fim;
+                    }
+                }
+
+                proximoInicio = null;
+            }
+
+            return periodos;
         }
     }
 }

@@ -189,7 +189,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         INNER JOIN Agenda a ON a.Id = ac.IdAgenda
                         LEFT JOIN Agendamento ag ON ag.IdAgendaColaborador = ac.Id
                         INNER JOIN Servicos s ON s.Id = ag.IdServico
-                        WHERE ac.Status = 1
+                        WHERE ac.Status = 1 AND ag.Ativo = 1
                         AND ac.IdColaborador = @IdColaborador";
 
             var retorno = await _dbAgenda.Connection.QueryAsync<AgendamentoColaboradorPeriodoDTO>(sql, new { IdColaborador = idColaborador })

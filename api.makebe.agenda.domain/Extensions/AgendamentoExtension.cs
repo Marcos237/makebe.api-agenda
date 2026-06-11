@@ -39,5 +39,10 @@ namespace api.makebe.agenda.domain.Extensions
 
             return new TimeSpan(horas, minutos, 0);
         }
+
+        public static bool CalcularEhDesativado(this AgendamentoConsultaDTO agendamento)
+        {
+            return agendamento.DataInicioAgendamento > DateTime.Now.AddDays(1);
+        }
     }
 }

@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\api.makebe.agenda.applications\api.makebe.agenda.applications.csproj" />
     <ProjectReference Include="..\api.makebe.agenda.domain\api.makebe.agenda.domain.csproj" />
   </ItemGroup>
 

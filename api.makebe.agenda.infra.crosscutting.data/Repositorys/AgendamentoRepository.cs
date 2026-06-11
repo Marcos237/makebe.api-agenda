@@ -1,5 +1,6 @@
 ﻿using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
 using Dapper;
 
@@ -66,6 +67,31 @@ namespace api.makebe.agenda.infra.data.Repositorys
             return response;
         }
 
+        public async Task<IEnumerable<AgendamentoConsultaDTO>> BuscarMeusAgendamentos(string idUsuario)
+        {
+            var sql = @"SELECT a.Id,
+                            CAST(a.IdUsuario AS CHAR) AS IdUsuario,
+                            a.DataInicioAgendamento,
+                            a.DataTerminoAgendamento,
+                            s.Descricao AS DescricaoServico,
+                            ac.IdColaborador,
+                            CAST(c.UsuarioId AS CHAR) AS IdColaboradorUsuario
+                        FROM Agendamento a
+                        INNER JOIN AgendaColaborador ac ON ac.Id = a.IdAgendaColaborador
+                        INNER JOIN Servicos s ON s.Id = a.IdServico
+                        INNER JOIN Colaborador c ON c.Id = ac.IdColaborador
+                        WHERE 
+                        a.IdUsuario = @IdUsuario 
+                        AND 
+                        a.Ativo = 1
+                        ORDER BY a.DataInicioAgendamento  DESC";
+
+            return await _dbAgenda.Connection.QueryAsync<AgendamentoConsultaDTO>(sql, new
+            {
+                IdUsuario = PropiedadesHelper.ParseGuidOrDefault(idUsuario)
+            }) ?? Enumerable.Empty<AgendamentoConsultaDTO>();
+        }
+
         public async Task<IEnumerable<AgendamentoDTO>> BuscarPorAnoConta(int ano, int id, string conta)
         {
 
@@ -101,12 +127,14 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             CAST(a.IdUsuario AS CHAR) AS IdUsuario,
                         	a.DataInicioAgendamento,
                         	a.DataTerminoAgendamento,
-                            c.Id AS IdColaborador
+                            c.Id AS IdColaborador,
+                            s.Descricao AS DescricaoServico
                         FROM Agendamento a
                         INNER JOIN AgendaColaborador ac  ON ac.Id = a.IdAgendaColaborador
                         INNER JOIN Colaborador c ON c.Id  = ac.IdColaborador 
                         INNER JOIN ContaColaborador cc ON cc.ColaboradorId = c.Id
-                        WHERE DATE(a.DataInicioAgendamento) = DATE(@Data)
+                        INNER JOIN Servicos s ON s.Id  = a.IdServico
+                        WHERE DATE(a.DataInicioAgendamento) = @Data
                         AND cc.ContaId  = @Conta
                         AND c.Id  = @ColaboradorId
                         AND a.Ativo = 1
@@ -119,10 +147,33 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<int> Salvar(Agendamento agendamento)
         {
+            var sql = @"
+        INSERT INTO Agendamento
+        (
+            IdAgendaColaborador,
+            IdServico,
+            IdUsuario,
+            DataInicioAgendamento,
+            DataTerminoAgendamento,
+            DataCadastro,
+            DataAtualizacao,
+            Ativo
+        )
+        VALUES
+        (
+            @IdAgendaColaborador,
+            @IdServico,
+            @IdUsuario,
+            @DataInicioAgendamento,
+            @DataTerminoAgendamento,
+            @DataCadastro,
+            @DataAtualizacao,
+            @Ativo
+        );
 
-            var sql = @"INSERT INTO Agendamento (IdAgendaColaborador, IdServico, IdUsuario, DataInicioAgendamento , DataTerminoAgendamento , DataCadastro , DataAtualizacao, Ativo)
-                                        VALUES (@IdAgendaColaborador, @IdServico, @IdUsuario, @DataInicioAgendamento , @DataTerminoAgendamento , @DataCadastro , @DataAtualizacao, @Ativo)";
-            var response = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
+        SELECT LAST_INSERT_ID();";
+
+            return await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
             {
                 IdAgendaColaborador = agendamento.IdAgendaColaborador,
                 IdServico = agendamento.IdServico,
@@ -131,9 +182,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 DataTerminoAgendamento = agendamento.DataTerminoAgendamento,
                 DataCadastro = agendamento.DataCadastro,
                 DataAtualizacao = agendamento.DataAtualizacao,
-                Ativo = agendamento.Ativo,
+                Ativo = agendamento.Ativo
             });
-            return response;
         }
         public async Task<bool> Atualizar(Agendamento agendamento)
         {
@@ -162,14 +212,12 @@ namespace api.makebe.agenda.infra.data.Repositorys
         }
         public async Task<bool> Desativar(int id)
         {
-            var sql = @"UPDATE Agendamento a  SET Ativo = 0 WHERE Id = @Id
-";
+            var sql = @"UPDATE Agendamento a  SET Ativo = 0 WHERE Id = @Id";
             var response = await _dbAgenda.Connection.ExecuteAsync(sql, new
             {
                 Id = id
             });
             return response > 0;
         }
-
     }
 }
