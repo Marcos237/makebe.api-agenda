@@ -32,8 +32,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 AgendaAbertaInicio = agenda.AgendaAbertaInicio,
                 AgendaAbertaFim = agenda.AgendaAbertaFim,
                 IsBloqueadoHoje = agenda.IsBloqueadoHoje,
-                AgendaBloqueadaInicio = agenda.AgendaBloqueadaInicio,
-                AgendaBloqueadaFim = agenda.AgendaBloqueadaFim,
+                AgendaBloqueadaInicio = new DateTime(9999, 12, 31, 23, 59, 59),
+                AgendaBloqueadaFim = new DateTime(9999, 12, 31, 23, 59, 59),
                 DataCadastro = agenda.DataCadastro,
                 DataAtualizacao = agenda.DataAtualizacao,
                 Status = agenda.Status
@@ -66,8 +66,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 AgendaAbertaInicio = agenda.AgendaAbertaInicio,
                 AgendaAbertaFim = agenda.AgendaAbertaFim,
                 IsBloqueadoHoje = agenda.IsBloqueadoHoje,
-                AgendaBloqueadaInicio = agenda.AgendaBloqueadaInicio,
-                AgendaBloqueadaFim = agenda.AgendaBloqueadaFim,
+                AgendaBloqueadaInicio = new DateTime(9999, 12, 31, 23, 59, 59),
+                AgendaBloqueadaFim = new DateTime(9999, 12, 31, 23, 59, 59),
                 DataAtualizacao = agenda.DataAtualizacao,
                 Status = agenda.Status,
                 Id = agenda.Id

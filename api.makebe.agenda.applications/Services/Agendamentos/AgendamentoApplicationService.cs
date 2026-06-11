@@ -3,6 +3,7 @@ using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Models.Responses;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Extensions;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
 using api.makebe.agenda.infra.crosscutting.Entidades;
@@ -25,11 +26,14 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
         private readonly IMapper _mapper;
         private readonly IValidationService<AgendamentoDTO> _validationService;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
+        private readonly IServicosDomainService _servicosDomainService;
+        private readonly IEmailEnvioDomainService _emailEnvioDomainService;
 
         public AgendamentoApplicationService(IAgendamentoDomainService agendamentoDomainService, INotificationContext notificationContext,
             IContaEventCrossCuttingService contaEventCrossCuttingService, IUsuarioEventCrossCuttingService usuarioEventCrossCuttingService,
             IUsuarioClienteConsultadosCrosCuttingService consultadosCrosCuttingService, IMapper mapper, IValidationService<AgendamentoDTO> validationService,
-            IUsuarioSessaoDomainService usuarioSessaoDomainService)
+            IUsuarioSessaoDomainService usuarioSessaoDomainService, IServicosDomainService servicosDomainService,
+            IEmailEnvioDomainService emailEnvioDomainService)
         {
             _agendamentoDomainService = agendamentoDomainService;
             _notificationContext = notificationContext;
@@ -39,6 +43,8 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
             _mapper = mapper;
             _validationService = validationService;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
+            _servicosDomainService = servicosDomainService;
+            _emailEnvioDomainService = emailEnvioDomainService;
         }
         public async Task<ResponseModel<PaginacaoDTO<AgendamentoDTO>>> BuscarAgendamentoPaginado(PaginacaoDTO<AgendamentoDTO> paginacao, string usuario)
         {
@@ -63,6 +69,12 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
 
             return ResponseModelHelper<AgendamentoDTO>.RetornarResponseModel(response, _notificationContext.Notifications);
         }
+
+        public async Task<PaginacaoDTO<AgendamentoConsultaDTO>> BuscarMeusAgendamentos(PaginacaoDTO<AgendamentoConsultaDTO> paginacao, string usuarioId)
+        {
+            return await _agendamentoDomainService.BuscarMeusAgendamentos(paginacao, usuarioId);
+        }
+
         public async Task<ResponseModel<AgendamentoDTO>> BuscarAgendamentoPorAno(int ano, int id, string usuarioId)
         {
             var usuario = PropiedadesHelper.ParseGuidOrDefault(usuarioId);
@@ -95,6 +107,10 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
         }
         public async Task<ResponseModel<AgendamentoDTO>> Persistir(AgendamentoDTO agendamentoDTO, string usuario)
         {
+            var servico = await _servicosDomainService.BuscarPorId(agendamentoDTO.IdServico);
+            agendamentoDTO.Periodo = servico?.Periodo ?? 0;
+            agendamentoDTO.DataInicioAgendamento = ValoresHelper.MontarDate(agendamentoDTO.DataInicioAgendamentoExtenso, agendamentoDTO.Data) ?? DateTime.Now;
+            agendamentoDTO.DataTerminoAgendamento = agendamentoDTO.MontarDataTermino();
 
             var isValid = await _validationService.Validar(agendamentoDTO);
             if (!isValid)
@@ -103,9 +119,13 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
             var agendamentoMap = _mapper.Map<Agendamento>(agendamentoDTO);
             var idColaborador = Convert.ToInt32(TextoHelper.GetNumeros(agendamentoDTO.IdColaborador ?? "0"));
             var response = await _agendamentoDomainService.Salvar(agendamentoMap, idColaborador);
+            agendamentoDTO.Id = response;
 
             var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuario ?? string.Empty);
             await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuario ?? string.Empty);
+
+            if (response > 0)
+                await _emailEnvioDomainService.GerarEmailsAgendamento(agendamentoDTO);
 
             return ResponseModelHelper<AgendamentoDTO>.RetornarResponseModel(agendamentoDTO, _notificationContext.Notifications);
         }

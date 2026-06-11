@@ -1,6 +1,7 @@
-﻿using api.makebe.agenda.domain.Constants;
+using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Extensions;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
 using api.makebe.agenda.domain.Specifications.AgendamentoSpecifications;
@@ -15,7 +16,7 @@ namespace api.makebe.agenda.domain.Validations
         private readonly IAgendamentoColaboradorRepository _agendamentoColaboradorRepository;
         public AgendamentoValidation(IAgendamentoLojaRepository agendamentoLojaRepository, IAgendamentoColaboradorRepository agendamentoColaboradorRepository)
         {
-            _agendamentoLojaRepository = agendamentoLojaRepository; 
+            _agendamentoLojaRepository = agendamentoLojaRepository;
             _agendamentoColaboradorRepository = agendamentoColaboradorRepository;
 
             RuleFor(agendamento => new AgendamentoLojaPeriodoSpecification(_agendamentoLojaRepository).IsSatisfiedBy(agendamento))
@@ -23,10 +24,6 @@ namespace api.makebe.agenda.domain.Validations
                     .WithMessage(AgendamentoConstant.AgendamentoLojaFechada)
                     .WithName(nameof(Agendamento.DataInicioAgendamento));
 
-            RuleFor(agendamento => new AgendamentoLojaBloqueadaSpecification(_agendamentoLojaRepository).IsSatisfiedBy(agendamento))
-                    .Must(agendamento => agendamento)
-                    .WithMessage(AgendamentoConstant.AgendamentoLojaBloqueada)
-                    .WithName(nameof(Agendamento.DataInicioAgendamento));
 
             RuleFor(agendamento => new AgendamentoColaboradorAgendaPeriodoSpecification(_agendamentoColaboradorRepository).IsSatisfiedBy(agendamento))
                     .Must(agendamento => agendamento)
@@ -58,7 +55,7 @@ namespace api.makebe.agenda.domain.Validations
             {
                 var isValid = new DatasValidasEntreInicioFimSpecification().IsSatisfiedBy(
                     (ValoresHelper.MontarDate(agendamento?.DataInicioAgendamentoExtenso, agendamento?.Data),
-                    ValoresHelper.MontarDate(agendamento?.DataTerminoAgendamentoExtenso, agendamento?.Data)));
+                    agendamento.MontarDataTermino()));
                 if (!isValid)
                 {
                     context.AddFailure(nameof(Agendamento.DataInicioAgendamento), AgendaConstant.DataAbrturaFechamentoInvalido);
@@ -82,6 +79,7 @@ namespace api.makebe.agenda.domain.Validations
                     context.AddFailure("Servico", AgendamentoConstant.ServicoObrigatorio);
                 }
             });
+
         }
     }
 }

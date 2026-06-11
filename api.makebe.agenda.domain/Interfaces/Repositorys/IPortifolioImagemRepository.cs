@@ -7,6 +7,7 @@ namespace api.makebe.agenda.domain.Interfaces.Repositorys
     {
         Task<IEnumerable<PortifolioImagemDTO>> BuscarImagensPorIdPortifolio(int id);
         Task<PortifolioImagemDTO> BuscarImagensPorId(int id);
+        Task<IEnumerable<ColaboradorPortifolioImagemDTO>> BuscarImagensPorColaboradorId(int id);
         Task<int> Salvar(PortifolioImagens lojaPortifolioImagens);
         Task<PortifolioImagens> Atualizar(PortifolioImagens lojaPortifolioImagens);
         Task<bool> Desativar(int id);

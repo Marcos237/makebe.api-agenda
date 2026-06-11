@@ -9,6 +9,7 @@ using api.makebe.agenda.applications.Services.Enderecos;
 using api.makebe.agenda.applications.Services.Lojas;
 using api.makebe.agenda.applications.Services.Portifolios;
 using api.makebe.agenda.applications.Services.Servicos;
+using api.makebe.agenda.applications.Services.Vitrines;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +36,8 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<IAgendaApplicationService, AgendaApplicationService>();
             services.AddScoped<IAgendamentoApplicationService, AgendamentoApplicationService>();
             services.AddScoped<IAgendamentoColaboradorApplicationService, AgendamentoColaboradorApplicationService>();
+            services.AddScoped<IPeriodoDisponivelAgendamentoApplicationService, PeriodoDisponivelAgendamentoApplicationService>();
+            services.AddScoped<IVitrineService, VitrineService>();
             services.AddScoped(typeof(IContextFactory<>), typeof(ContextFactory<>));
 
             ConfigHelper.Initialize(configuration);

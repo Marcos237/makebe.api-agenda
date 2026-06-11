@@ -23,6 +23,76 @@ namespace api.makebe.agenda.infra.data.Repositorys
             return retorno;
         }
 
+        public async  Task<IEnumerable<LojaVitrineDTO>> BuscarLojasVitrinePorTipo(string tipo)
+        {
+            var sql = @"SELECT *
+                            FROM (
+                                SELECT 
+                                    l.Id,
+                                    l.RazaoSocial,
+                                    pi.NomeImagem,
+                                    pi.TituloImagem,
+                                    pi.UrlImagem,
+                                    lp.PortifolioId,
+                                    lp.LojaId
+                                FROM Loja l
+                                INNER JOIN LojaPortifolio lp 
+                                    ON lp.LojaId = l.Id
+                                    
+                                INNER JOIN Portifolio p ON p.Id  = lp.PortifolioId     
+                                INNER JOIN PortifolioImagens pi 
+                                    ON pi.PortifolioId = p.Id
+                                WHERE l.Status = 1 AND lp.Status  = 1
+                                    AND pi.TituloImagem LIKE CONCAT('%', @Tipo, '%')
+                                    AND pi.TituloImagem LIKE '%vitrine%' 
+                                    AND pi.Status = 1
+                            ) Resultado";
+
+            var retorno = await _dbAgenda.Connection.QueryAsync<LojaVitrineDTO>(sql, new { Tipo = tipo })
+                ?? Enumerable.Empty<LojaVitrineDTO>();
+
+            return retorno;
+        }
+
+
+        public async Task<IEnumerable<LojaVitrineDTO>> BuscarLojasBannerPorTipo(string tipo)
+        {
+            var sql = @"SELECT *
+                            FROM (
+                                SELECT 
+                                    l.Id,
+                                    l.RazaoSocial,
+                                    pi.NomeImagem,
+                                    pi.TituloImagem,
+                                    pi.UrlImagem,
+                                    ROW_NUMBER() OVER (
+                                        PARTITION BY l.Id
+                                        ORDER BY pi.Id
+                                    ) AS RowNum
+                                FROM Loja l
+                                INNER JOIN LojaPortifolio lp 
+                                    ON lp.LojaId = l.Id
+                                INNER JOIN PortifolioImagens pi 
+                                    ON pi.PortifolioId = lp.PortifolioId
+                                WHERE l.Status = 1 AND lp.Status  = 1
+                                    AND l.IsVitrine = 1
+                                    AND pi.TituloImagem LIKE CONCAT('%', @Tipo, '%')
+                                    AND pi.TituloImagem IN (
+                                        'Primeira imagem do banner',
+                                        'Segunda imagem do banner',
+                                        'Terceira imagem do banner'
+                                    )
+                                    AND pi.Status = 1
+                            ) Resultado
+                            WHERE Resultado.RowNum <= 3
+                            LIMIT 30;";
+
+            var retorno = await _dbAgenda.Connection.QueryAsync<LojaVitrineDTO>(sql, new { Tipo = tipo })
+                ?? Enumerable.Empty<LojaVitrineDTO>();
+
+            return retorno;
+        }
+
         public async Task<PaginacaoDTO<LojaDTO>> BuscarLojas(PaginacaoDTO<LojaDTO> paginacao, string contaId)
         {
 

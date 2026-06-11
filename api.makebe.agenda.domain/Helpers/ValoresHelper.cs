@@ -82,5 +82,15 @@ namespace api.makebe.agenda.domain.Helpers
 
             return null;
         }
+
+        public static DateTime? ConverterParaData(string valor)
+        {
+            if (string.IsNullOrWhiteSpace(valor))
+                return null;
+
+            return DateTime.TryParse(valor, out var data)
+                ? data
+                : null;
+        }
     }
 }

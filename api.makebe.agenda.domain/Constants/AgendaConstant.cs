@@ -12,6 +12,6 @@
         public const string DiaSemanaInicioInvalido = "O dia  de início da semana não pode ser nulo";
         public const string DiaSemanaFimInvalido = "O dia de Fim da semana não pode ser nulo";
         public const string LojaInvalido = "O campo loja não pode ser nulo.";
-        public const string ColaboradorInvalido = "O campo Colaborador não pode ser nulo.";
+        public const string ColaboradorInvalido = "O campo Colaborador não pode ser nulo."; 
     }
 }

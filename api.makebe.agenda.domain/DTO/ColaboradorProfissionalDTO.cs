@@ -11,10 +11,17 @@
         public string? NomeColaborador { get; set; }
         public string? RazaoSocial { get; set; }
         public string? DescricaoServico { get; set; }
+        public string? UrlImagem { get; set; }
         public bool Status { get; set; }
         public string? NomeColaboradorRazaoSocial
         {
             get => $"{NomeColaborador} - {RazaoSocial}";
         }
+        public DateTime PeriodoInativoInicio { get; set; }
+        public DateTime PeriodoInativoFim { get; set; }
+        public string? PeriodoInativoInicioExtenso { get; set; }
+        public string? PeriodoInativoFimExtenso { get; set; }
+        public IEnumerable<PortifolioImagemDTO>? Imagens { get; set; }
+        public string? Texto { get; set; }
     }
 }

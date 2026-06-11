@@ -7,5 +7,9 @@
         public int LojaId { get; set; }
         public int ServicoId { get; set; }
         public string? Descricao { get; set; }
+        public DateTime PeriodoInativoInicio { get; set; }
+        public DateTime PeriodoInativoFim { get; set; }
+        public string? PeriodoInativoInicioExtenso { get; set; }
+        public string? PeriodoInativoFimExtenso { get; set; }
     }
 }

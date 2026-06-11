@@ -9,5 +9,6 @@
         public const string LojaListaVazia = "Telefone inválido.";
         public const string RazaoSocialInvalido = "A razão social está inválida.";
         public const string TipoLojaInvalido = "Selecione um tipo de loja.";
+        public const string TipoLojaVitrine = "vitrine";
     }
 }

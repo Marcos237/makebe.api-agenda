@@ -8,7 +8,7 @@ namespace api.makebe.agenda.domain.Interfaces.Repositorys
         Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoColaboradorAgendaBloqueada(int idColaborador, DateTime dataInicio, DateTime dataFim);
         Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoColaboradorDatas(int idColaborador, DateTime dataInicio, DateTime dataFim);
         Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoColaboradorDisponivel(int idColaborador, DateTime dataInicio, DateTime dataFim, int idAgendamento);
-
-
+        Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentosPorColaboradorId(int idColaborador);
+        Task<IEnumerable<AgendamentoColaboradorPeriodoDTO>> BuscarPeriodosPorColaboradorId(int idColaborador);
     }
 }

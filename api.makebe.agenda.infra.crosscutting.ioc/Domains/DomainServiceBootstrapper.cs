@@ -40,7 +40,9 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IFiltrosAgendamentoDomainService, FiltrosAgendamentoDomainService>();
             services.AddScoped<IPortifolioValidacaoAplicationService, PortifolioValidacaoAplicationService>();
             services.AddScoped<IAgendamentoDomainService, AgendamentoDomainService>();
+            services.AddScoped<IEmailEnvioDomainService, EmailEnvioDomainService>();
             services.AddScoped<IAgendamentoColaboradorDomainService, AgendamentoColaboradorDomainServices>();
+            services.AddScoped<IPeriodoDisponivelAgendamentoDomainService, PeriodoDisponivelAgendamentoDomainService>();
 
 
             services.AddScoped<IValidationService<Loja>, ValidationService<Loja>>();

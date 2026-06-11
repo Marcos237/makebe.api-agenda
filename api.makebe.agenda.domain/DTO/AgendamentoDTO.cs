@@ -10,13 +10,17 @@
         public string? NomeColaborador { get; set; }
         public int IdServico { get; set; }
         public string? DescricaoServico { get; set; }
+        public decimal Valor { get; set; }
         public string? IdUsuario { get; set; }
         public string? NomeUsuario { get; set; }
         public string? Data { get; set; }
         public DateTime DataInicioAgendamento { get; set; }
         public DateTime DataTerminoAgendamento { get; set; }
         public string? DataInicioAgendamentoExtenso { get; set; }
-        public string? DataTerminoAgendamentoExtenso { get; set; }
+        public DateTime PeriodoInativoInicio { get; set; }
+        public DateTime PeriodoInativoFim { get; set; }
         public bool Ativo { get; set; }
+        public bool IsBloqueadoHoje { get; set; }
+        public Decimal Periodo { get; set; }
     }
 }

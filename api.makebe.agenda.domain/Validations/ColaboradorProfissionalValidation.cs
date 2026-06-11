@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.domain.Constants;
+using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Specifications.TextoSpecifications;
 using FluentValidation;
@@ -31,11 +31,11 @@ namespace api.makebe.agenda.domain.Validations
             {
                 var campos = new List<KeyValuePair<string, int>>
                 {
-                  new KeyValuePair<string, int>(colaborador!.Descricao ?? string.Empty, 200),    
+                  new KeyValuePair<string, int>(colaborador!.Descricao ?? string.Empty, 200),
                 }
                 .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
                 .DistinctBy(kvp => kvp.Key)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);        
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 return new TamanhoCamposSpecification().IsSatisfiedBy(campos);
             })
             .WithMessage(BaseConstant.Campos)

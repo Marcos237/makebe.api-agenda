@@ -10,5 +10,7 @@
         public bool Status { get; set; }
         public DateTime DataCadastro  { get; set; }
         public DateTime DataAtualizacao  { get; set; }
+        public DateTime? PeriodoInativoInicio { get; set; }
+        public DateTime? PeriodoInativoFim { get; set; } 
     }
 }

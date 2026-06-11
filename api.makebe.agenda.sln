@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.10.35027.167
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11801.241 oobstable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api.makebe.agenda", "api.makebe.agenda\api.makebe.agenda.csproj", "{2CFE4A8A-7D25-4E0C-8A91-0B0DBE5F4FF7}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api.makebe.agenda.infra.crosscutting.ioc", "api.makebe.agenda.infra.crosscutting.ioc\api.makebe.agenda.infra.crosscutting.ioc.csproj", "{C2F55B1E-7F96-4DBF-A3CE-596DEB32FCD2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api.makebe.agenda.test", "api.makebe.agenda.test\api.makebe.agenda.test.csproj", "{A0F9E3B3-2A25-431A-9154-38A198740E9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{82D43D28-BFC9-45AD-A09E-BB9302EC3111}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -7,6 +7,7 @@ namespace api.makebe.agenda.domain.Interfaces.Repositorys
     {
         Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorContaId(string contaId);
         Task<ColaboradorProfissionalDTO> BuscarPorId(int id);
+        Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorLojaId(int id);
         Task<int> Salvar(ColaboradorProfissional colaborador);
         Task<bool> Atualizar(ColaboradorProfissional colaborador);
         Task<bool> Desativar(int id);

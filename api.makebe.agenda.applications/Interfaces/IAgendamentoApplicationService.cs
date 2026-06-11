@@ -8,6 +8,7 @@ namespace api.makebe.agenda.applications.Interfaces
     {
         Task<ResponseModel<PaginacaoDTO<AgendamentoDTO>>> BuscarAgendamentoPaginado(PaginacaoDTO<AgendamentoDTO> paginacao, string usuario);
         Task<ResponseModel<AgendamentoDTO>> BuscarAgendamentoPorId(int id);
+        Task<PaginacaoDTO<AgendamentoConsultaDTO>> BuscarMeusAgendamentos(PaginacaoDTO<AgendamentoConsultaDTO> paginacao, string usuarioId);
         Task<ResponseModel<AgendamentoDTO>> BuscarAgendamentoPorAno(int ano, int id, string conta);
         Task<ResponseModel<AgendamentoDTO>> BuscarAgendamentoPorData(string data, int id, string conta);
         Task<ResponseModel<AgendamentoDTO>> Persistir(AgendamentoDTO agendamentoDTO, string usuario);

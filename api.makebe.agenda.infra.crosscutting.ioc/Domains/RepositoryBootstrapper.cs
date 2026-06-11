@@ -35,10 +35,13 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IAgendaContextRepository<AgendaLoja>, AgendaLojaRepository>();
             services.AddScoped<IAgendaContextRepository<AgendaColaborador>, AgendaColaboradorRepository>();
             services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
+            services.AddScoped<IEmailEnvioRepository, EmailEnvioRepository>();
             services.AddScoped<IAgendamentoColaboradorRepository, AgendamentoColaboradorRepository>();
             services.AddScoped<IAgendamentoLojaRepository, AgendamentoLojaRepository>();
             services.AddScoped<IAgendaLojaRepository, AgendaLojaRepository>();
             services.AddScoped<IAgendaColaboradorRepository, AgendaColaboradorRepository>();
+            services.AddScoped<IEnderecoLojaRepository, LojaEnderecoRepository>();
+            services.AddScoped<IVitrineRepository, VitrineRepository>();
         }
     }
 }

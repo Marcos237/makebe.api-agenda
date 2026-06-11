@@ -1,6 +1,7 @@
 ﻿using api.makebe.agenda.domain.Constants;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
+using api.makebe.agenda.domain.Extensions;
 using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
 using api.makebe.agenda.domain.Interfaces.Services;
@@ -55,13 +56,15 @@ namespace api.makebe.agenda.domain.Services
                            var colaborador = colaboradoresResponse?.First(c => c.UsuarioId == PropiedadesHelper.ParseGuidOrDefault(usuario.Id));
                            return AdicionarColaborador(usuario, permissao, colaborador!);
                        });
+            var totalRegistros = colaboradoresFiltrados?.Count() ?? 0;
+            var totalPaginas = totalRegistros.CalcularTotalPaginas(totalRegistros);
             return new PaginacaoDTO<ColaboradorDTO>
             {
                 paginaAtual = paginacao?.paginaAtual ?? 1,
-                totalPaginas = paginacao?.totalPaginas ?? 1,
+                totalPaginas = totalPaginas,
                 quantidadePagina = paginacao?.quantidadePagina ?? 10,
                 registroInicial = paginacao?.registroInicial ?? 1,
-                total = paginacao?.total ?? 0,
+                total = totalRegistros,
                 objetos = colaboradoresFiltrados?.ToList() ?? new List<ColaboradorDTO>()
             };
         }

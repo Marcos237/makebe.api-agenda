@@ -144,5 +144,57 @@ namespace api.makebe.agenda.infra.data.Repositorys
             var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, new { ContaId = conta }) ?? Enumerable.Empty<ColaboradorDTO>();
             return retorno;
         }
+
+        public async Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentosPorColaboradorId(int idColaborador)
+        {
+            var sql = @"SELECT 
+                            a.Id, 
+                            a.IdAgendaColaborador,
+                            a.IdServico,
+                            CAST(a.IdUsuario AS CHAR) AS IdUsuario,
+                            a.DataInicioAgendamento,
+                            a.DataTerminoAgendamento,
+                            c.Id AS IdColaborador,
+                            s.Descricao AS DescricaoServico,                   
+                            s.Valor,
+                            s.Periodo
+                        FROM Agendamento a
+                        INNER JOIN AgendaColaborador ac ON ac.Id = a.IdAgendaColaborador
+                        INNER JOIN Colaborador c ON c.Id = ac.IdColaborador
+                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId = c.Id
+                        INNER JOIN Servicos s ON s.Id = a.IdServico
+                        WHERE c.Id = @IdColaborador
+                          AND a.Ativo = 1
+                        ORDER BY a.DataInicioAgendamento DESC";
+
+            var retorno = await _dbAgenda.Connection.QueryAsync<AgendamentoDTO>(sql, new { IdColaborador = idColaborador })
+                ?? Enumerable.Empty<AgendamentoDTO>();
+            return retorno;
+        }
+
+        public async Task<IEnumerable<AgendamentoColaboradorPeriodoDTO>> BuscarPeriodosPorColaboradorId(int idColaborador)
+        {
+            var sql = @"SELECT DISTINCT
+                            ac.Id AS IdAgendaColaborador,
+                            cp.ColaboradorId,
+                            cp.PeriodoInativoInicio,
+                            cp.PeriodoInativoFim,
+                            a.AgendaBloqueadaInicio,
+                            a.AgendaBloqueadaFim,
+                            ag.DataInicioAgendamento,
+                            ag.DataTerminoAgendamento,
+                            s.Periodo 
+                        FROM ColaboradorProfissional cp
+                        INNER JOIN AgendaColaborador ac ON ac.IdColaborador = cp.ColaboradorId
+                        INNER JOIN Agenda a ON a.Id = ac.IdAgenda
+                        LEFT JOIN Agendamento ag ON ag.IdAgendaColaborador = ac.Id
+                        INNER JOIN Servicos s ON s.Id = ag.IdServico
+                        WHERE ac.Status = 1 AND ag.Ativo = 1
+                        AND ac.IdColaborador = @IdColaborador";
+
+            var retorno = await _dbAgenda.Connection.QueryAsync<AgendamentoColaboradorPeriodoDTO>(sql, new { IdColaborador = idColaborador })
+                ?? Enumerable.Empty<AgendamentoColaboradorPeriodoDTO>();
+            return retorno;
+        }
     }
 }
