@@ -98,11 +98,16 @@ namespace api.makebe.agenda.applications.Services.Agendas
             try
             {
                 await _unitOfWork.BeginTransaction();
+                if (payload?.Tipo == (int)TipoUsuario.Loja)
+                {
+                    agenda.AgendaBloqueadaInicio = new DateTime(9999, 12, 31, 23, 59, 59);
+                    agenda.AgendaBloqueadaFim = new DateTime(9999, 12, 31, 23, 59, 59);
+                }
+
                 var agendaRetorno = await _agendaDomainService.Persitir(agenda);
 
                 if (payload?.Tipo == (int)TipoUsuario.Loja)
                 {
-
                     agendaLoja.IdAgenda = agendaRetorno;
                     await _contextFactoryLoja.Persistir(agendaLoja);
                 }
