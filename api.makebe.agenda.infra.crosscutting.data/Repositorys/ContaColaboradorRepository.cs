@@ -12,6 +12,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             _dbAgenda = dbAgenda;
         }
+
+
         public async Task<IEnumerable<ColaboradorDTO>> BuscarColaboradorPorContaId(string contaId)
         {
             var sql = @"SELECT DISTINCT c.Id, c.UsuarioId, c.DataCadastro, c.DataAtualizacao, cc.Status  FROM Colaborador c
@@ -55,5 +57,6 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
             return retorno > 0;
         }
+
     }
 }

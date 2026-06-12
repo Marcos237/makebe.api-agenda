@@ -69,5 +69,81 @@ namespace api.makebe.agenda.infra.data.Repositorys
             { Id = id }) > 0;
             return retorno;
         }
+
+        public async Task<PaginacaoDTO<ColaboradorDTO>> BuscarPaginadoPorConta(string usuarioId, PaginacaoDTO<ColaboradorDTO> paginacao)
+        {
+            paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
+            var sql = await BuscarConsulta();
+            var parametros = new
+            {
+                RegistroInicial = paginacao.registroInicial,
+                TamanhoPagina = paginacao.quantidadePagina,
+                ContaId = usuarioId,
+                Status = paginacao?.objetoPesquisa?.Status,
+                Nome = paginacao?.objetoPesquisa?.Nome,
+                Cpf = paginacao?.objetoPesquisa?.Cpf,
+                Email = paginacao?.objetoPesquisa?.Email,
+                PermissaoId = paginacao?.objetoPesquisa?.PermissaoId
+            };
+            var lojas = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, parametros) ?? Enumerable.Empty<ColaboradorDTO>();
+            paginacao!.total = lojas.Count();
+
+            string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
+            paginacao!.objetos = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sqlBusca, param: parametros) ?? Enumerable.Empty<ColaboradorDTO>();
+
+            return paginacao;
+        }
+
+
+        private Task<string> BuscarConsulta()
+        {
+            var query = @"SELECT     
+                             Id,
+                            UsuarioId,
+                            Nome,
+                            Email,
+                            Cpf,
+                            Telefone,
+                            Instagran,
+                            CAST(PermissaoId AS CHAR) AS PermissaoId,
+                            MostrarVitrine,
+                            Status,
+                            UrlImagem,
+                            NomeImagem,
+                            DescricaoPermissao,
+                            ContaId  
+                        FROM vw_colaborador
+                        WHERE ContaId  = @ContaId
+                        AND (@Status IS NULL OR Status = @Status)
+                        AND (Nome LIKE CONCAT('%', @Nome, '%') OR @Nome IS NULL OR @Nome = '') 
+                        AND (Cpf LIKE CONCAT('%', @Cpf, '%') OR @Cpf IS NULL OR @Cpf = '')
+                        AND (Email LIKE CONCAT('%', @Email, '%') OR @Email IS NULL OR @Email = '')
+                        AND (PermissaoId LIKE CONCAT('%', @PermissaoId, '%') OR @PermissaoId IS NULL OR @PermissaoId = '00000000-0000-0000-0000-000000000000')
+                        ORDER BY Nome ";
+            return Task.FromResult(query);
+        }
+
+        public async Task<IEnumerable<ColaboradorDTO>> BuscarPorConta(string usuarioId)
+        {
+            var sql = @"SELECT     
+                             Id,
+                            UsuarioId,
+                            Nome,
+                            Email,
+                            Cpf,
+                            Telefone,
+                            Instagran,
+                            CAST(PermissaoId AS CHAR) AS PermissaoId,
+                            MostrarVitrine,
+                            Status,
+                            UrlImagem,
+                            NomeImagem,
+                            DescricaoPermissao,
+                            ContaId   
+                        FROM vw_colaborador
+                        WHERE ContaId  = @ContaId ORDER BY Nome; ";
+            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, new { ContaId = usuarioId });
+            return retorno;
+        }
     }
 }

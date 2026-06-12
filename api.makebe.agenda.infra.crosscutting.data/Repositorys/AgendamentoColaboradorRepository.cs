@@ -183,13 +183,20 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             a.AgendaBloqueadaFim,
                             ag.DataInicioAgendamento,
                             ag.DataTerminoAgendamento,
-                            s.Periodo 
+                            s.Periodo
                         FROM ColaboradorProfissional cp
-                        INNER JOIN AgendaColaborador ac ON ac.IdColaborador = cp.ColaboradorId
-                        INNER JOIN Agenda a ON a.Id = ac.IdAgenda
-                        LEFT JOIN Agendamento ag ON ag.IdAgendaColaborador = ac.Id
-                        INNER JOIN Servicos s ON s.Id = ag.IdServico
-                        WHERE ac.Status = 1 AND ag.Ativo = 1
+                        LEFT JOIN AgendaColaborador ac
+                            ON ac.IdColaborador = cp.ColaboradorId
+                        LEFT JOIN Agenda a
+                            ON a.Id = ac.IdAgenda
+                        LEFT JOIN Agendamento ag
+                            ON ag.IdAgendaColaborador = ac.Id
+                            AND ag.Ativo = 1
+                        LEFT JOIN Servicos s
+                            ON s.Id = ag.IdServico
+                        WHERE
+                            cp.Status = 1
+                            AND ac.Status = 1
                         AND ac.IdColaborador = @IdColaborador";
 
             var retorno = await _dbAgenda.Connection.QueryAsync<AgendamentoColaboradorPeriodoDTO>(sql, new { IdColaborador = idColaborador })
