@@ -66,7 +66,7 @@ deploy-prod:
     - ssh "$AWS_USER@$AWS_HOST" "cd '$AWS_API_PATH' && docker build --no-cache -t api-makebe-agenda:latest ."
     - ssh "$AWS_USER@$AWS_HOST" "docker stop api-makebe-agenda 2>/dev/null || true"
     - ssh "$AWS_USER@$AWS_HOST" "docker rm api-makebe-agenda 2>/dev/null || true"
-    - ssh "$AWS_USER@$AWS_HOST" "docker run -d --name api-makebe-agenda --network makebe_makebe-rede -p 4001:80 -v /makebe/api/agenda/appsettings.json:/App/appsettings.json -v /makebe/html/images:/App/imagens -v /etc/localtime:/etc/localtime:ro api-makebe-agenda:latest"
+    - ssh "$AWS_USER@$AWS_HOST" "docker run -d --name api-makebe-agenda --network makebe_makebe-rede -p 4001:80 -v /makebe/api/agenda/appsettings.json:/App/appsettings.json -v /makebe/pacotes/images:/App/imagens -v /etc/localtime:/etc/localtime:ro api-makebe-agenda:latest"
   tags: [docker]
   only: [main]
   when: manual
