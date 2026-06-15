@@ -72,13 +72,23 @@ namespace api.makebe.agenda.domain.Helpers
                 return null;
 
             var ptBR = CultureInfo.GetCultureInfo("pt-BR");
-            if (!DateTime.TryParseExact(data.Trim(), "dd/MM/yyyy", ptBR, DateTimeStyles.None, out var baseDate))
-                return null;
-            if (DateTime.TryParse(valor.Trim(), ptBR, DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AllowWhiteSpaces, out var dt))
-                return baseDate.Date.Add(dt.TimeOfDay);
 
-            if (TimeSpan.TryParse(valor.Trim(), out var ts))
-                return baseDate.Date.Add(ts);
+            if (!DateTime.TryParseExact(
+                    data.Trim(),
+                    "dd/MM/yyyy",
+                    ptBR,
+                    DateTimeStyles.None,
+                    out var baseDate))
+                return null;
+
+            if (TimeSpan.TryParseExact(
+                    valor.Trim(),
+                    @"hh\:mm",
+                    CultureInfo.InvariantCulture,
+                    out var hora))
+            {
+                return baseDate.Date.Add(hora);
+            }
 
             return null;
         }
