@@ -71,24 +71,24 @@ namespace api.makebe.agenda.domain.Helpers
             if (string.IsNullOrWhiteSpace(data) || string.IsNullOrWhiteSpace(valor))
                 return null;
 
-            var ptBR = CultureInfo.GetCultureInfo("pt-BR");
+            DateTime baseDate;
+
+            var formatos = new[]
+            {
+        "dd/MM/yyyy",
+        "MM/dd/yyyy"
+    };
 
             if (!DateTime.TryParseExact(
                     data.Trim(),
-                    "dd/MM/yyyy",
-                    ptBR,
+                    formatos,
+                    CultureInfo.InvariantCulture,
                     DateTimeStyles.None,
-                    out var baseDate))
+                    out baseDate))
                 return null;
 
-            if (TimeSpan.TryParseExact(
-                    valor.Trim(),
-                    @"hh\:mm",
-                    CultureInfo.InvariantCulture,
-                    out var hora))
-            {
+            if (TimeSpan.TryParse(valor.Trim(), out var hora))
                 return baseDate.Date.Add(hora);
-            }
 
             return null;
         }
