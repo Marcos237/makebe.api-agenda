@@ -7,7 +7,7 @@ stages:
 
 build:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:8.0
+  image: mcr.microsoft.com/dotnet/sdk:8.0.416
   script:
     - dotnet clean
     - rm -rf published
