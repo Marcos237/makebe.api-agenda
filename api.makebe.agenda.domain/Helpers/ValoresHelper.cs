@@ -71,20 +71,7 @@ namespace api.makebe.agenda.domain.Helpers
             if (string.IsNullOrWhiteSpace(data) || string.IsNullOrWhiteSpace(valor))
                 return null;
 
-            DateTime baseDate;
-
-            var formatos = new[]
-            {
-        "dd/MM/yyyy",
-        "MM/dd/yyyy"
-    };
-
-            if (!DateTime.TryParseExact(
-                    data.Trim(),
-                    formatos,
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out baseDate))
+            if (!DateTime.TryParse(data.Trim(), out var baseDate))
                 return null;
 
             if (TimeSpan.TryParse(valor.Trim(), out var hora))
