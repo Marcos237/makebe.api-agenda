@@ -71,13 +71,24 @@ namespace api.makebe.agenda.domain.Helpers
             if (string.IsNullOrWhiteSpace(data) || string.IsNullOrWhiteSpace(valor))
                 return null;
 
-            if (!DateTime.TryParse(data.Trim(), out var baseDate))
+            var cultura = new CultureInfo("pt-BR");
+
+            if (!DateTime.TryParseExact(
+                    data.Trim(),
+                    "dd/MM/yyyy",
+                    cultura,
+                    DateTimeStyles.None,
+                    out var baseDate))
                 return null;
 
-            if (TimeSpan.TryParse(valor.Trim(), out var hora))
-                return baseDate.Date.Add(hora);
+            if (!TimeSpan.TryParseExact(
+                    valor.Trim(),
+                    "hh\\:mm\\:ss",
+                    cultura,
+                    out var hora))
+                return null;
 
-            return null;
+            return baseDate.Date.Add(hora);
         }
 
         public static DateTime? ConverterParaData(string valor)
