@@ -68,24 +68,37 @@ namespace api.makebe.agenda.domain.Helpers
         }
         public static DateTime? MontarDate(string? valor, string? data)
         {
-            if (string.IsNullOrWhiteSpace(data) || string.IsNullOrWhiteSpace(valor))
+            if (string.IsNullOrWhiteSpace(valor))
                 return null;
 
             var cultura = new CultureInfo("pt-BR");
 
+            if (DateTime.TryParseExact(
+                valor.Trim(),
+                "dd/MM/yyyy HH:mm:ss",
+                cultura,
+                DateTimeStyles.None,
+                out var dataCompleta))
+            {
+                return dataCompleta;
+            }
+
+            if (string.IsNullOrWhiteSpace(data))
+                return null;
+
             if (!DateTime.TryParseExact(
-                    data.Trim(),
-                    "dd/MM/yyyy",
-                    cultura,
-                    DateTimeStyles.None,
-                    out var baseDate))
+                data.Trim(),
+                "dd/MM/yyyy",
+                cultura,
+                DateTimeStyles.None,
+                out var baseDate))
                 return null;
 
             if (!TimeSpan.TryParseExact(
-                    valor.Trim(),
-                    "hh\\:mm\\:ss",
-                    cultura,
-                    out var hora))
+                valor.Trim(),
+                "hh\\:mm\\:ss",
+                cultura,
+                out var hora))
                 return null;
 
             return baseDate.Date.Add(hora);
