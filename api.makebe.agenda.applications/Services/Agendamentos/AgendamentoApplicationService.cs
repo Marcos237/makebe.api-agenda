@@ -112,6 +112,8 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
             agendamentoDTO.DataInicioAgendamento = ValoresHelper.MontarDate(agendamentoDTO.DataInicioAgendamentoExtenso, agendamentoDTO.Data) ?? DateTime.Now;
             agendamentoDTO.DataTerminoAgendamento = agendamentoDTO.MontarDataTermino();
 
+            Console.WriteLine($"MontarDate={agendamentoDTO.DataInicioAgendamento}");
+
             var isValid = await _validationService.Validar(agendamentoDTO);
             if (!isValid)
                 return ResponseModelHelper<AgendamentoDTO>.RetornarResponseModel(agendamentoDTO, _notificationContext.Notifications);
