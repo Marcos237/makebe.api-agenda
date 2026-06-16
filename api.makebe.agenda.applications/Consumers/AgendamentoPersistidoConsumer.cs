@@ -53,6 +53,9 @@ namespace api.makebe.agenda.applications.Consumers
                 Periodo = message.Agendamento.Periodo
             };
 
+            Console.WriteLine($"Data={agendamento?.Data}");
+            Console.WriteLine($"DataInicioExtenso={agendamento?.DataInicioAgendamentoExtenso}");
+
             var response = await _agendamentoApplicationService.Persistir(agendamento, message.UsuarioIdEvent ?? string.Empty);
             await context.RespondAsync(new AgendamentoPersistidoEvent
             {
