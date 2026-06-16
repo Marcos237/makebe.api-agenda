@@ -1,8 +1,9 @@
+using AgendamentoPersistenciaEvent;
 using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.infra.crosscutting.Notifications;
-using AgendamentoPersistenciaEvent;
 using MassTransit;
+using System.Globalization;
 
 namespace api.makebe.agenda.applications.Consumers
 {
@@ -43,14 +44,17 @@ namespace api.makebe.agenda.applications.Consumers
                 Valor = message.Agendamento.Valor,
                 IdUsuario = message.Agendamento.IdUsuario,
                 NomeUsuario = message.Agendamento.NomeUsuario,
-                Data = message.Agendamento.DataInicioAgendamento.ToShortDateString(),
+                Data = message.Agendamento.DataInicioAgendamento
+    .ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                DataInicioAgendamentoExtenso = message.Agendamento.DataInicioAgendamento
+    .ToString("HH:mm:ss", CultureInfo.InvariantCulture),
                 DataInicioAgendamento = message.Agendamento.DataInicioAgendamento,
                 DataTerminoAgendamento = message.Agendamento.DataTerminoAgendamento,
-                DataInicioAgendamentoExtenso = message.Agendamento.DataInicioAgendamento.ToString(),
                 PeriodoInativoInicio = message.Agendamento.PeriodoInativoInicio,
                 PeriodoInativoFim = message.Agendamento.PeriodoInativoFim,
                 Ativo = message.Agendamento.Ativo,
                 Periodo = message.Agendamento.Periodo
+
             };
 
             Console.WriteLine($"Data={agendamento?.Data}");
