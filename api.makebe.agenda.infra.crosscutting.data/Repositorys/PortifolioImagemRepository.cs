@@ -26,7 +26,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         }
         public async Task<IEnumerable<ColaboradorPortifolioImagemDTO>> BuscarImagensPorColaboradorId(int id)
         {
-            var sql = @"SELECT 
+            var sql = @"SELECT DISTINCT
 	                        t.NomeImagem, 
 	                        t.UrlImagem, 
 	                        t.TituloImagem, 
