@@ -119,6 +119,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         AND (Cpf LIKE CONCAT('%', @Cpf, '%') OR @Cpf IS NULL OR @Cpf = '')
                         AND (Email LIKE CONCAT('%', @Email, '%') OR @Email IS NULL OR @Email = '')
                         AND (PermissaoId LIKE CONCAT('%', @PermissaoId, '%') OR @PermissaoId IS NULL OR @PermissaoId = '00000000-0000-0000-0000-000000000000')
+                        AND PermissaoId IN ('70A54CCD-8124-4BCE-AEC1-4913A37BAE8E', 'FFBFA665-0370-4953-8A33-3C1B1D87A091', '4391AA5D-65C9-4523-B401-0337D1F4FCED')
                         ORDER BY Nome ";
             return Task.FromResult(query);
         }
