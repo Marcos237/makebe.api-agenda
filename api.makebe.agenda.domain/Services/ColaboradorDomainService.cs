@@ -9,10 +9,15 @@ namespace api.makebe.agenda.domain.Services
     {
         private readonly IColaboradorRepository _colaboradorRepository;
         private readonly IContaColaboradorDomainService _usuarioColaboradorRepository;
-        public ColaboradorDomainService(IColaboradorRepository colaboradorRepository, IContaColaboradorDomainService usuarioColaboradorRepository)
+        private readonly IUsuarioPermissaoDomainService _usuarioPermissaoDomainService;
+        public ColaboradorDomainService(
+            IColaboradorRepository colaboradorRepository,
+            IContaColaboradorDomainService usuarioColaboradorRepository,
+            IUsuarioPermissaoDomainService usuarioPermissaoDomainService)
         {
             _colaboradorRepository = colaboradorRepository;
             _usuarioColaboradorRepository = usuarioColaboradorRepository;
+            _usuarioPermissaoDomainService = usuarioPermissaoDomainService;
         }
 
         public async Task<ColaboradorDTO> BuscarColaboradorPorIdUsuario(Guid id)
@@ -50,9 +55,19 @@ namespace api.makebe.agenda.domain.Services
         }
         public async Task<PaginacaoDTO<ColaboradorDTO>> BuscarPaginadoPorConta(string usuarioId, PaginacaoDTO<ColaboradorDTO> paginacao)
         {
-            var colaboradores = await _colaboradorRepository.BuscarPaginadoPorConta(usuarioId, paginacao);
+            var possuiAcessoCompletoConta = await _usuarioPermissaoDomainService.PossuiAcessoCompletoConta();
+            var colaboradores = possuiAcessoCompletoConta
+                ? await _colaboradorRepository.BuscarPaginadoPorConta(usuarioId, paginacao)
+                : await BuscarPaginadoPorUsuarioAutenticado(paginacao);
+
             colaboradores.totalPaginas = (colaboradores.total + colaboradores.quantidadePagina - 1) / colaboradores.quantidadePagina;
             return colaboradores;
+        }
+
+        private async Task<PaginacaoDTO<ColaboradorDTO>> BuscarPaginadoPorUsuarioAutenticado(PaginacaoDTO<ColaboradorDTO> paginacao)
+        {
+            var usuarioAutenticado = await _usuarioPermissaoDomainService.BuscarUsuarioAutenticado();
+            return await _colaboradorRepository.BuscarPaginadoPorUsuario(usuarioAutenticado.UsuarioId.ToString(), paginacao);
         }
     }
 }
