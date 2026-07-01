@@ -25,6 +25,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IPortifolioImagemDomainService, PortifolioImagemDomainService>();
             services.AddScoped<IArquivoDomainService, ArquivoDomainService>();
             services.AddScoped<IColaboradorDomainService, ColaboradorDomainService>();
+            services.AddScoped<IUsuarioPermissaoDomainService, UsuarioPermissaoDomainService>();
             services.AddScoped<ILojaColaboradorDomainService, LojaColaboradorDomainService>();
             services.AddScoped<IServicosDomainService, ServicoDomainService>();
             services.AddScoped<IContaColaboradorDomainService, ContaColaboradorDomainService>();

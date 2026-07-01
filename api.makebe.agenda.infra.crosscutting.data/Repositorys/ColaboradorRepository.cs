@@ -73,7 +73,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<PaginacaoDTO<ColaboradorDTO>> BuscarPaginadoPorConta(string usuarioId, PaginacaoDTO<ColaboradorDTO> paginacao)
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
-            var sql = await BuscarConsulta();
+            var sql = await BuscarConsultaPorConta();
             var parametros = new
             {
                 RegistroInicial = paginacao.registroInicial,
@@ -94,8 +94,31 @@ namespace api.makebe.agenda.infra.data.Repositorys
             return paginacao;
         }
 
+        public async Task<PaginacaoDTO<ColaboradorDTO>> BuscarPaginadoPorUsuario(string usuarioId, PaginacaoDTO<ColaboradorDTO> paginacao)
+        {
+            paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
+            var sql = await BuscarConsultaPorUsuario();
+            var parametros = new
+            {
+                RegistroInicial = paginacao.registroInicial,
+                TamanhoPagina = paginacao.quantidadePagina,
+                UsuarioId = usuarioId,
+                Status = paginacao?.objetoPesquisa?.Status,
+                Nome = paginacao?.objetoPesquisa?.Nome,
+                Cpf = paginacao?.objetoPesquisa?.Cpf,
+                Email = paginacao?.objetoPesquisa?.Email,
+                PermissaoId = paginacao?.objetoPesquisa?.PermissaoId
+            };
+            var colaboradores = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, parametros) ?? Enumerable.Empty<ColaboradorDTO>();
+            paginacao.total = colaboradores.Count();
 
-        private Task<string> BuscarConsulta()
+            string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
+            paginacao.objetos = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sqlBusca, param: parametros) ?? Enumerable.Empty<ColaboradorDTO>();
+
+            return paginacao;
+        }
+
+        private Task<string> BuscarConsultaPorConta()
         {
             var query = @"SELECT     
                              Id,
@@ -121,6 +144,35 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         AND (PermissaoId LIKE CONCAT('%', @PermissaoId, '%') OR @PermissaoId IS NULL OR @PermissaoId = '00000000-0000-0000-0000-000000000000')
                         AND PermissaoId IN ('70A54CCD-8124-4BCE-AEC1-4913A37BAE8E', 'FFBFA665-0370-4953-8A33-3C1B1D87A091', '4391AA5D-65C9-4523-B401-0337D1F4FCED')
                         ORDER BY Nome ";
+            return Task.FromResult(query);
+        }
+
+        private Task<string> BuscarConsultaPorUsuario()
+        {
+            var query = @"SELECT
+                            Id,
+                            UsuarioId,
+                            Nome,
+                            Email,
+                            Cpf,
+                            Telefone,
+                            Instagran,
+                            CAST(PermissaoId AS CHAR) AS PermissaoId,
+                            MostrarVitrine,
+                            Status,
+                            UrlImagem,
+                            NomeImagem,
+                            DescricaoPermissao,
+                            ContaId
+                        FROM vw_colaborador vc
+                        WHERE vc.UsuarioId = @UsuarioId
+                        AND vc.Status = 1
+                        AND (@Status IS NULL OR vc.Status = @Status)
+                        AND (vc.Nome LIKE CONCAT('%', @Nome, '%') OR @Nome IS NULL OR @Nome = '')
+                        AND (vc.Cpf LIKE CONCAT('%', @Cpf, '%') OR @Cpf IS NULL OR @Cpf = '')
+                        AND (vc.Email LIKE CONCAT('%', @Email, '%') OR @Email IS NULL OR @Email = '')
+                        AND (vc.PermissaoId LIKE CONCAT('%', @PermissaoId, '%') OR @PermissaoId IS NULL OR @PermissaoId = '00000000-0000-0000-0000-000000000000')
+                        ORDER BY vc.Nome ";
             return Task.FromResult(query);
         }
 

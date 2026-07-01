@@ -4,12 +4,14 @@ using api.makebe.agenda.applications.Helpers;
 using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.applications.Services.Agendamentos;
 using api.makebe.agenda.applications.Services.Agendas;
+using api.makebe.agenda.applications.Services.Autenticacao;
 using api.makebe.agenda.applications.Services.Colaboradores;
 using api.makebe.agenda.applications.Services.Enderecos;
 using api.makebe.agenda.applications.Services.Lojas;
 using api.makebe.agenda.applications.Services.Portifolios;
 using api.makebe.agenda.applications.Services.Servicos;
 using api.makebe.agenda.applications.Services.Vitrines;
+using api.makebe.agenda.domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +27,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
             services.AddScoped<IPortifolioApplicationService, PortifolioApplicationService>();
             services.AddScoped<IPortifolioImagemApplicationService, PortifolioImagensApplicationService>();
             services.AddScoped<IColaboradorApplicationService, ColaboradorApplicationService>();
+            services.AddScoped<IUsuarioAutenticadoService, UsuarioAutenticadoService>();
             services.AddScoped<IServicoApplicationService, ServicosApplicationService>();
             services.AddScoped<IColaboradorProfissionalApplicationService, ColaboradorProfissionalApplicationService>();
             services.AddScoped<ITipoPortifolioApplicationService, TipoPortifolioApplicationService>();
