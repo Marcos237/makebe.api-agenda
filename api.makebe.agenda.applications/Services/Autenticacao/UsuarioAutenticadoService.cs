@@ -3,6 +3,7 @@ using api.makebe.agenda.domain.Helpers;
 using api.makebe.agenda.domain.Interfaces.Services;
 using lib.makebe.applications.Security;
 using Microsoft.AspNetCore.Http;
+using System.Reflection;
 
 namespace api.makebe.agenda.applications.Services.Autenticacao
 {
@@ -23,20 +24,25 @@ namespace api.makebe.agenda.applications.Services.Autenticacao
 
             var claims = await IdentityExtensions.DecodificarJWT(identity);
 
-            return new UsuarioAutenticadoDTO
+            var response = new UsuarioAutenticadoDTO
             {
                 UsuarioId = PropiedadesHelper.ParseGuidOrDefault(claims.UsuarioId),
                 PermissaoId = PropiedadesHelper.ParseGuidOrDefault(BuscarValorPermissao(claims))
             };
+            return response;
         }
 
         private static string BuscarValorPermissao(object claims)
         {
-            var propriedadesPermissao = new[] { "PermissaoId", "Permissao", "Papeis" };
+            var propriedadesPermissao = new[] { "Value", "permissao" };
 
             foreach (var propriedade in propriedadesPermissao)
             {
-                var valor = claims.GetType().GetProperty(propriedade)?.GetValue(claims)?.ToString();
+                var valor = claims.GetType()
+                    .GetProperty(propriedade, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)?
+                    .GetValue(claims)?
+                    .ToString();
+
                 if (!string.IsNullOrWhiteSpace(valor))
                     return valor;
             }
