@@ -10,19 +10,24 @@ namespace api.makebe.agenda.domain.Services
     {
         private readonly IColaboradorProfissionalRepository _ColaboradorProfissionalRepository;
         private readonly IAgendaColaboradorRepository _agendaColaboradorRepository;
+        private readonly IUsuarioPermissaoDomainService _usuarioPermissaoDomainService;
         public ColaboradorProfissionalDomainService(IColaboradorProfissionalRepository ColaboradorProfissionalRepository,
-            IAgendaColaboradorRepository agendaColaboradorRepository)
+            IAgendaColaboradorRepository agendaColaboradorRepository,
+            IUsuarioPermissaoDomainService usuarioPermissaoDomainService)
         {
             _ColaboradorProfissionalRepository = ColaboradorProfissionalRepository;
             _agendaColaboradorRepository = agendaColaboradorRepository;
+            _usuarioPermissaoDomainService = usuarioPermissaoDomainService;
         }
-        public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> BuscarPaginado(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, string contaId, IEnumerable<UsuarioDTO> usuarios)
+        public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> BuscarPaginado(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, string contaId)
         {
-            var colaboradores = await _ColaboradorProfissionalRepository.BuscarPorContaId(contaId) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
-            paginacao.objetos = colaboradores;
-            var retornoColaborador = await MontarColaboradorProfissional(paginacao, usuarios);
-            var colaboradorFiltrado = await Filtrar(retornoColaborador);
-            return colaboradorFiltrado;
+            var possuiAcessoCompletoConta = await _usuarioPermissaoDomainService.PossuiAcessoCompletoConta();
+            var retornoColaborador = possuiAcessoCompletoConta
+                ? await _ColaboradorProfissionalRepository.BuscarPaginadoPorContaId(contaId, paginacao)
+                : await BuscarPaginadoPorUsuarioAutenticado(paginacao);
+
+            retornoColaborador.totalPaginas = (retornoColaborador.total + retornoColaborador.quantidadePagina - 1) / retornoColaborador.quantidadePagina;
+            return retornoColaborador;
         }
 
         public async Task<ColaboradorProfissionalDTO> BuscarPorId(int id)
@@ -31,12 +36,12 @@ namespace api.makebe.agenda.domain.Services
             return retorno;
         }
 
-        public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorConta(string contaId, IEnumerable<UsuarioDTO> usuarios)
+        public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorConta(string contaId)
         {
-            var colaboradores = await _ColaboradorProfissionalRepository.BuscarPorContaId(contaId) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
-            var colaboradoresCompletos = colaboradores.Join(usuarios, colaborador => colaborador.UsuarioId, usuario => usuario.Id,
-          (colaborador, usuario) => AdicionarColaboradorProfissional(colaborador, usuario));
-            return colaboradoresCompletos;
+            var possuiAcessoCompletoConta = await _usuarioPermissaoDomainService.PossuiAcessoCompletoConta();
+            return possuiAcessoCompletoConta
+                ? await _ColaboradorProfissionalRepository.BuscarPorContaId(contaId)
+                : await BuscarPorUsuarioAutenticado();
 
         }
         public async Task<bool> BuscarAgendaVisible(int colaboradorId)
@@ -80,72 +85,16 @@ namespace api.makebe.agenda.domain.Services
             return await _ColaboradorProfissionalRepository.Desativar(id);
         }
 
-        public async Task<IEnumerable<string>> MontarIdsPesquisas(IEnumerable<ColaboradorProfissionalDTO> colaboradores)
+        private async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> BuscarPaginadoPorUsuarioAutenticado(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao)
         {
-            var retorno = colaboradores
-                .Select(colaborador => colaborador.UsuarioId?.ToString() ?? string.Empty).Where(id => !string.IsNullOrEmpty(id));
-
-            return await Task.FromResult(retorno);
-        }
-        public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> MontarColaboradorProfissional(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, IEnumerable<UsuarioDTO> usuarios)
-        {
-            var colaboradoresFiltrados = paginacao.objetos?.Join(usuarios, colaborador => colaborador.UsuarioId, usuario => usuario.Id,
-                    (colaborador, usuario) => AdicionarColaboradorProfissional(colaborador, usuario));
-
-            return await Task.FromResult(new PaginacaoDTO<ColaboradorProfissionalDTO>
-            {
-                paginaAtual = paginacao?.paginaAtual ?? 1,
-                totalPaginas = paginacao?.totalPaginas ?? 1,
-                quantidadePagina = paginacao?.quantidadePagina ?? 10,
-                registroInicial = paginacao?.registroInicial ?? 1,
-                objetoPesquisa = paginacao?.objetoPesquisa ?? new ColaboradorProfissionalDTO(),
-                total = paginacao?.total ?? 0,
-                objetos = colaboradoresFiltrados?.ToList() ?? new List<ColaboradorProfissionalDTO>()
-            });
+            var usuarioAutenticado = await _usuarioPermissaoDomainService.BuscarUsuarioAutenticado();
+            return await _ColaboradorProfissionalRepository.BuscarPaginadoPorUsuario(usuarioAutenticado.UsuarioId.ToString(), paginacao);
         }
 
-        public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> Filtrar(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao)
+        private async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorUsuarioAutenticado()
         {
-            paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
-
-            var filtrados = paginacao?.objetos?.Where(objeto =>
-                 (string.IsNullOrEmpty(paginacao?.objetoPesquisa?.NomeColaborador) ||
-                 objeto.NomeColaborador?.Contains(paginacao.objetoPesquisa.NomeColaborador, StringComparison.OrdinalIgnoreCase) == true) &&
-
-                (string.IsNullOrEmpty(paginacao?.objetoPesquisa?.RazaoSocial) ||
-                 objeto.RazaoSocial?.Contains(paginacao.objetoPesquisa.RazaoSocial, StringComparison.OrdinalIgnoreCase) == true) &&
-
-                (string.IsNullOrEmpty(paginacao?.objetoPesquisa?.DescricaoServico) ||
-                 objeto.DescricaoServico?.Contains(paginacao.objetoPesquisa.DescricaoServico, StringComparison.OrdinalIgnoreCase) == true) &&
-
-                (string.IsNullOrEmpty(paginacao?.objetoPesquisa?.Descricao) ||
-                 objeto.Descricao?.Contains(paginacao.objetoPesquisa.Descricao, StringComparison.OrdinalIgnoreCase) == true)
-
-            ) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
-            paginacao!.total = filtrados?.Count() ?? 0;
-            paginacao!.totalPaginas = (paginacao.total + paginacao.quantidadePagina - 1) / paginacao.quantidadePagina;
-
-            paginacao.objetos = filtrados?.Skip(paginacao.registroInicial).Take(paginacao.quantidadePagina);
-
-
-            return await Task.FromResult(paginacao);
-        }
-        private static ColaboradorProfissionalDTO AdicionarColaboradorProfissional(ColaboradorProfissionalDTO colaborador, UsuarioDTO usuario)
-        {
-            return new ColaboradorProfissionalDTO
-            {
-                Id = colaborador.Id,
-                ColaboradorId = colaborador.ColaboradorId,
-                UsuarioId = colaborador.UsuarioId,
-                NomeColaborador = usuario.Nome,
-                LojaId = colaborador.LojaId,
-                RazaoSocial = colaborador.RazaoSocial,
-                ServicoId = colaborador.ServicoId,
-                DescricaoServico = colaborador?.DescricaoServico,
-                Descricao = colaborador?.Descricao,
-                PeriodoInativoInicio = colaborador.PeriodoInativoInicio,
-                PeriodoInativoFim = colaborador.PeriodoInativoFim,
-            };
+            var usuarioAutenticado = await _usuarioPermissaoDomainService.BuscarUsuarioAutenticado();
+            return await _ColaboradorProfissionalRepository.BuscarPorUsuarioId(usuarioAutenticado.UsuarioId.ToString());
         }
     }
 }

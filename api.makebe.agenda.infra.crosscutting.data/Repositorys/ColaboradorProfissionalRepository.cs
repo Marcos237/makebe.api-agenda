@@ -13,35 +13,61 @@ namespace api.makebe.agenda.infra.data.Repositorys
             _dbAgenda = dbAgenda;
         }
 
-        public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorContaId(string contaId)
+        public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> BuscarPaginadoPorContaId(string contaId, PaginacaoDTO<ColaboradorProfissionalDTO> paginacao)
         {
-            var sql = @"SELECT DISTINCT 
-                                cp.Id,
-                                cp.ColaboradorId, 
-                                CAST(c.UsuarioId AS CHAR) AS UsuarioId,
-                                cp.LojaId, 
-                                l.RazaoSocial, 
-                                cp.ServicoId, 
-                                s.Descricao as DescricaoServico, 
-                                cp.Descricao,
-                                cp.PeriodoInativoInicio,
-                                cp.PeriodoInativoFim,
-                                cp.DataCadastro, 
-                                cc.ContaId 
-                       FROM ColaboradorProfissional cp
-                       INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId 
-                       INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
-                       INNER JOIN Loja l on l.Id = cp.LojaId 
-                       INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
-                       WHERE 
-                              cc.ContaId = @ContaId
-                       AND    cp.Status = 1";
-            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(
-                sql,
-                new { ContaId = contaId }
-            ) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+            paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
 
-            return retorno;
+            var sql = @"SELECT DISTINCT
+                          colaborador.Nome AS NomeColaborador,
+                          cp.Id,
+                          cp.ColaboradorId, 
+                          CAST(c.UsuarioId AS CHAR) AS UsuarioId,
+                          cp.LojaId, 
+                          l.RazaoSocial, 
+                          cp.ServicoId, 
+                          s.Descricao as DescricaoServico, 
+                          cp.Descricao,
+                          cp.PeriodoInativoInicio,
+                          cp.PeriodoInativoFim,
+                          cp.DataCadastro,
+                          cc.ContaId
+                        FROM  vw_colaborador AS colaborador
+                        INNER JOIN Colaborador AS c ON c.UsuarioId  = colaborador.UsuarioId
+                        INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
+                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
+                        INNER JOIN Loja l on l.Id = cp.LojaId 
+                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        WHERE 
+                               cc.ContaId = @ContaId
+                        AND    
+                        	   cp.Status = 1
+                        AND
+                               colaborador.Status = 1
+                        AND (colaborador.Nome LIKE CONCAT('%', @NomeColaborador, '%') OR @NomeColaborador IS NULL OR @NomeColaborador = '')
+                        AND (l.RazaoSocial LIKE CONCAT('%', @RazaoSocial, '%') OR @RazaoSocial IS NULL OR @RazaoSocial = '')
+                        AND (s.Descricao LIKE CONCAT('%', @DescricaoServico, '%') OR @DescricaoServico IS NULL OR @DescricaoServico = '')
+                        AND (cp.Descricao LIKE CONCAT('%', @Descricao, '%') OR @Descricao IS NULL OR @Descricao = '')
+                        ORDER BY colaborador.Nome ";
+
+            var parametros = new
+            {
+                RegistroInicial = paginacao.registroInicial,
+                TamanhoPagina = paginacao.quantidadePagina,
+                ContaId = contaId,
+                NomeColaborador = paginacao?.objetoPesquisa?.NomeColaborador,
+                RazaoSocial = paginacao?.objetoPesquisa?.RazaoSocial,
+                DescricaoServico = paginacao?.objetoPesquisa?.DescricaoServico,
+                Descricao = paginacao?.objetoPesquisa?.Descricao
+            };
+
+            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(sql, parametros) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+            paginacao.total = retorno.Count();
+            paginacao.totalPaginas = (paginacao.total + paginacao.quantidadePagina - 1) / paginacao.quantidadePagina;
+
+            string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
+            paginacao.objetos = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(sqlBusca, parametros) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+
+            return paginacao;
         }
 
         public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorLojaId(int id)
@@ -142,6 +168,135 @@ namespace api.makebe.agenda.infra.data.Repositorys
                       Where Id = @Id";
             var retorno = await _dbAgenda.Connection.ExecuteAsync(sql, new
             { Id = id }) > 0;
+            return retorno;
+        }
+
+        public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> BuscarPaginadoPorUsuario(string usuarioId, PaginacaoDTO<ColaboradorProfissionalDTO> paginacao)
+        {
+            paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
+
+            var sql = @"SELECT DISTINCT
+                          colaborador.Nome AS NomeColaborador,
+                          cp.Id,
+                          cp.ColaboradorId, 
+                          CAST(c.UsuarioId AS CHAR) AS UsuarioId,
+                          cp.LojaId, 
+                          l.RazaoSocial, 
+                          cp.ServicoId, 
+                          s.Descricao as DescricaoServico, 
+                          cp.Descricao,
+                          cp.PeriodoInativoInicio,
+                          cp.PeriodoInativoFim,
+                          cp.DataCadastro,
+                          cc.ContaId
+                        FROM vw_colaborador AS colaborador
+                        INNER JOIN Colaborador AS c ON c.UsuarioId  = colaborador.UsuarioId
+                        INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
+                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
+                        INNER JOIN Loja l on l.Id = cp.LojaId 
+                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        WHERE 
+                               colaborador.UsuarioId  = @UsuarioId
+                        AND    
+                        	   cp.Status = 1
+                        AND
+                               colaborador.Status = 1
+                        AND (colaborador.Nome LIKE CONCAT('%', @NomeColaborador, '%') OR @NomeColaborador IS NULL OR @NomeColaborador = '')
+                        AND (l.RazaoSocial LIKE CONCAT('%', @RazaoSocial, '%') OR @RazaoSocial IS NULL OR @RazaoSocial = '')
+                        AND (s.Descricao LIKE CONCAT('%', @DescricaoServico, '%') OR @DescricaoServico IS NULL OR @DescricaoServico = '')
+                        AND (cp.Descricao LIKE CONCAT('%', @Descricao, '%') OR @Descricao IS NULL OR @Descricao = '')
+                        ORDER BY colaborador.Nome ";
+
+            var parametros = new
+            {
+                RegistroInicial = paginacao.registroInicial,
+                TamanhoPagina = paginacao.quantidadePagina,
+                UsuarioId = usuarioId,
+                NomeColaborador = paginacao?.objetoPesquisa?.NomeColaborador,
+                RazaoSocial = paginacao?.objetoPesquisa?.RazaoSocial,
+                DescricaoServico = paginacao?.objetoPesquisa?.DescricaoServico,
+                Descricao = paginacao?.objetoPesquisa?.Descricao
+            };
+
+            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(sql, parametros) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+            paginacao.total = retorno.Count();
+            paginacao.totalPaginas = (paginacao.total + paginacao.quantidadePagina - 1) / paginacao.quantidadePagina;
+
+            string sqlBusca = $"{sql} LIMIT @TamanhoPagina OFFSET @RegistroInicial";
+            paginacao.objetos = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(sqlBusca, parametros) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+
+            return paginacao;
+        }
+
+        public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorContaId(string contaId)
+        {
+            var sql = @"SELECT DISTINCT
+                          colaborador.Nome AS NomeColaborador,
+                          cp.Id,
+                          cp.ColaboradorId, 
+                          CAST(c.UsuarioId AS CHAR) AS UsuarioId,
+                          cp.LojaId, 
+                          l.RazaoSocial, 
+                          cp.ServicoId, 
+                          s.Descricao as DescricaoServico, 
+                          cp.Descricao,
+                          cp.PeriodoInativoInicio,
+                          cp.PeriodoInativoFim,
+                          cp.DataCadastro,
+                          cc.ContaId
+                        FROM  vw_colaborador AS colaborador
+                        INNER JOIN Colaborador AS c ON c.UsuarioId  = colaborador.UsuarioId
+                        INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
+                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
+                        INNER JOIN Loja l on l.Id = cp.LojaId 
+                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        WHERE 
+                               cc.ContaId = @ContaId
+                        AND    
+                        	   cp.Status = 1
+                        AND
+                               colaborador.Status = 1";
+            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(
+                sql,
+                new { ContaId = contaId }
+            ) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+
+            return retorno;
+        }
+
+        public async Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorUsuarioId(string usuarioId)
+        {
+            var sql = @"SELECT DISTINCT
+                          colaborador.Nome AS NomeColaborador,
+                          cp.Id,
+                          cp.ColaboradorId, 
+                          CAST(c.UsuarioId AS CHAR) AS UsuarioId,
+                          cp.LojaId, 
+                          l.RazaoSocial, 
+                          cp.ServicoId, 
+                          s.Descricao as DescricaoServico, 
+                          cp.Descricao,
+                          cp.PeriodoInativoInicio,
+                          cp.PeriodoInativoFim,
+                          cp.DataCadastro,
+                          cc.ContaId
+                        FROM vw_colaborador AS colaborador
+                        INNER JOIN Colaborador AS c ON c.UsuarioId  = colaborador.UsuarioId
+                        INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
+                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
+                        INNER JOIN Loja l on l.Id = cp.LojaId 
+                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        WHERE 
+                               colaborador.UsuarioId  = @UsuarioId
+                        AND    
+                        	   cp.Status = 1
+                        AND
+                               colaborador.Status = 1";
+            var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorProfissionalDTO>(
+                sql,
+                new { UsuarioId = usuarioId }
+            ) ?? Enumerable.Empty<ColaboradorProfissionalDTO>();
+
             return retorno;
         }
     }

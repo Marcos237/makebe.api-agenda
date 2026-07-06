@@ -53,6 +53,7 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Applications
                 mc.AddProfile(new AgendaPayloadToAgendaColaboradorMap());
                 mc.AddProfile(new PaginacaoDTOMap());
                 mc.AddProfile(new AgendamentoDtoToAgendamentoMap());
+                mc.AddProfile(new ColaboradorProfissionalDTOToColaboradorDTOMap());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
