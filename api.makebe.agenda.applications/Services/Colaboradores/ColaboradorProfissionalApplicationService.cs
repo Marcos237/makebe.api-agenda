@@ -36,14 +36,7 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
         public async Task<ResponseModel<PaginacaoDTO<ColaboradorProfissionalDTO>>> BuscarUsuariosPaginado(PaginacaoDTO<ColaboradorProfissionalDTO> paginacao, string usuario)
         {
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
-            var usuarioConsultadoEvent = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta?.Id ?? Guid.Empty };
-            var usuariosConta = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConsultadoEvent);
-            var permissaoId = ConfigHelper.GetValue(BaseConstant.ClientePermissao ?? string.Empty);
-            var usuarioContaFiltro = usuariosConta.UsuariosEvents?.Where(usuario => usuario.PermissaoId != PropiedadesHelper.ParseGuidOrDefault(permissaoId
-                ?? string.Empty));
-            var usuarioMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuarioContaFiltro);
-
-            var paginacaoRetorno = await _colaboradorProfissionalDomainService.BuscarPaginado(paginacao, conta?.Id.ToString() ?? string.Empty, usuarioMap);
+            var paginacaoRetorno = await _colaboradorProfissionalDomainService.BuscarPaginado(paginacao, conta?.Id.ToString() ?? string.Empty);
             if (!paginacao.objetos!.Any())
                 _validationService.RetornarListaVazia(nameof(ColaboradorProfissional), BaseConstant.ListaVazia);
 
@@ -82,10 +75,7 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
         public async Task<ResponseModel<ColaboradorProfissionalDTO>> BuscarPorConta(string usuario)
         {
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
-            var usuarioConsultadoEvent = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta?.Id ?? Guid.Empty };
-            var usuariosConta = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConsultadoEvent);
-            var usuarioMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuariosConta.UsuariosEvents);
-            var colaboradoresResponse = await _colaboradorProfissionalDomainService.BuscarPorConta(conta?.Id.ToString() ?? string.Empty, usuarioMap);
+            var colaboradoresResponse = await _colaboradorProfissionalDomainService.BuscarPorConta(conta?.Id.ToString() ?? string.Empty);
             if (colaboradoresResponse.Any() == false)
                 _validationService.RetornarListaVazia(nameof(ColaboradorProfissionalDTO), BaseConstant.ListaVazia);
 

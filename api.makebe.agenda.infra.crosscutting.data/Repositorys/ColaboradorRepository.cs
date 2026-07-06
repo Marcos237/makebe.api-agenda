@@ -194,7 +194,9 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             DescricaoPermissao,
                             ContaId   
                         FROM vw_colaborador
-                        WHERE ContaId  = @ContaId ORDER BY Nome; ";
+                        WHERE ContaId  = @ContaId
+                        AND PermissaoId IN ('FFBFA665-0370-4953-8A33-3C1B1D87A091', '70A54CCD-8124-4BCE-AEC1-4913A37BAE8E', '4391AA5D-65C9-4523-B401-0337D1F4FCED')
+                        ORDER BY Nome; ";
             var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, new { ContaId = usuarioId });
             return retorno;
         }
