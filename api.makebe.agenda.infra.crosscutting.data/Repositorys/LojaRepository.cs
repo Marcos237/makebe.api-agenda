@@ -84,7 +84,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                                     )
                                     AND pi.Status = 1
                             ) Resultado
-                            WHERE Resultado.RowNum <= 3
+                            WHERE Resultado.RowNum <= 1
                             LIMIT 30;";
 
             var retorno = await _dbAgenda.Connection.QueryAsync<LojaVitrineDTO>(sql, new { Tipo = tipo })
