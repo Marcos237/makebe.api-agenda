@@ -40,8 +40,8 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<Servico> BuscarPorId(int id)
         {
-            var sql = @"SELECT * from Servicos s  WHERE s.Status = 1 AND s.Id = @Id";
-            var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Servico>(sql, new { Id = id }) ?? new Servico();
+            var sql = @"SELECT s.* from Servicos s  WHERE s.Status = 1 AND s.Id = @Id";
+            var response = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<Servico>(sql, new { Id = id }, _dbAgenda.Transaction) ?? new Servico();
             return response;
         }
 
@@ -96,14 +96,14 @@ namespace api.makebe.agenda.infra.data.Repositorys
                 Periodo = servicos.Periodo,
                 Valor = servicos.Valor,
                 Id = servicos.Id
-            });
+            }, _dbAgenda.Transaction);
             return servicos;
         }
 
         public async Task<bool> Desativar(int id)
         {
             var sql = @"UPDATE Servicos SET Status = 0 WHERE Id = @Id";
-            var response = await _dbAgenda.Connection.ExecuteAsync(sql, new { Id = id });
+            var response = await _dbAgenda.Connection.ExecuteAsync(sql, new { Id = id }, _dbAgenda.Transaction);
             return response > 0;
         }
 
@@ -114,9 +114,13 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             s.Descricao,
                             DATE_FORMAT(s.DataCadastro, '%d/%m/%Y %H:%i:%s') AS DataCadastro,
                             s.Periodo,
-                            s.Valor
+                            s.Valor,
+                            ci.Id AS CategoriaItemId,
+                            ci.Descricao AS DescricaoCategoria
                         FROM Servicos s
                         INNER JOIN ContaServico cs ON cs.ServicoId = s.Id
+                        LEFT JOIN Categoria c ON c.IdServico = s.Id AND c.Ativo = 1
+                        LEFT JOIN CategoriaItem ci ON ci.id = c.CategoriaItemId AND ci.Status = 1
                         WHERE s.Status = 1
                           AND cs.ContaId = @ContaId
                           AND (

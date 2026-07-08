@@ -22,11 +22,13 @@ namespace api.makebe.agenda.applications.Services.Servicos
         private readonly IValidationService<Servico> _validationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IContaServicoDomainService _contaServicoDomainService;
+        private readonly ICategoriaDomainService _categoriaDomainService;
+        private readonly ICategoriaItemDomainService _categoriaItemDomainService;
         private readonly IUsuarioSessaoDomainService _usuarioSessaoDomainService;
         private readonly IMapper _mapper;
         public ServicosApplicationService(IServicosDomainService servicosDomainService, IContaEventCrossCuttingService contaEventCrossCuttingService,
             INotificationContext notificationContext, IValidationService<Servico> validationService, IUnitOfWork unitOfWork, IContaServicoDomainService contaServicoDomainService
-           , IUsuarioSessaoDomainService usuarioSessaoDomainService, IMapper mapper)
+           , ICategoriaDomainService categoriaDomainService, ICategoriaItemDomainService categoriaItemDomainService, IUsuarioSessaoDomainService usuarioSessaoDomainService, IMapper mapper)
         {
             _servicosDomainService = servicosDomainService;
             _contaEventCrossCuttingService = contaEventCrossCuttingService;
@@ -34,6 +36,8 @@ namespace api.makebe.agenda.applications.Services.Servicos
             _validationService = validationService;
             _unitOfWork = unitOfWork;
             _contaServicoDomainService = contaServicoDomainService;
+            _categoriaDomainService = categoriaDomainService;
+            _categoriaItemDomainService = categoriaItemDomainService;
             _usuarioSessaoDomainService = usuarioSessaoDomainService;
             _mapper = mapper;
         }
@@ -61,7 +65,24 @@ namespace api.makebe.agenda.applications.Services.Servicos
                 _validationService.RetornarListaVazia(BaseConstant.ListaVazia, nameof(ServicoDTO));
 
             var responseMap = _mapper.Map<ServicoDTO>(response);
+            var categoria = (await _categoriaDomainService.BuscarPorServico(id)).FirstOrDefault();
+            if (categoria != null)
+            {
+                var categoriaItem = (await _categoriaItemDomainService.BuscarTodosAtivos())
+                    .FirstOrDefault(x => x.Descricao == categoria.Descricao);
+                responseMap.CategoriaItemId = categoriaItem?.Id ?? 0;
+            }
+
+            responseMap.CategoriaItens = await _categoriaItemDomainService.BuscarTodosAtivos();
             return ResponseModelHelper<ServicoDTO>.RetornarResponseModel(responseMap, _notificationContext.Notifications);
+        }
+        public async Task<ResponseModel<CategoriaItem>> BuscarCategorias()
+        {
+            var response = await _categoriaItemDomainService.BuscarTodosAtivos() ?? Enumerable.Empty<CategoriaItem>();
+            if (!response.Any())
+                _notificationContext.AddNotification(nameof(CategoriaItem), BaseConstant.ListaVazia);
+
+            return ResponseModelHelper<CategoriaItem>.RetornarResponseModel(response, _notificationContext.Notifications);
         }
         public async Task<ResponseModel<ServicoDTO>> BuscarServicosPorColaboradoId(int id)
         {
@@ -88,6 +109,8 @@ namespace api.makebe.agenda.applications.Services.Servicos
 
                 if (item.Id == 0)
                     await _contaServicoDomainService.Salvar(contaServico, item.Id);
+
+                await PersitirCategoria(item, servicoRetorno);
                 _unitOfWork.Commit();
                 var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
                 await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
@@ -107,6 +130,28 @@ namespace api.makebe.agenda.applications.Services.Servicos
             var retornoSessaoAtual = await _usuarioSessaoDomainService.BuscarSessao(usuarioId ?? string.Empty);
             await _usuarioSessaoDomainService.AtualizarSessao(retornoSessaoAtual, usuarioId ?? string.Empty);
             return retorno;
+        }
+
+        private async Task PersitirCategoria(ServicoDTO item, int servicoId)
+        {
+            if (item.CategoriaItemId <= 0)
+                return;
+
+            if (item.Id > 0)
+                await _categoriaDomainService.DesativarPorServico(servicoId);
+
+            var categoriaItem = await _categoriaItemDomainService.BuscarPorId(item.CategoriaItemId);
+            if (categoriaItem == null)
+                return;
+
+            await _categoriaDomainService.Salvar(new Categoria
+            {
+                CategoriaItemId = item.CategoriaItemId,
+                ServicoId = servicoId,
+                Descricao = categoriaItem.Descricao,
+                DataCadastro = DateTime.Now,
+                Ativo = true
+            });
         }
     }
 }
