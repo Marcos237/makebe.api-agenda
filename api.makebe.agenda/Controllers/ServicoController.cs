@@ -58,6 +58,18 @@ namespace api.makebe.agenda.Controllers
 
         }
 
+        [HttpGet("Categoria")]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> BuscarCategorias()
+        {
+            var retorno = await _servicoApplicationService.BuscarCategorias();
+            if (retorno.datas == null || !retorno.datas.Any())
+            {
+                return StatusCode(StatusCodes.Status204NoContent, retorno);
+            }
+            return StatusCode(StatusCodes.Status200OK, retorno);
+        }
+
         [HttpGet("GetByColaboradorId/{id}")]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> GetByColaboradorId(int id)
