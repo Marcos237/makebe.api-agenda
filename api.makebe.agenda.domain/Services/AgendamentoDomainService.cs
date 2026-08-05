@@ -91,8 +91,6 @@ namespace api.makebe.agenda.domain.Services
         public async Task<IEnumerable<AgendamentoDTO>> BuscarAgendamentoPorData(DateTime data, int id,  string conta)
         {
             var response = await  _agendamentoRepository.BuscarAgendamentoPorData(data, id,  conta);
-            foreach (var item in response)       
-                item.DataTerminoAgendamento = item.DataTerminoAgendamento.AddMinutes(1);
             
             return response;
         }

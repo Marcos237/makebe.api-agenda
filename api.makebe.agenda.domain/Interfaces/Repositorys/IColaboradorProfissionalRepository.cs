@@ -14,5 +14,9 @@ namespace api.makebe.agenda.domain.Interfaces.Repositorys
         Task<bool> Desativar(int id);
         Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorContaId(string contaId);
         Task<IEnumerable<ColaboradorProfissionalDTO>> BuscarPorUsuarioId(string usuarioId);
+        Task<IEnumerable<ColaboradorServicos>> BuscarServicosPorColaboradorId(int colaboradorId);
+        Task<int> SalvarServico(ColaboradorServicos colaboradorServico);
+        Task<bool> RemoverServico(int colaboradorId, int servicoId);
+        Task<bool> RemoverTodosServicos(int colaboradorId);
     }
 }

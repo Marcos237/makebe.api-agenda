@@ -84,9 +84,9 @@ namespace api.makebe.agenda.applications.Services.Servicos
 
             return ResponseModelHelper<CategoriaItem>.RetornarResponseModel(response, _notificationContext.Notifications);
         }
-        public async Task<ResponseModel<ServicoDTO>> BuscarServicosPorColaboradoId(int id)
+        public async Task<ResponseModel<ServicoDTO>> BuscarServicosPorColaboradorId(int id)
         {
-            var response = await _servicosDomainService.BuscarServicosPorColaboradoId(id);
+            var response = await _servicosDomainService.BuscarServicosPorColaboradorId(id);
             if (response.Any() == false)
                 _validationService.RetornarListaVazia(BaseConstant.ListaVazia, nameof(ServicoDTO));
 

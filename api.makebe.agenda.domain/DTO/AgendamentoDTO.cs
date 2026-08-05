@@ -22,5 +22,7 @@
         public bool Ativo { get; set; }
         public bool IsBloqueadoHoje { get; set; }
         public Decimal Periodo { get; set; }
+        public string? NomeCliente { get; set; }
+        public string? TelefoneCliente { get; set; }
     }
 }

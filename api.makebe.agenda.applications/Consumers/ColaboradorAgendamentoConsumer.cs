@@ -29,7 +29,7 @@ namespace api.makebe.agenda.applications.Consumers
             var agendamentos = await _agendamentoColaboradorRepository.BuscarAgendamentosPorColaboradorId(message.ColaboradorId)
                 ?? Enumerable.Empty<AgendamentoDTO>();
 
-            var servicos = await _servicosRepository.BuscarServicos(agendas?.FirstOrDefault()?.ContaId ?? string.Empty);
+            var servicos = await _servicosRepository.BuscarServicosPorColaboradorId(message.ColaboradorId);
             await context.RespondAsync(new ColaboradorAgendamentoPublicadoEvent
             {
                 ColaboradorId = message.ColaboradorId,

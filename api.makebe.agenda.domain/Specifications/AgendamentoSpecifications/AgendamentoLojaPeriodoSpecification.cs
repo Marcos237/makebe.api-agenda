@@ -17,8 +17,10 @@ namespace api.makebe.agenda.domain.Specifications.AgendamentoSpecifications
         {
             var id = Convert.ToInt32(item.IdColaborador ?? "0");
             var dataIncio = ValoresHelper.MontarDate(item?.DataInicioAgendamentoExtenso, item?.Data) ?? DateTime.Now;
+            var dataPesquisaIncio = dataIncio.AddMinutes(1);
             var dataFim = item.MontarDataTermino();
-            var response = _agendamentoLojaRepository.BuscarAgendamentoLojaAgendaAberta(id, dataIncio, dataFim).Result;
+            var dataFimPesquisa = dataFim.AddMinutes(-1);
+            var response = _agendamentoLojaRepository.BuscarAgendamentoLojaAgendaAberta(id, dataPesquisaIncio, dataFimPesquisa).Result;
             return !response.Any();
         }
     }

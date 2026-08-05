@@ -21,12 +21,6 @@ namespace api.makebe.agenda.domain.Validations
             }).WithMessage(ColaboradorProfissionalConstant.LojaIdValidacao)
             .WithName(nameof(ColaboradorProfissional.LojaId));
 
-            RuleFor(colaborador => new IdsObrigatoriosSpecifications().IsSatisfiedBy(colaborador.ServicoId!)).Must(colaborador =>
-            {
-                return colaborador;
-            }).WithMessage(ColaboradorProfissionalConstant.ServicoValidacao)
-            .WithName(nameof(ColaboradorProfissional.ServicoId));
-
             RuleFor(colaborador => colaborador).Must(colaborador =>
             {
                 var campos = new List<KeyValuePair<string, int>>
@@ -40,6 +34,16 @@ namespace api.makebe.agenda.domain.Validations
             })
             .WithMessage(BaseConstant.Campos)
             .WithName("Descricao");
+
+            RuleFor(colaborador => colaborador.Servicos)
+                .Must(servicos => servicos == null || servicos.Count() <= 10)
+                .WithMessage(ColaboradorProfissionalConstant.ServicoQuantidadeValidacao)
+                .WithName(nameof(ColaboradorProfissional.Servicos));
+
+            RuleFor(colaborador => colaborador.Servicos)
+                .Must(servicos => servicos == null || servicos.GroupBy(x => x.IdServico).All(x => x.Count() == 1))
+                .WithMessage(ColaboradorProfissionalConstant.ServicoDuplicadoValidacao)
+                .WithName(nameof(ColaboradorProfissional.Servicos));
 
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace api.makebe.agenda.domain.DTO
+﻿using api.makebe.agenda.domain.Entidades;
+
+namespace api.makebe.agenda.domain.DTO
 {
     public class ColaboradorProfissionalDTO
     {
@@ -22,6 +24,8 @@
         public string? PeriodoInativoInicioExtenso { get; set; }
         public string? PeriodoInativoFimExtenso { get; set; }
         public IEnumerable<PortifolioImagemDTO>? Imagens { get; set; }
+
+        public IEnumerable<ColaboradorServicos>? Servicos { get; set; }
         public string? Texto { get; set; }
     }
 }

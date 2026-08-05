@@ -63,9 +63,7 @@ namespace api.makebe.agenda.applications.Services.Agendamentos
             if (id == 0)
                 return ResponseModelHelper<AgendamentoDTO>.RetornarResponseModel(new AgendamentoDTO(), _notificationContext.Notifications);
             var response = await _agendamentoDomainService.BuscarPorId(id);
-            var usuarioEvent = new UsuarioConsultadoPorIdEvent() { Id = PropiedadesHelper.ParseGuidOrDefault(response.IdUsuario) };
-            var responseEvent = await _usuarioEventCrossCuttingService.BuscarUsuarioPorId(usuarioEvent);
-            response.NomeUsuario = responseEvent.UsuarioConsultadoRetorno?.Nome ?? string.Empty;
+            response.NomeUsuario = response.NomeCliente ?? string.Empty;
 
             return ResponseModelHelper<AgendamentoDTO>.RetornarResponseModel(response, _notificationContext.Notifications);
         }

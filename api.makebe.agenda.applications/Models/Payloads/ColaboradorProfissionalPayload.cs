@@ -6,6 +6,7 @@
         public int ColaboradorId { get; set; }
         public int LojaId { get; set; }
         public int ServicoId { get; set; }
+        public IEnumerable<api.makebe.agenda.domain.Entidades.ColaboradorServicos>? Servicos { get; set; }
         public string? Descricao { get; set; }
         public DateTime PeriodoInativoInicio { get; set; }
         public DateTime PeriodoInativoFim { get; set; }

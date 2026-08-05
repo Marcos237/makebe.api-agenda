@@ -36,7 +36,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
                         INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
                         INNER JOIN Loja l on l.Id = cp.LojaId 
-                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        LEFT JOIN Servicos s ON s.Id  = cp.ServicoId 
                         WHERE 
                                cc.ContaId = @ContaId
                         AND    
@@ -85,7 +85,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                        INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId 
                        INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
                        INNER JOIN Loja l on l.Id = cp.LojaId 
-                       INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                       LEFT JOIN Servicos s ON s.Id  = cp.ServicoId 
                        WHERE 
                               l.Id = @Id
                        AND    cp.Status = 1";
@@ -104,7 +104,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                             INNER JOIN Colaborador c ON c.Id  = cp.ColaboradorId 
                             INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
                             INNER JOIN Loja l on l.Id = cp.LojaId 
-                            INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                            LEFT JOIN Servicos s ON s.Id  = cp.ServicoId 
                             WHERE cp.Status = 1
                             AND cp.Id = @Id";
             var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorProfissionalDTO>(sql, new { Id = id }) ?? new ColaboradorProfissionalDTO();
@@ -171,6 +171,58 @@ namespace api.makebe.agenda.infra.data.Repositorys
             return retorno;
         }
 
+        public async Task<IEnumerable<ColaboradorServicos>> BuscarServicosPorColaboradorId(int colaboradorId)
+        {
+            var sql = @"SELECT Id, IdColaborador, IdServico, DataCadastro
+                        FROM ColaboradorServicos
+                        WHERE IdColaborador = @IdColaborador";
+
+            return await _dbAgenda.Connection.QueryAsync<ColaboradorServicos>(
+                sql,
+                new { IdColaborador = colaboradorId },
+                _dbAgenda.Transaction) ?? Enumerable.Empty<ColaboradorServicos>();
+        }
+
+        public async Task<int> SalvarServico(ColaboradorServicos colaboradorServico)
+        {
+            var sql = @"INSERT INTO ColaboradorServicos (IdColaborador, IdServico, DataCadastro)
+                        VALUES (@IdColaborador, @IdServico, @DataCadastro);
+                        SELECT LAST_INSERT_ID();";
+
+            return await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
+            {
+                colaboradorServico.IdColaborador,
+                colaboradorServico.IdServico,
+                colaboradorServico.DataCadastro
+            }, _dbAgenda.Transaction);
+        }
+
+        public async Task<bool> RemoverServico(int colaboradorId, int servicoId)
+        {
+            var sql = @"DELETE FROM ColaboradorServicos
+                        WHERE IdColaborador = @IdColaborador
+                          AND IdServico = @IdServico;";
+
+            return await _dbAgenda.Connection.ExecuteAsync(sql, new
+            {
+                IdColaborador = colaboradorId,
+                IdServico = servicoId
+            }, _dbAgenda.Transaction) > 0;
+        }
+
+        public async Task<bool> RemoverTodosServicos(int colaboradorId)
+        {
+            var sql = @"DELETE FROM ColaboradorServicos
+                        WHERE IdColaborador = @IdColaborador;";
+
+            await _dbAgenda.Connection.ExecuteAsync(sql, new
+            {
+                IdColaborador = colaboradorId
+            }, _dbAgenda.Transaction);
+
+            return true;
+        }
+
         public async Task<PaginacaoDTO<ColaboradorProfissionalDTO>> BuscarPaginadoPorUsuario(string usuarioId, PaginacaoDTO<ColaboradorProfissionalDTO> paginacao)
         {
             paginacao.registroInicial = (paginacao.paginaAtual - 1) * paginacao.quantidadePagina;
@@ -194,7 +246,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
                         INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
                         INNER JOIN Loja l on l.Id = cp.LojaId 
-                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        LEFT JOIN Servicos s ON s.Id  = cp.ServicoId 
                         WHERE 
                                colaborador.UsuarioId  = @UsuarioId
                         AND    
@@ -232,8 +284,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         {
             var sql = @"SELECT DISTINCT
                           colaborador.Nome AS NomeColaborador,
-                          cp.Id,
-                          cp.ColaboradorId, 
+                          cp.ColaboradorId AS Id, 
                           CAST(c.UsuarioId AS CHAR) AS UsuarioId,
                           cp.LojaId, 
                           l.RazaoSocial, 
@@ -249,7 +300,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
                         INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
                         INNER JOIN Loja l on l.Id = cp.LojaId 
-                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        LEFT JOIN Servicos s ON s.Id  = cp.ServicoId 
                         WHERE 
                                cc.ContaId = @ContaId
                         AND    
@@ -285,7 +336,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         INNER JOIN ColaboradorProfissional cp ON cp.ColaboradorId = c.Id 
                         INNER JOIN ContaColaborador cc ON cc.ColaboradorId  = c.Id 
                         INNER JOIN Loja l on l.Id = cp.LojaId 
-                        INNER JOIN Servicos s ON s.Id  = cp.ServicoId 
+                        LEFT JOIN Servicos s ON s.Id  = cp.ServicoId 
                         WHERE 
                                colaborador.UsuarioId  = @UsuarioId
                         AND    

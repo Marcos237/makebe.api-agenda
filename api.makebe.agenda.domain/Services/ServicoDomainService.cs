@@ -37,9 +37,9 @@ namespace api.makebe.agenda.domain.Services
             return response;
         }
 
-        public async Task<IEnumerable<Servico>> BuscarServicosPorColaboradoId(int id)
+        public async Task<IEnumerable<Servico>> BuscarServicosPorColaboradorId(int id)
         {
-            var response = await _servicosRepository.BuscarServicosPorColaboradoId(id);
+            var response = await _servicosRepository.BuscarServicosPorColaboradorId(id);
             return response;
         }
 

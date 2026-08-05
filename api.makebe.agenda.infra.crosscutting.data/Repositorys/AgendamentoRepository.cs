@@ -53,12 +53,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         	CAST(ag.IdUsuario AS CHAR) AS IdUsuario,
                         	ag.DataInicioAgendamento,
                         	ag.DataTerminoAgendamento,
-                        	c.Id AS IdColaborador
+                        	c.Id AS IdColaborador,
+                        	u.Nome As NomeCliente,
+                            u.Telefone As TelefoneCliente 
                         FROM Agendamento ag 
                         INNER JOIN AgendaColaborador ac  ON ac.Id  = ag.IdAgendaColaborador AND ac.Status  = 1
                         INNER JOIN Agenda a ON a.Id  = ac.IdAgenda  AND a.Status  = 1
                         INNER JOIN Servicos s ON s.Id  = ag.IdServico
                         INNER JOIN Colaborador c ON c.Id  = ac.IdColaborador 
+                        LEFT JOIN `Makebe.Sessao`.Usuario u ON u.Id = ag.IdUsuario
                         WHERE ag.Id = @Id
                         AND ag.Ativo = 1
                         ORDER BY ag.DataInicioAgendamento  DESC";
@@ -128,12 +131,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         	a.DataInicioAgendamento,
                         	a.DataTerminoAgendamento,
                             c.Id AS IdColaborador,
-                            s.Descricao AS DescricaoServico
+                            s.Descricao AS DescricaoServico,
+                            u.Nome As NomeCliente,
+                            u.Telefone As TelefoneCliente 
                         FROM Agendamento a
                         INNER JOIN AgendaColaborador ac  ON ac.Id = a.IdAgendaColaborador
                         INNER JOIN Colaborador c ON c.Id  = ac.IdColaborador 
                         INNER JOIN ContaColaborador cc ON cc.ColaboradorId = c.Id
                         INNER JOIN Servicos s ON s.Id  = a.IdServico
+                        LEFT JOIN `Makebe.Sessao`.Usuario u ON u.Id = a.IdUsuario
                         WHERE DATE(a.DataInicioAgendamento) = @Data
                         AND cc.ContaId  = @Conta
                         AND c.Id  = @ColaboradorId

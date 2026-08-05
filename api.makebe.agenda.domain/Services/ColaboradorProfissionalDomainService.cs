@@ -33,6 +33,7 @@ namespace api.makebe.agenda.domain.Services
         public async Task<ColaboradorProfissionalDTO> BuscarPorId(int id)
         {
             var retorno = await _ColaboradorProfissionalRepository.BuscarPorId(id);
+            retorno.Servicos = await _ColaboradorProfissionalRepository.BuscarServicosPorColaboradorId(retorno.ColaboradorId);
             return retorno;
         }
 
@@ -67,16 +68,19 @@ namespace api.makebe.agenda.domain.Services
         }
         public async Task<int> Salvar(ColaboradorProfissional colaborador)
         {
+            colaborador.ServicoId = colaborador.Servicos?.FirstOrDefault()?.IdServico ?? colaborador.ServicoId;
             if (colaborador.Id == 0)
             {
                 colaborador.DataAtualizacao = DateTime.Now;
                 colaborador.DataCadastro = DateTime.Now;
                 colaborador.Status = true;
                 var retornoSalvar = await _ColaboradorProfissionalRepository.Salvar(colaborador);
+                await AtualizarServicos(colaborador.ColaboradorId, colaborador.Servicos);
                 return retornoSalvar;
             }
             colaborador.DataAtualizacao = DateTime.Now;
-            var retorno = await _ColaboradorProfissionalRepository.Atualizar(colaborador);
+            await _ColaboradorProfissionalRepository.Atualizar(colaborador);
+            await AtualizarServicos(colaborador.ColaboradorId, colaborador.Servicos);
             return colaborador.Id;
         }
 
@@ -95,6 +99,39 @@ namespace api.makebe.agenda.domain.Services
         {
             var usuarioAutenticado = await _usuarioPermissaoDomainService.BuscarUsuarioAutenticado();
             return await _ColaboradorProfissionalRepository.BuscarPorUsuarioId(usuarioAutenticado.UsuarioId.ToString());
+        }
+
+        private async Task AtualizarServicos(int colaboradorId, IEnumerable<ColaboradorServicos>? servicos)
+        {
+            var servicosAtuais = (await _ColaboradorProfissionalRepository.BuscarServicosPorColaboradorId(colaboradorId))
+                .Select(x => x.IdServico)
+                .ToHashSet();
+
+            var novosServicos = (servicos ?? Enumerable.Empty<ColaboradorServicos>())
+                .Select(x => x.IdServico)
+                .Distinct()
+                .ToHashSet();
+
+            if (!novosServicos.Any())
+            {
+                await _ColaboradorProfissionalRepository.RemoverTodosServicos(colaboradorId);
+                return;
+            }
+
+            var servicosParaAdicionar = novosServicos.Where(id => !servicosAtuais.Contains(id));
+            foreach (var servicoId in servicosParaAdicionar)
+            {
+                await _ColaboradorProfissionalRepository.SalvarServico(new ColaboradorServicos
+                {
+                    IdColaborador = colaboradorId,
+                    IdServico = servicoId,
+                    DataCadastro = DateTime.Now
+                });
+            }
+
+            var servicosParaRemover = servicosAtuais.Where(id => !novosServicos.Contains(id));
+            foreach (var servicoId in servicosParaRemover)
+                await _ColaboradorProfissionalRepository.RemoverServico(colaboradorId, servicoId);
         }
     }
 }

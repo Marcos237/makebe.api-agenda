@@ -6,6 +6,7 @@
         public int ColaboradorId { get; set; }
         public int LojaId { get; set; }
         public int ServicoId { get; set; }
+        public IEnumerable<ColaboradorServicos>? Servicos { get; set; }
         public string? Descricao { get; set; }
         public bool Status { get; set; }
         public DateTime DataCadastro  { get; set; }

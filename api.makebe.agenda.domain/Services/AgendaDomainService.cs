@@ -17,6 +17,17 @@ namespace api.makebe.agenda.domain.Services
         {
             agenda.DataAtualizacao = DateTime.Now;
             agenda.Status = true;
+            if (agenda.AgendaBloqueadaInicio.HasValue)
+            {
+                var data = agenda.AgendaBloqueadaInicio.Value;
+                agenda.AgendaBloqueadaInicio = data.AddSeconds(-data.Second).AddMilliseconds(-data.Millisecond);
+            }
+            if (agenda.AgendaBloqueadaFim.HasValue)
+            {
+                var data = agenda.AgendaBloqueadaFim.Value;
+                agenda.AgendaBloqueadaFim = data.AddSeconds(-data.Second).AddMilliseconds(-data.Millisecond);
+            }
+
             await PreencherDiasSemana(agenda);
             if (agenda.Id == 0)
             {

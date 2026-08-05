@@ -75,7 +75,7 @@ namespace api.makebe.agenda.Controllers
         public async Task<IActionResult> GetByColaboradorId(int id)
         {
 
-            var retorno = await _servicoApplicationService.BuscarServicosPorColaboradoId(id);
+            var retorno = await _servicoApplicationService.BuscarServicosPorColaboradorId(id);
             if (retorno?.datas?.Any() == false)
             {
                 return StatusCode(StatusCodes.Status204NoContent, retorno);

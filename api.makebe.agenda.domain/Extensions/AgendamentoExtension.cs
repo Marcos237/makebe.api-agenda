@@ -23,7 +23,7 @@ namespace api.makebe.agenda.domain.Extensions
         public static DateTime MontarDataTermino(this AgendamentoDTO? agendamento)
         {
             var dataInicio = ValoresHelper.MontarDate(agendamento?.DataInicioAgendamentoExtenso, agendamento?.Data) ?? DateTime.Now;
-            return (agendamento?.Periodo.SomarPeriodo(dataInicio) ?? dataInicio).AddMinutes(-1);
+            return (agendamento?.Periodo.SomarPeriodo(dataInicio) ?? dataInicio);
         }
 
         public static TimeSpan ParaTimeSpan(this decimal valor)
