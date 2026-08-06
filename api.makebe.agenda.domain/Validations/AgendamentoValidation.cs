@@ -35,6 +35,11 @@ namespace api.makebe.agenda.domain.Validations
                     .WithMessage(AgendamentoConstant.AgendamentoColaboradorFechado)
                     .WithName(nameof(Agendamento.DataInicioAgendamento));
 
+            RuleFor(agendamento => new AgendamentoColaboradorPeriodoInativoSpecification(_agendamentoColaboradorRepository).IsSatisfiedBy(agendamento))
+                    .Must(agendamento => agendamento)
+                    .WithMessage(AgendamentoConstant.AgendamentoColaboradorFechado)
+                    .WithName(nameof(Agendamento.DataInicioAgendamento));
+
             RuleFor(agendamento => new AgendamentoDisponivelSpecification(_agendamentoColaboradorRepository).IsSatisfiedBy(agendamento))
                     .Must(agendamento => agendamento)
                     .WithMessage(AgendamentoConstant.AgendamentoIndiponivel)
