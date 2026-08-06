@@ -1,4 +1,5 @@
 using api.makebe.agenda.applications.Meddleweres;
+using api.makebe.agenda.Configurations;
 using api.makebe.agenda.infra.crosscutting.ioc.Applications;
 using api.makebe.agenda.infra.crosscutting.ioc.Data;
 using api.makebe.agenda.infra.crosscutting.ioc.Domains;
@@ -28,6 +29,8 @@ builder.Services.InitializeInfraServiceCrossCuttingBootstrapper();
 builder.Services.InitializeInfraEventBootstrapper();
 builder.Services.InitializeLibDependencyInjection();
 builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<ApiSecurityOptions>(
+    builder.Configuration.GetSection(ApiSecurityOptions.SectionName));
 
 
 var chave = builder.Configuration["SysKey"]!.ToString();
@@ -115,6 +118,7 @@ app.UseExceptionHandler(exceptionApp =>
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseMiddleware<LogResponseMiddleware>();
+app.UseMiddleware<ApiSecurityMiddleware>();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
