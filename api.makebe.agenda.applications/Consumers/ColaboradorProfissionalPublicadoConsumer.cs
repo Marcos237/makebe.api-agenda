@@ -66,7 +66,7 @@ namespace api.makebe.agenda.applications.Consumers
             await context.RespondAsync(new ColaboradorProfissionalPublicadoEvent
             {
                 LojaId = message.LojaId,
-                DataEvento = DateTime.UtcNow,
+                DataEvento = DateTime.Now,
                 ColaboradoresProfissionais = colaboradoresProfissionais
             });
         }

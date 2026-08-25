@@ -31,7 +31,7 @@ namespace api.makebe.agenda.applications.Consumers
             await context.RespondAsync(new LojasVitrinePublicadasEvent
             {
                 Tipo = message.Tipo,
-                DataEvento = DateTime.UtcNow,
+                DataEvento = DateTime.Now,
                 Lojas = lojasVitrine.Select(x => new LojaVitrineEvent
                 {
                     Id = x.Id,

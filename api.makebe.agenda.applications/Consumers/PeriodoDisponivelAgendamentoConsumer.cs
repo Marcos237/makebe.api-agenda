@@ -31,7 +31,7 @@ namespace api.makebe.agenda.applications.Consumers
                 IdServico = message.IdServico,
                 IdColaborador = message.IdColaborador,
                 Data = message.Data,
-                DataEvento = DateTime.UtcNow,
+                DataEvento = DateTime.Now,
                 Periodos = periodos.Select(periodo => new PeriodoEvent
                 {
                     Inicio = periodo.Inicio,

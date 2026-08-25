@@ -31,7 +31,7 @@ namespace api.makebe.agenda.applications.Consumers
             await context.RespondAsync(new ColaboradorPortifolioImagemPublicadoEvent
             {
                 Id = message.Id,
-                DataEvento = DateTime.UtcNow,
+                DataEvento = DateTime.Now,
                 Imagens = imagens.Select(x => new ColaboradorPortifolioImagemEvent
                 {
                     NomeImagem = x.NomeImagem,

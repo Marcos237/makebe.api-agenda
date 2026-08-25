@@ -63,7 +63,7 @@ namespace api.makebe.agenda.applications.Consumers
             await context.RespondAsync(new MeusAgendamentosPublicadoEvent
             {
                 UsuarioIdEvent = message.UsuarioIdEvent,
-                DataEvento = DateTime.UtcNow,
+                DataEvento = DateTime.Now,
                 Paginacao = new PaginacaoEvent<MeuAgendamentoEvent>
                 {
                     quantidadePagina = agendamentosPaginados.quantidadePagina,

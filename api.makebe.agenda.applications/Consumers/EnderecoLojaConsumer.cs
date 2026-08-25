@@ -24,7 +24,7 @@ namespace api.makebe.agenda.applications.Consumers
             await context.RespondAsync(new EnderecoLojaPublicadoEvent
             {
                 Id = message.Id,
-                DataEvento = DateTime.UtcNow,
+                DataEvento = DateTime.Now,
                 Lojas = lojas.Select(x => new EnderecoLojaEvent.EnderecoLojaEvent
                 {
                     Id = x.Id,

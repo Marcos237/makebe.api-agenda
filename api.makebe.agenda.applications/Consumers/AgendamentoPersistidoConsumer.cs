@@ -26,7 +26,7 @@ namespace api.makebe.agenda.applications.Consumers
                     Agendamento = null,
                     UsuarioIdEvent = message.UsuarioIdEvent,
                     Notifications = Enumerable.Empty<Notification>(),
-                    DataEvento = DateTime.UtcNow
+                    DataEvento = DateTime.Now
                 });
                 return;
             }
@@ -87,7 +87,7 @@ namespace api.makebe.agenda.applications.Consumers
                 },
                 UsuarioIdEvent = message.UsuarioIdEvent,
                 Notifications = response.notifications ?? Enumerable.Empty<Notification>(),
-                DataEvento = DateTime.UtcNow
+                DataEvento = DateTime.Now
             });
         }
     }

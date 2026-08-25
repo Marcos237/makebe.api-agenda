@@ -33,7 +33,7 @@ namespace api.makebe.agenda.applications.Consumers
             await context.RespondAsync(new ColaboradorAgendamentoPublicadoEvent
             {
                 ColaboradorId = message.ColaboradorId,
-                DataEvento = DateTime.UtcNow,
+                DataEvento = DateTime.Now,
                 Agendamentos = await Task.WhenAll(agendas!.Select(async x =>
                 {
                     return new global::ColaboradorAgendamentoEvent.ColaboradorAgendamentoEvent
