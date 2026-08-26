@@ -96,6 +96,27 @@ namespace api.makebe.agenda.Controllers
             }
         }
 
+
+        [HttpGet("BuscarPorIdUsuario/{id}")]
+        [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
+        public async Task<IActionResult> BuscarPorIdUsuario()
+        {
+            try
+            {
+                var chaveUsuario = Chave ?? string.Empty;   
+                var retorno = await _colaboradorApplicationService.BuscarColaboradorUsuarioPorId(chaveUsuario);
+                if (retorno.data == null)
+                {
+                    return StatusCode(StatusCodes.Status204NoContent, retorno);
+                }
+                return StatusCode(StatusCodes.Status200OK, retorno);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         [AuthorizationFilter(PapeisPermissoes.GerenciaContasGestor)]
         public async Task<IActionResult> Post(ColaboradorPayload model)

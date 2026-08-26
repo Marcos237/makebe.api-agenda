@@ -15,7 +15,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
 
         public async Task<ColaboradorDTO> BuscarPorUsuarioId(Guid id)
         {
-            var sql = @"SELECT c.Id, c.UsuarioId , c.DataCadastro , c.DataAtualizacao ,c.Status  FROM ContaColaborador cc 
+            var sql = @"SELECT c.Id, c.UsuarioId , c.DataCadastro , c.DataAtualizacao ,c.Status , c.IsGestor  FROM ContaColaborador cc 
                         INNER JOIN Colaborador c  ON cc.ColaboradorId  = c.Id 
                         WHERE c.UsuarioId  = @UsuarioId";
             var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorDTO>(sql, new { UsuarioId = id }) ?? new ColaboradorDTO();
@@ -24,7 +24,7 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<ColaboradorDTO> BuscarPorId(int id)
         {
 
-            var sql = @"SELECT c.Id, CAST(c.UsuarioId AS CHAR) AS UsuarioCodigo, c.DataAtualizacao, c.Status FROM Colaborador c WHERE c.Id = @Id AND c.Status = 1";
+            var sql = @"SELECT c.Id, CAST(c.UsuarioId AS CHAR) AS UsuarioCodigo, c.DataAtualizacao, c.Status, c.IsGestor FROM Colaborador c WHERE c.Id = @Id AND c.Status = 1";
             var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorDTO>(sql, new { Id = id }) ?? new ColaboradorDTO();
             return retorno;
 
@@ -33,14 +33,15 @@ namespace api.makebe.agenda.infra.data.Repositorys
         public async Task<int> Salvar(Colaborador colaborador)
         {
             var sql = @"                      
-                        INSERT INTO Colaborador (UsuarioId, DataCadastro, DataAtualizacao, Status) VALUES  (@UsuarioId, @DataCadastro, @DataAtualizacao, @Status);                     
+                        INSERT INTO Colaborador (UsuarioId, DataCadastro, DataAtualizacao, Status, IsGestor) VALUES  (@UsuarioId, @DataCadastro, @DataAtualizacao, @Status, @IsGestor);                     
                         SELECT LAST_INSERT_ID();";
             var retorno = await _dbAgenda.Connection.ExecuteScalarAsync<int>(sql, new
             {
                 UsuarioId = colaborador.UsuarioId.ToString(),
                 DataCadastro = colaborador.Datacadastro,
                 DataAtualizacao = colaborador.DataAtualizacao,
-                Status = colaborador.Status
+                Status = colaborador.Status,
+                IsGestor = colaborador.IsGestor
             }, _dbAgenda.Transaction);
             return retorno;
 
@@ -199,6 +200,22 @@ namespace api.makebe.agenda.infra.data.Repositorys
                         ORDER BY Nome; ";
             var retorno = await _dbAgenda.Connection.QueryAsync<ColaboradorDTO>(sql, new { ContaId = usuarioId });
             return retorno;
+        }
+
+        public async Task<ColaboradorDTO> BuscarColaboradorUsuarioPorId(string id)
+        {
+            try
+            {
+                var sql = @"SELECT CAST(Id AS CHAR) AS IdUsuario, Nome, Cpf, Telefone, Email, CAST(PermissaoId AS CHAR) AS PermissaoId, Instagran,
+                           1 AS IsGestor, Status , UrlImagem   FROM `Makebe.Sessao`.Usuario WHERE Id = @Id ";
+                var retorno = await _dbAgenda.Connection.QueryFirstOrDefaultAsync<ColaboradorDTO>(sql, new { Id = id }) ?? new ColaboradorDTO();
+                return retorno;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
     }
 }

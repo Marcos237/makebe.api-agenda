@@ -48,6 +48,11 @@ namespace api.makebe.agenda.domain.Services
             return response;
         }
 
+        public  async Task<ColaboradorDTO> BuscarColaboradorUsuarioPorId(string id)
+        {
+            var response = await _colaboradorRepository.BuscarColaboradorUsuarioPorId(id);
+            return response;
+        }
 
         public async Task<bool> Desativar(int id)
         {
@@ -69,5 +74,6 @@ namespace api.makebe.agenda.domain.Services
             var usuarioAutenticado = await _usuarioPermissaoDomainService.BuscarUsuarioAutenticado();
             return await _colaboradorRepository.BuscarPaginadoPorUsuario(usuarioAutenticado.UsuarioId.ToString(), paginacao);
         }
+
     }
 }

@@ -12,6 +12,7 @@ namespace api.makebe.agenda.domain.Interfaces.Repositorys
         Task<bool> Desativar(int id);
         Task<PaginacaoDTO<ColaboradorDTO>> BuscarPaginadoPorConta(string usuarioId, PaginacaoDTO<ColaboradorDTO> paginacao);
         Task<PaginacaoDTO<ColaboradorDTO>> BuscarPaginadoPorUsuario(string usuarioId, PaginacaoDTO<ColaboradorDTO> paginacao);
+        Task<ColaboradorDTO> BuscarColaboradorUsuarioPorId(string id);
         Task<IEnumerable<ColaboradorDTO>> BuscarPorConta(string usuarioId);
     }
 }

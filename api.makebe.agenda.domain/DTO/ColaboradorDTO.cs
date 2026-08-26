@@ -16,5 +16,6 @@
         public string? NomeImagem { get; set; }
         public string? UrlImagem { get; set; }
         public string? DescricaoStatus { get; set; }
+        public bool IsGestor { get; set; }
     }
 }

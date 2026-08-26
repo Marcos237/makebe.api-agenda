@@ -14,6 +14,7 @@ namespace api.makebe.agenda.applications.Mappers.ColaboradorMappers
                .ForMember(dest => dest.UsuarioId, opt => opt.MapFrom(src => PropiedadesHelper.ParseGuidOrDefault(src.UsuarioId)))
                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+               .ForMember(dest => dest.IsGestor, opt => opt.MapFrom(src => src.IsGestor))
                .ReverseMap();
 
         }

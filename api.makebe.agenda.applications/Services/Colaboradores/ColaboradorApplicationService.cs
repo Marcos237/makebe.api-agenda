@@ -83,6 +83,14 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
         }
 
 
+        public async Task<ResponseModel<ColaboradorDTO>> BuscarColaboradorUsuarioPorId(string id)
+        {
+
+            var response = await _colaboradorDomainService.BuscarColaboradorUsuarioPorId(id);
+            return ResponseModelHelper<ColaboradorDTO>.RetornarResponseModel(response, _notificationContext.Notifications);
+        }
+
+
         public async Task<ResponseModel<ColaboradorDTO>> BuscarColaboradorPorId(int id)
         {
             var colaborador = await _colaboradorDomainService.BuscarColaboradorPorId(id);
@@ -103,6 +111,12 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
             var contaEvent = new UsuarioContaEvent();
             try
             {
+                if (colaboradorMap.IsGestor)
+                {
+                    colaboradorMap = new Colaborador() { IsGestor = true, Status = true, UsuarioId = PropiedadesHelper.ParseGuidOrDefault(usuario), Datacadastro = DateTime.Now, DataAtualizacao = DateTime.Now };
+                    await SalvarUsuarioConta(usuarioPayload, usuario, colaboradorMap, registradoEvent, contaEvent);
+                    return await BuscarUsuarioPorId(colaboradorMap.UsuarioId.ToString());   
+                }
                 UsuarioRegistradoEvent usuarioEvent = await SalvarUsuario(usuarioPayload);
                 colaboradorMap.UsuarioId = usuarioEvent.UsuarioConsultado.Id;
                 colaboradorMap.Status = usuarioPayload.Status;
@@ -148,6 +162,7 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
         public async Task SalvarUsuarioConta(ColaboradorPayload usuarioPayload, string usuario, Colaborador colaboradorMap,
             UsuarioContaRegistradoEvent registradoEvent, UsuarioContaEvent contaEvent)
         {
+
             if (usuarioPayload.Id == 0)
             {
                 var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuario));
@@ -157,7 +172,10 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
                 contaEvent.Id = Guid.NewGuid();
 
                 registradoEvent.Conta = contaEvent;
-                var usuarioContaEvent = await _contaEventCrossCuttingService.SalvarUsuarioConta(registradoEvent);
+                var usuarioContaEvent = new UsuarioContaRegistradoEvent();
+                if (!colaboradorMap.IsGestor)
+                    usuarioContaEvent = await _contaEventCrossCuttingService.SalvarUsuarioConta(registradoEvent);
+
                 await _unitOfWork.BeginTransaction();
                 var colaborador = await _colaboradorDomainService.Salvar(colaboradorMap, usuarioPayload?.UsuarioId ?? string.Empty);
                 var usuarioColaboradorMap = new ContaColaborador() { ContaId = conta?.Id, ColaboradorId = colaborador, Status = usuarioPayload!.Status };
@@ -165,6 +183,5 @@ namespace api.makebe.agenda.applications.Services.Colaboradores
                 _unitOfWork.Commit();
             }
         }
-
     }
 }

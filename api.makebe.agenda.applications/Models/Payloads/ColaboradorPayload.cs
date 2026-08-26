@@ -14,5 +14,6 @@
         public bool Status { get; set; }
         public string? Instagram { get; set; }
         public int Tipo { get; set; }
+        public bool IsGestor { get; set; }
     }
 }

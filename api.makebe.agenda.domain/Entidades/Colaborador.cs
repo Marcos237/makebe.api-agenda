@@ -7,5 +7,6 @@
         public DateTime Datacadastro { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public bool Status { get; set; }
+        public bool IsGestor { get; set; }
     }
 }
