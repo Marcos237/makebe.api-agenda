@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.domain.DTO;
+using api.makebe.agenda.domain.DTO;
 
 namespace api.makebe.agenda.domain.Interfaces.Repositorys
 {

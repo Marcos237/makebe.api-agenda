@@ -1,4 +1,4 @@
-﻿using api.makebe.agenda.applications.Interfaces;
+using api.makebe.agenda.applications.Interfaces;
 using api.makebe.agenda.domain.DTO;
 using api.makebe.agenda.domain.Entidades;
 using api.makebe.agenda.domain.Interfaces.Repositorys;
@@ -33,8 +33,10 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
             services.AddScoped<IContaServicoRepository, ContaServicoRepository>();
             services.AddScoped<IPortifolioContextRepository<LojaPortifolio, PortifolioDTO>, LojaPortifolioRepository>();
             services.AddScoped<IPortifolioContextRepository<ColaboradorPortifolio, PortifolioDTO>, ColaboradorPortifolioRepository>();
+            services.AddScoped<IColaboradorPortifolioRepository, ColaboradorPortifolioRepository>();
             services.AddScoped<IEnderecoContextRepository<LojaEndereco, EnderecoDTO>, LojaEnderecoRepository>();
             services.AddScoped<IEnderecoContextRepository<ColaboradorEndereco, EnderecoDTO>, ColaboradorEnderecoRepository>();
+            services.AddScoped<IColaboradorEnderecoRepository, ColaboradorEnderecoRepository>();
             services.AddScoped<IAgendaRepository, AgendaRepository>();
             services.AddScoped<IAgendaContextRepository<AgendaLoja>, AgendaLojaRepository>();
             services.AddScoped<IAgendaContextRepository<AgendaColaborador>, AgendaColaboradorRepository>();
@@ -49,3 +51,6 @@ namespace api.makebe.agenda.infra.crosscutting.ioc.Domains
         }
     }
 }
+
+
+

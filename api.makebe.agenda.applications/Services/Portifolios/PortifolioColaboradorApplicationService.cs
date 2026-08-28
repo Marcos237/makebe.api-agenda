@@ -26,11 +26,8 @@ namespace api.makebe.agenda.applications.Services.Portifolios
         public async Task<PaginacaoDTO<PortifolioDTO>> BuscarPortifolios(PaginacaoDTO<PortifolioDTO> paginacao, string usuarioId)
         {
             var conta = await _contaEventCrossCuttingService.BuscarContaPorId(PropiedadesHelper.ParseGuidOrDefault(usuarioId));
-            var usuarioConsultadoEvent = new UsuarioContaConsultadoPorContaEvent() { IdConta = conta.Id ?? Guid.Empty };
-            var usuariosConta = await _contaEventCrossCuttingService.BuscarUsuarioContaPorIdConta(usuarioConsultadoEvent);
-            var usuariosMap = _mapper.Map<IEnumerable<UsuarioDTO>>(usuariosConta.UsuariosEvents);
 
-            var response = await _colaboradorPortifolioDomainService.BuscarPortifolios(paginacao, conta.Id.ToString() ?? string.Empty, usuariosMap);
+            var response = await _colaboradorPortifolioDomainService.BuscarPortifolios(paginacao, conta.Id.ToString() ?? string.Empty);
             return response;
         }
 
